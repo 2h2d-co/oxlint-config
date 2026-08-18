@@ -137,8 +137,10 @@ Repository setup:
 
 1. Configure npm trusted publishing for `2h2d-co/oxlint-config` using
    `.github/workflows/publish.yml` and the `npm-publish` environment.
-2. Restrict that GitHub environment to `v*` tags and require a reviewer.
-3. Protect `main` with code-owner review and protect `v*` tags from unauthorized changes.
+2. Restrict that GitHub environment to `v*` tags without a deployment reviewer or administrator
+   bypass.
+3. Protect `main` with code-owner review and protect `v*` tags from unauthorized changes while
+   retaining the repository-administrator release path.
 4. Replace `.github/release-signers` if release commits use a different SSH signing key.
 
 Release flow:
