@@ -16,3 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 
 - Update the supported Oxlint and `@oxlint/plugins` version to 1.78.0.
+
+### Fixed
+
+- Reject primitive JSON values where release validation requires package metadata objects.
