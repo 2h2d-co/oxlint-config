@@ -4,7 +4,7 @@
 - Keep `src/plugin.ts`, `src/strict-rules.ts`, package exports, README rule lists, and tests aligned.
 - Add focused RuleTester coverage for every custom rule and every rule option.
 - Keep the plugin and strict preset free of rejected, conditionally redundant, and deferred rules
-  unless the documented policy decision changes.
+  unless `STRICT-RULE-POLICY.md` records a new decision.
 - Apply the strict preset to all committed TypeScript and JavaScript source in this repository; do
   not create test, tooling, generated, or vendored exclusions.
 - Keep Oxlint and `@oxlint/plugins` on the same tested version line because JavaScript plugins are

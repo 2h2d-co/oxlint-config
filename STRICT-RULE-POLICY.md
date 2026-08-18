@@ -1,7 +1,7 @@
 # Strict rule policy
 
-This document records the adopted strict-preset rules from the second code-quality review and the
-rules deliberately deferred for later reconsideration.
+This document is the authoritative record of the shared strict preset. It incorporates the fresh
+post-rollout review of the rules' actual effects across consumer repositories.
 
 ## Scope
 
@@ -10,29 +10,116 @@ rules deliberately deferred for later reconsideration.
 - Use native Oxlint rules instead of custom equivalents when native enforcement is sufficient.
 - Keep native rules in their original namespaces. Reserve `2h2d/` for rules implemented by this
   package.
+- Prefer a narrow, explained line suppression over distorting production contracts, adding
+  pass-through abstractions, or deleting useful test coverage to satisfy a rule.
+
+## Adopted custom rules
+
+### `2h2d/no-known-value-widening`
+
+Require `satisfies` when a populated object literal, or a stable `const` initialized from one, is
+assigned to an open dictionary binding.
+
+The rule does not reject:
+
+- explicit function return contracts;
+- inline structural object contracts;
+- deliberate `unknown` or `object` bindings;
+- empty mutable dictionary accumulators.
+
+This keeps the useful literal-key preservation from the original rule without treating every
+intentional abstraction boundary as evidence loss.
+
+### `2h2d/no-module-mocking`
+
+Reject Vitest and Jest module-loader replacement. Prefer production dependency interfaces, local
+servers, temporary directories, real adapters, and faithful test implementations. A narrow
+suppression is permitted when the behavior under test genuinely belongs to module loading itself.
+
+### `2h2d/no-object-parameters`
+
+Reject the broad `object` type on function parameters. Use a specific owner contract or a genuine
+generic constraint such as `Value extends object`. A reviewed suppression is permitted for an
+operation whose exact contract is intentionally only “non-primitive.”
+
+### `2h2d/no-silent-error-suppression`
+
+Analyze every reachable handler path instead of accepting any syntactic `throw` anywhere in the
+handler.
+
+- Require at least one path that throws or rejects with the caught cause or a value derived from it.
+- Permit a normally completing path only after a condition or switch that examines the cause.
+- Reject unrelated replacement throws and rejections.
+- Resolve and analyze file-local named `.catch(handler)` callbacks.
+- Reject imported or otherwise uninspectable rejection callbacks unless narrowly suppressed.
+- Treat nested `try` control flow conservatively because an inner handler can intercept a throw.
+
+Terminal UI reporting, process-exit conversion, and best-effort cleanup may intentionally consume a
+failure, but each such case requires a narrow explained suppression.
+
+### `2h2d/no-unknown-returns`
+
+Reject explicit function contracts returning `unknown`, a union containing `unknown`,
+`Promise<unknown>`, `PromiseLike<unknown>`, or a file-local alias resolving to one of those types.
+
+Parse or validate uncertain data before returning it from an application boundary. A genuinely
+generic decoding API may use a narrow reviewed suppression rather than claim a false domain type.
+
+### `2h2d/no-unpreserved-caught-error`
+
+Reject a parameterless catch that throws a replacement global `Error`, `TypeError`, or
+`AggregateError`. Add a catch parameter so native `preserve-caught-error` can require it as the
+replacement error's `cause`.
+
+This targeted rule replaces the previous requirement that every catch have a parameter.
+
+### `2h2d/no-unreviewed-suppression-directives`
+
+- Ban `@ts-expect-error`, `@ts-ignore`, and `@ts-nocheck`.
+- Ban range-wide `oxlint-disable`, `eslint-disable`, and matching enable directives.
+- Permit only same-line and next-line lint suppressions.
+- Require exactly one named lint rule.
+- Require a non-empty explanation after `--`.
+- Set the root Oxlint option `reportUnusedDisableDirectives` to `error` in every consumer.
+
+### `2h2d/no-unsafe-dictionary-type`
+
+Reject object dictionaries whose direct value contract is `any`, `object`, `{}`, or a union or
+file-local alias containing one of those types.
+
+`Record<string, unknown>` and equivalent index signatures are permitted: `unknown` is a truthful,
+type-safe contract when each retrieved value must be narrowed. Use recursive `JsonValue` and
+`JsonObject` only after establishing that the data is actually JSON.
 
 ## Adopted native rules
 
-The following rules are enabled as errors:
+The following rules remain enabled as errors:
 
-| Configuration rule ID                               | Baseline findings | Policy                                                                           |
-| --------------------------------------------------- | ----------------: | -------------------------------------------------------------------------------- |
-| `typescript/no-floating-promises`                   |                 0 | Keep every created Promise observed or explicitly handled.                       |
-| `typescript/no-misused-promises`                    |                 3 | Do not pass Promise-returning functions to synchronous contracts.                |
-| `typescript/only-throw-error`                       |                 2 | Throw values with reliable error semantics.                                      |
-| `typescript/use-unknown-in-catch-callback-variable` |                 2 | Treat callback failures as uncertain until narrowed.                             |
-| `typescript/switch-exhaustiveness-check`            |                 3 | Handle every union member without treating `default` as proof of exhaustiveness. |
-| `preserve-caught-error`                             |                26 | Require a catch parameter and preserve the original failure through `cause`.     |
-| `typescript/no-non-null-assertion`                  |               184 | Ban unchecked postfix non-null assertions.                                       |
-| `typescript/no-explicit-any`                        |                83 | Prevent `any` from bypassing type checking.                                      |
-| `typescript/no-unsafe-argument`                     |                30 | Prevent unsafe values from entering typed calls.                                 |
-| `typescript/no-unsafe-assignment`                   |                15 | Prevent unsafe values from entering typed bindings.                              |
-| `typescript/no-unsafe-call`                         |                43 | Require callable type evidence before invocation.                                |
-| `typescript/no-unsafe-member-access`                |                68 | Require object type evidence before property access.                             |
-| `typescript/no-unsafe-return`                       |                12 | Prevent unsafe values from escaping typed functions.                             |
+| Configuration rule ID                               | Policy                                                            |
+| --------------------------------------------------- | ----------------------------------------------------------------- |
+| `typescript/consistent-type-assertions`             | Ban every non-const type assertion.                               |
+| `typescript/no-explicit-any`                        | Prevent explicit type-system bypasses.                            |
+| `typescript/no-floating-promises`                   | Require every Promise rejection to be observed.                   |
+| `typescript/no-misused-promises`                    | Do not pass Promise-returning functions to synchronous contracts. |
+| `typescript/no-non-null-assertion`                  | Ban unchecked postfix non-null assertions.                        |
+| `typescript/no-unsafe-argument`                     | Prevent unsafe values from entering typed calls.                  |
+| `typescript/no-unsafe-assignment`                   | Prevent unsafe values from entering typed bindings.               |
+| `typescript/no-unsafe-call`                         | Require callable type evidence before invocation.                 |
+| `typescript/no-unsafe-member-access`                | Require object type evidence before property access.              |
+| `typescript/no-unsafe-return`                       | Prevent unsafe values from escaping typed functions.              |
+| `typescript/only-throw-error`                       | Throw values with reliable error semantics.                       |
+| `typescript/switch-exhaustiveness-check`            | Handle every union member without relying on `default`.           |
+| `typescript/use-unknown-in-catch-callback-variable` | Treat Promise rejection values as uncertain until narrowed.       |
+| `preserve-caught-error`                             | Preserve a caught failure when constructing a replacement Error.  |
 
-Baseline counts came from the 11 repositories migrated to the first shared preset. Diagnostics from
-the unsafe-propagation rules overlap, so their counts do not represent distinct changes.
+`typescript/no-floating-promises` uses `ignoreVoid: false`. `void operation()` does not handle a
+rejection. The `describe`, `it`, and `test` exports from `node:test` are allowed because the Node
+test runner owns and observes their returned Promises. Invoke those registration calls directly
+rather than wrapping them in `void`.
+
+`preserve-caught-error` uses `requireCatchParameter: false`. Parameterless best-effort catches do
+not need dummy variables; `2h2d/no-unpreserved-caught-error` handles the narrower replacement-error
+case.
 
 Exhaustive switches use:
 
@@ -43,40 +130,30 @@ Exhaustive switches use:
 }
 ```
 
-Caught errors use:
+## Removed rules
 
-```json
-{
-  "requireCatchParameter": true
-}
-```
+The post-rollout review removed these rules from both the strict preset and the plugin:
 
-## Adopted custom rules
+| Rule                                      | Reason                                                                                            |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `2h2d/no-conditional-empty-object-spread` | The rejected idiom precisely represents omission; mutation is often longer and less local.        |
+| `2h2d/no-runtime-typeof`                  | `typeof` is a sound narrowing primitive; wrapping it in a type guard merely moves the same check. |
+| `2h2d/no-shape-in-symbol-names`           | A vocabulary ban cannot objectively improve correctness and conflicts with legitimate domains.    |
+| `2h2d/no-unknown-type-aliases`            | Aliasing `unknown` can add domain meaning without weakening type safety.                          |
 
-### `2h2d/no-unreviewed-suppression-directives`
+Do not reintroduce these rules without new evidence and a separate review.
 
-- Ban `@ts-expect-error`, `@ts-ignore`, and `@ts-nocheck`.
-- Ban range-wide `oxlint-disable`, `eslint-disable`, and matching enable directives.
-- Permit only same-line and next-line lint suppressions.
-- Require exactly one named lint rule.
-- Require a specific explanation after `--`.
-- Set the root Oxlint option `reportUnusedDisableDirectives` to `error` in every consumer.
+## Post-rollout evidence
 
-Example:
-
-```ts
-// oxlint-disable-next-line no-await-in-loop -- protocol operations must remain ordered.
-await operation();
-```
-
-### `2h2d/no-silent-error-suppression`
-
-- Reject catch handlers without a syntactic failure-propagation path.
-- Reject inline `.catch(...)` callbacks without a syntactic failure-propagation path.
-- Recognize `throw` and a returned `Promise.reject(...)` as propagation.
-- Require expected failures to be classified explicitly while preserving a path for unexpected
-  failures.
-- Leave named `.catch(handler)` callbacks to analysis of the handler's own implementation.
+- The original silent-error implementation accumulated 51 narrow suppressions across consumers,
+  including 39 in `pi-openai-codex-compat`.
+- Requiring every catch parameter caused 11 paired `no-unused-vars` suppressions in that repository
+  and encouraged `void error` statements elsewhere.
+- The first non-null migration overused a `requiredValue` helper; a semantic review reduced it from
+  82 uses to 13 genuine invariants.
+- Unsafe-propagation rules exposed inaccurate broad test fixtures, but upstream `any` declarations
+  also created pressure to remove an integration block. Future migrations must preserve useful
+  coverage and suppress a rule narrowly at an unavoidable third-party boundary instead.
 
 ## Deferred for later reconsideration
 

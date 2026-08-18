@@ -11,7 +11,7 @@ function isObject(value: unknown): value is object {
   return typeof value === "object" && value !== null;
 }
 
-void test("built package exports resolve through the package name", async () => {
+test("built package exports resolve through the package name", async () => {
   const pluginUrl = import.meta.resolve("@2h2d/oxlint-config/plugin");
   const rulesUrl = import.meta.resolve("@2h2d/oxlint-config/strict-rules");
   const pluginModule: unknown = await import(pluginUrl);
@@ -25,7 +25,7 @@ void test("built package exports resolve through the package name", async () => 
   assert.ok(isObject(rulesModule.strictRules));
 });
 
-void test("Oxlint loads the built plugin by package specifier", async () => {
+test("Oxlint loads the built plugin by package specifier", async () => {
   const temporaryDirectory = await mkdtemp(join(root, ".consumer-"));
   try {
     const configPath = join(temporaryDirectory, "oxlint.config.json");
@@ -41,7 +41,7 @@ void test("Oxlint loads the built plugin by package specifier", async () => {
             },
           ],
           rules: {
-            "2h2d/no-shape-in-symbol-names": "error",
+            "2h2d/no-object-parameters": "error",
             "preserve-caught-error": ["error", { requireCatchParameter: true }],
             "typescript/no-explicit-any": "error",
           },
@@ -53,7 +53,8 @@ void test("Oxlint loads the built plugin by package specifier", async () => {
     await writeFile(
       sourcePath,
       [
-        "const responseShape: any = 1;",
+        "const response: any = 1;",
+        "function accept(value: object) { return value; }",
         "try {",
         "  operation();",
         "} catch (cause) {",
@@ -73,7 +74,7 @@ void test("Oxlint loads the built plugin by package specifier", async () => {
     );
 
     assert.equal(result.status, 1, result.stderr);
-    assert.match(result.stdout, /2h2d\(no-shape-in-symbol-names\)/u);
+    assert.match(result.stdout, /2h2d\(no-object-parameters\)/u);
     assert.match(result.stdout, /eslint\(preserve-caught-error\)/u);
     assert.match(result.stdout, /typescript\(no-explicit-any\)/u);
   } finally {

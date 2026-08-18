@@ -80,15 +80,12 @@ export default defineConfig({
 
 The strict preset enables these custom rules as errors:
 
-- `2h2d/no-conditional-empty-object-spread`
 - `2h2d/no-known-value-widening`
 - `2h2d/no-module-mocking`
 - `2h2d/no-object-parameters`
-- `2h2d/no-runtime-typeof` with `allowInTypeGuards: true`
-- `2h2d/no-shape-in-symbol-names`
 - `2h2d/no-silent-error-suppression`
 - `2h2d/no-unknown-returns`
-- `2h2d/no-unknown-type-aliases`
+- `2h2d/no-unpreserved-caught-error`
 - `2h2d/no-unreviewed-suppression-directives`
 - `2h2d/no-unsafe-dictionary-type`
 
@@ -97,9 +94,14 @@ The suppression-directive rule bans TypeScript suppression comments. Lint suppre
 `--`. `reportUnusedDisableDirectives: "error"` is a root configuration option rather than a rule,
 so consumer configurations must set it as shown above.
 
-The silent-error rule requires catch handlers and inline Promise rejection callbacks to contain a
-syntactic propagation path: a `throw` statement or a returned `Promise.reject(...)`. Expected
-failures must be classified explicitly while every other failure remains able to propagate.
+The silent-error rule analyzes each reachable handler path. At least one path must preserve and
+propagate the caught cause, while every normally completing path must follow a condition or switch
+that examines that cause. File-local named Promise rejection handlers are resolved and analyzed;
+uninspectable handlers require a narrow explained suppression.
+
+The unpreserved-error rule rejects replacement built-in errors thrown from parameterless catches.
+It complements native `preserve-caught-error` without requiring dummy catch variables for
+best-effort cleanup.
 
 ## Native rules
 
@@ -107,10 +109,16 @@ The strict preset also enables these native Oxlint rules:
 
 ```json
 {
-  "preserve-caught-error": ["error", { "requireCatchParameter": true }],
+  "preserve-caught-error": ["error", { "requireCatchParameter": false }],
   "typescript/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
   "typescript/no-explicit-any": "error",
-  "typescript/no-floating-promises": "error",
+  "typescript/no-floating-promises": [
+    "error",
+    {
+      "allowForKnownSafeCalls": ["describe", "it", "test"],
+      "ignoreVoid": false
+    }
+  ],
   "typescript/no-misused-promises": "error",
   "typescript/no-non-null-assertion": "error",
   "typescript/no-unsafe-argument": "error",
@@ -131,7 +139,9 @@ The strict preset also enables these native Oxlint rules:
 ```
 
 Every non-const type assertion and postfix non-null assertion is prohibited. `as const` remains
-allowed.
+allowed. `void promise` is not accepted as Promise rejection handling. Node's `describe`, `it`, and
+`test` registration calls are allowed because the test runner observes their Promises; invoke those
+registrations directly rather than wrapping them in `void`.
 
 ## Rule namespaces
 
@@ -154,10 +164,14 @@ Importing a native rule through `strictRules` does not move it into the `2h2d` n
 - Prefer `satisfies` to widening annotations.
 - Keep promises observable and use exhaustive union handling.
 - Use named contracts for meaningful inputs and outputs.
-- Represent arbitrary JSON with recursive `JsonValue` and `JsonObject` types.
+- Use `unknown` for genuinely uncertain dictionary values and narrow each value before use.
+- Represent data with recursive `JsonValue` and `JsonObject` only after establishing that it is
+  JSON.
 - Replace dependencies through production interfaces rather than module-loader mocks.
 - Apply policy to every committed TypeScript and JavaScript file without special directories for
   vendored, test, or tooling code.
+- Prefer a narrow explained suppression over distorting a contract, adding a pass-through helper,
+  or deleting useful test coverage.
 
 ## Compatibility
 

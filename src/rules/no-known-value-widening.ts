@@ -3,14 +3,12 @@ import { defineRule } from "@oxlint/plugins";
 import {
   classifyWideningTarget,
   createTypeEnvironment,
-  isKnownEvidenceExpression,
+  isPopulatedObjectExpression,
   type TypeEnvironment,
   type WideningTarget,
 } from "../shared/dictionary-types.ts";
 
 import type { ESTree, Scope, SourceCode, Variable } from "@oxlint/plugins";
-
-type FunctionExpression = ESTree.ArrowFunctionExpression | ESTree.Function;
 
 function unwrapExpression(expression: ESTree.Expression): ESTree.Expression {
   let current = expression;
@@ -55,12 +53,12 @@ function isStableConstVariable(variable: Variable, declarator: ESTree.VariableDe
   );
 }
 
-function hasKnownEvidence(
+function hasPopulatedObjectEvidence(
   sourceCode: SourceCode,
   expression: ESTree.Expression,
   visitedVariables = new Set<Variable>(),
 ): boolean {
-  if (isKnownEvidenceExpression(expression)) return true;
+  if (isPopulatedObjectExpression(expression)) return true;
   const unwrapped = unwrapExpression(expression);
   if (unwrapped.type !== "Identifier") return false;
   const variable = resolveVariable(sourceCode, unwrapped);
@@ -74,7 +72,7 @@ function hasKnownEvidence(
     return false;
   }
   visitedVariables.add(variable);
-  return hasKnownEvidence(sourceCode, declarator.init, visitedVariables);
+  return hasPopulatedObjectEvidence(sourceCode, declarator.init, visitedVariables);
 }
 
 function annotationTarget(
@@ -86,57 +84,23 @@ function annotationTarget(
     : classifyWideningTarget(annotation.typeAnnotation, environment);
 }
 
-function enclosingFunction(node: ESTree.Node): FunctionExpression | null {
-  let current: ESTree.Node | null = node.parent;
-  while (current !== null && current.type !== "Program") {
-    if (
-      current.type === "ArrowFunctionExpression" ||
-      current.type === "FunctionDeclaration" ||
-      current.type === "FunctionExpression"
-    ) {
-      return current;
-    }
-    current = current.parent;
-  }
-  return null;
-}
-
 function sourceKeyName(sourceCode: SourceCode, key: ESTree.PropertyKey): string {
   if (key.type === "Identifier" || key.type === "PrivateIdentifier") return key.name;
   if (key.type === "Literal") return String(key.value);
   return sourceCode.getText(key);
 }
 
-function functionName(sourceCode: SourceCode, owner: FunctionExpression | null): string {
-  if (owner === null) return "anonymous function";
-  if (owner.id !== null) return owner.id.name;
-  const parent = owner.parent;
-  if (parent.type === "VariableDeclarator" && parent.id.type === "Identifier")
-    return parent.id.name;
-  if (parent.type === "MethodDefinition") return sourceKeyName(sourceCode, parent.key);
-  return "anonymous function";
-}
-
-function isEmptyObjectExpression(expression: ESTree.Expression): boolean {
-  const unwrapped = unwrapExpression(expression);
-  return unwrapped.type === "ObjectExpression" && unwrapped.properties.length === 0;
-}
-
 function isDictionaryAccumulatorTarget(destination: WideningTarget): boolean {
   return destination.kind === "open dictionary" || destination.kind === "generic container";
 }
 
-function hasParentAssertion(node: ESTree.Node): boolean {
-  return node.parent?.type === "TSAsExpression" || node.parent?.type === "TSTypeAssertion";
-}
-
-/** Detect sound syntactic cases where a known value is explicitly widened and loses evidence. */
+/** Require `satisfies` when a populated object is assigned to an open dictionary contract. */
 export const noKnownValueWideningRule = defineRule({
   meta: {
     type: "problem",
     docs: {
       description:
-        "Disallow syntactically established values from flowing into explicitly broad or anonymous target types that discard useful evidence.",
+        "Disallow populated object literals from being widened by open dictionary binding contracts.",
     },
     messages: {
       widening:
@@ -151,11 +115,8 @@ export const noKnownValueWideningRule = defineRule({
       destination: WideningTarget | null,
       subject: string,
     ) => {
-      if (destination === null) return;
-      if (isDictionaryAccumulatorTarget(destination) && isEmptyObjectExpression(expression)) {
-        return;
-      }
-      if (!hasKnownEvidence(context.sourceCode, expression)) return;
+      if (destination === null || !isDictionaryAccumulatorTarget(destination)) return;
+      if (!hasPopulatedObjectEvidence(context.sourceCode, expression)) return;
       context.report({
         node: expression,
         messageId: "widening",
@@ -204,39 +165,6 @@ export const noKnownValueWideningRule = defineRule({
           node.right,
           targetFromAnnotation(declarator.id.typeAnnotation),
           `binding \`${declarator.id.name}\``,
-        );
-      },
-      ReturnStatement(node) {
-        if (node.argument === null) return;
-        const owner = enclosingFunction(node);
-        reportFlow(
-          node.argument,
-          targetFromAnnotation(owner?.returnType),
-          `return value of \`${functionName(context.sourceCode, owner)}\``,
-        );
-      },
-      ArrowFunctionExpression(node) {
-        if (node.body.type === "BlockStatement") return;
-        reportFlow(
-          node.body,
-          targetFromAnnotation(node.returnType),
-          `return value of \`${functionName(context.sourceCode, node)}\``,
-        );
-      },
-      TSAsExpression(node) {
-        if (environment === null || hasParentAssertion(node)) return;
-        reportFlow(
-          node.expression,
-          classifyWideningTarget(node.typeAnnotation, environment),
-          "assertion",
-        );
-      },
-      TSTypeAssertion(node) {
-        if (environment === null || hasParentAssertion(node)) return;
-        reportFlow(
-          node.expression,
-          classifyWideningTarget(node.typeAnnotation, environment),
-          "assertion",
         );
       },
     };
