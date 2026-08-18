@@ -13,7 +13,7 @@ The package combines:
 Install the package and its exact supported Oxlint version as development dependencies:
 
 ```bash
-npm install --save-dev --save-exact @2h2d/oxlint-config oxlint@1.77.0
+npm install --save-dev --save-exact @2h2d/oxlint-config oxlint@1.78.0
 ```
 
 ## Oxlint configuration
@@ -112,7 +112,7 @@ The preset also bans every non-const type assertion:
 ## Compatibility
 
 Oxlint JavaScript plugins are currently alpha and outside normal semantic-versioning guarantees.
-This package pins and tests Oxlint and `@oxlint/plugins` 1.77.0. Update those versions together and
+This package pins and tests Oxlint and `@oxlint/plugins` 1.78.0. Update those versions together and
 validate the package-consumer integration test before release.
 
 ## Development
