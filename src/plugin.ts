@@ -8,6 +8,7 @@ import { noRuntimeTypeofRule } from "./rules/no-runtime-typeof.ts";
 import { noForbiddenTermInSymbolNamesRule } from "./rules/no-shape-in-symbol-names.ts";
 import { noUnknownReturnsRule } from "./rules/no-unknown-returns.ts";
 import { noUnknownTypeAliasesRule } from "./rules/no-unknown-type-aliases.ts";
+import { noUnreviewedSuppressionDirectivesRule } from "./rules/no-unreviewed-suppression-directives.ts";
 import { noUnsafeDictionaryTypeRule } from "./rules/no-unsafe-dictionary-type.ts";
 
 const plugin = eslintCompatPlugin({
@@ -21,6 +22,7 @@ const plugin = eslintCompatPlugin({
     "no-shape-in-symbol-names": noForbiddenTermInSymbolNamesRule,
     "no-unknown-returns": noUnknownReturnsRule,
     "no-unknown-type-aliases": noUnknownTypeAliasesRule,
+    "no-unreviewed-suppression-directives": noUnreviewedSuppressionDirectivesRule,
     "no-unsafe-dictionary-type": noUnsafeDictionaryTypeRule,
   },
 });

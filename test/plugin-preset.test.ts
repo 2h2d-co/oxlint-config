@@ -13,6 +13,7 @@ const expectedRules = [
   "no-shape-in-symbol-names",
   "no-unknown-returns",
   "no-unknown-type-aliases",
+  "no-unreviewed-suppression-directives",
   "no-unsafe-dictionary-type",
 ];
 
