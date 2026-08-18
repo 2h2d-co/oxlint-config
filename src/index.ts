@@ -1,3 +1,2 @@
-export function createMessage(name: string): string {
-  return `Hello, ${name}!`;
-}
+export { default as plugin } from "./plugin.ts";
+export { strictRules } from "./strict-rules.ts";

@@ -1,6 +1,16 @@
 # Agent Instructions
 
 - This project is a TypeScript ESM package.
+- Keep `src/plugin.ts`, `src/strict-rules.ts`, package exports, README rule lists, and tests aligned.
+- Add focused RuleTester coverage for every custom rule and every rule option.
+- Keep the plugin and strict preset free of rejected, conditionally redundant, and deferred rules
+  unless the documented policy decision changes.
+- Apply the strict preset to all committed TypeScript and JavaScript source in this repository; do
+  not create test, tooling, generated, or vendored exclusions.
+- Keep Oxlint and `@oxlint/plugins` on the same tested version line because JavaScript plugins are
+  alpha and outside normal semantic-versioning guarantees.
+- Preserve `LICENSES/anti-slop-MIT.txt` and `THIRD_PARTY_NOTICES.md` while adapted anti-slop code
+  remains.
 - Run `npm run check` and `npm test` before committing meaningful code changes.
 - Run `npm run pack:dry` to build and inspect the npm package contents before release.
 - Keep `.github/npm-package-files` synchronized with every intentional package-content change; local release validation and both CI jobs enforce it exactly.

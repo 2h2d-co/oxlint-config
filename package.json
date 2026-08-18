@@ -18,10 +18,11 @@
   },
   "files": [
     "dist",
-    "src",
     "README.md",
     "CHANGELOG.md",
-    "LICENSE"
+    "LICENSE",
+    "LICENSES",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "type": "module",
   "types": "dist/index.d.ts",
@@ -29,12 +30,20 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./plugin": {
+      "types": "./dist/plugin.d.ts",
+      "default": "./dist/plugin.js"
+    },
+    "./strict-rules": {
+      "types": "./dist/strict-rules.d.ts",
+      "default": "./dist/strict-rules.js"
     }
   },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "node --test --test-concurrency=1 test/*.test.ts",
+    "test": "npm run build && node --test --test-concurrency=1 test/*.test.ts",
     "check": "hk check --all --check",
     "pack:dry": "npm run build && npm pack --dry-run --ignore-scripts --allow-directory=all",
     "release": "node scripts/release.ts",
@@ -42,12 +51,18 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix"
   },
+  "dependencies": {
+    "@oxlint/plugins": "1.77.0"
+  },
   "devDependencies": {
     "@types/node": "22.20.1",
     "oxfmt": "0.62.0",
     "oxlint": "1.77.0",
     "oxlint-tsgolint": "7.0.2001",
     "typescript": "7.0.2"
+  },
+  "peerDependencies": {
+    "oxlint": "1.77.0"
   },
   "engines": {
     "node": ">=22.19.0"
