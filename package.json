@@ -1,0 +1,55 @@
+{
+  "name": "@2h2d/oxlint-config",
+  "version": "0.0.1-alpha.0",
+  "description": "Shared Oxlint rules and configuration for 2h2d repositories",
+  "homepage": "https://github.com/2h2d-co/oxlint-config#readme",
+  "bugs": {
+    "url": "https://github.com/2h2d-co/oxlint-config/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Kaan Ozdokmeci",
+    "email": "kaan@ozdokmeci.com",
+    "url": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2h2d-co/oxlint-config.git"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "node --test --test-concurrency=1 test/*.test.ts",
+    "check": "hk check --all --check",
+    "pack:dry": "npm run build && npm pack --dry-run --ignore-scripts --allow-directory=all",
+    "release": "node scripts/release.ts",
+    "fmt": "oxfmt",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "oxfmt": "0.62.0",
+    "oxlint": "1.77.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  }
+}

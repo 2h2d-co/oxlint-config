@@ -1,0 +1,44 @@
+# oxlint-config
+
+Shared Oxlint rules and configuration for 2h2d repositories
+
+## Development
+
+```bash
+npm install
+npm run check
+npm test
+npm run build
+npm run pack:dry
+```
+
+## Packaging
+
+`.github/npm-package-files` is the authoritative package-content allowlist used by the local release
+command and both CI jobs. Update it whenever the intended published file set changes.
+
+## Release staging
+
+Repository setup:
+
+1. Configure npm trusted publishing for `2h2d-co/oxlint-config` using
+   `.github/workflows/publish.yml` and the `npm-publish` environment.
+2. Restrict that GitHub environment to `v*` tags and require a reviewer.
+3. Protect `main` with code-owner review and protect `v*` tags from unauthorized changes.
+4. Replace `.github/release-signers` if release commits use a different SSH signing key.
+
+Release flow:
+
+1. Run `npm run release -- X.Y.Z` from a clean, synchronized `main`.
+2. The release command builds the package from the staged Git index, records its SHA-256 in the
+   SSH-signed release commit, rebuilds the commit to prove reproducibility, and creates a lightweight
+   `vX.Y.Z` tag.
+3. Inspect the commit and tag, then push them atomically with
+   `git push --atomic origin main vX.Y.Z`.
+4. A read-only CI job builds, tests, packs, and inspects the package without publishing credentials.
+5. After approval in `npm-publish`, a separate credentialed job verifies the signed commit and exact
+   package digest before attesting and staging that archive through npm trusted publishing.
+6. Approve the staged package on npmjs.com or with `npm stage approve <stage-id>`.
+
+Stable versions use `latest`; prereleases derive a non-`latest` dist-tag such as `alpha`, `beta`, or
+`rc` from their first prerelease identifier.
