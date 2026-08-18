@@ -13,6 +13,7 @@ export default defineConfig({
     builtin: true,
   },
   options: {
+    reportUnusedDisableDirectives: "error",
     typeAware: true,
     typeCheck: true,
   },

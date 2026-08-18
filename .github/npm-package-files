@@ -19,10 +19,14 @@ dist/rules/no-runtime-typeof.d.ts
 dist/rules/no-runtime-typeof.js
 dist/rules/no-shape-in-symbol-names.d.ts
 dist/rules/no-shape-in-symbol-names.js
+dist/rules/no-silent-error-suppression.d.ts
+dist/rules/no-silent-error-suppression.js
 dist/rules/no-unknown-returns.d.ts
 dist/rules/no-unknown-returns.js
 dist/rules/no-unknown-type-aliases.d.ts
 dist/rules/no-unknown-type-aliases.js
+dist/rules/no-unreviewed-suppression-directives.d.ts
+dist/rules/no-unreviewed-suppression-directives.js
 dist/rules/no-unsafe-dictionary-type.d.ts
 dist/rules/no-unsafe-dictionary-type.js
 dist/shared/dictionary-types.d.ts

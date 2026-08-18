@@ -40,6 +40,7 @@ export default defineConfig({
     builtin: true,
   },
   options: {
+    reportUnusedDisableDirectives: "error",
     typeAware: true,
     typeCheck: true,
   },
@@ -67,6 +68,7 @@ export default defineConfig({
     ],
     rules: strictRules,
     options: {
+      reportUnusedDisableDirectives: "error",
       typeAware: true,
       typeCheck: true,
     },
@@ -84,25 +86,73 @@ The strict preset enables these custom rules as errors:
 - `2h2d/no-object-parameters`
 - `2h2d/no-runtime-typeof` with `allowInTypeGuards: true`
 - `2h2d/no-shape-in-symbol-names`
+- `2h2d/no-silent-error-suppression`
 - `2h2d/no-unknown-returns`
 - `2h2d/no-unknown-type-aliases`
+- `2h2d/no-unreviewed-suppression-directives`
 - `2h2d/no-unsafe-dictionary-type`
 
-The preset also bans every non-const type assertion:
+The suppression-directive rule bans TypeScript suppression comments. Lint suppressions must use
+`disable-line` or `disable-next-line`, name exactly one rule, and include an explanation after
+`--`. `reportUnusedDisableDirectives: "error"` is a root configuration option rather than a rule,
+so consumer configurations must set it as shown above.
+
+The silent-error rule requires catch handlers and inline Promise rejection callbacks to contain a
+syntactic propagation path: a `throw` statement or a returned `Promise.reject(...)`. Expected
+failures must be classified explicitly while every other failure remains able to propagate.
+
+## Native rules
+
+The strict preset also enables these native Oxlint rules:
 
 ```json
 {
-  "typescript/consistent-type-assertions": ["error", { "assertionStyle": "never" }]
+  "preserve-caught-error": ["error", { "requireCatchParameter": true }],
+  "typescript/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
+  "typescript/no-explicit-any": "error",
+  "typescript/no-floating-promises": "error",
+  "typescript/no-misused-promises": "error",
+  "typescript/no-non-null-assertion": "error",
+  "typescript/no-unsafe-argument": "error",
+  "typescript/no-unsafe-assignment": "error",
+  "typescript/no-unsafe-call": "error",
+  "typescript/no-unsafe-member-access": "error",
+  "typescript/no-unsafe-return": "error",
+  "typescript/only-throw-error": "error",
+  "typescript/switch-exhaustiveness-check": [
+    "error",
+    {
+      "allowDefaultCaseForExhaustiveSwitch": false,
+      "considerDefaultExhaustiveForUnions": false
+    }
+  ],
+  "typescript/use-unknown-in-catch-callback-variable": "error"
 }
 ```
 
-`as const` remains allowed.
+Every non-const type assertion and postfix non-null assertion is prohibited. `as const` remains
+allowed.
+
+## Rule namespaces
+
+Rules retain the namespace of their implementation:
+
+- native TypeScript rules use configuration IDs such as `typescript/no-explicit-any` and are
+  displayed as `typescript(no-explicit-any)`;
+- native ESLint-compatible rules use IDs such as `preserve-caught-error` and are displayed as
+  `eslint(preserve-caught-error)`;
+- rules implemented by this package use IDs such as `2h2d/no-silent-error-suppression` and are
+  displayed as `2h2d(no-silent-error-suppression)`.
+
+Importing a native rule through `strictRules` does not move it into the `2h2d` namespace.
 
 ## Rule design
 
 - Parse uncertain values at their I/O boundary.
+- Propagate unexpected failures and preserve their original causes.
 - Preserve known keys, literals, and domain types.
 - Prefer `satisfies` to widening annotations.
+- Keep promises observable and use exhaustive union handling.
 - Use named contracts for meaningful inputs and outputs.
 - Represent arbitrary JSON with recursive `JsonValue` and `JsonObject` types.
 - Replace dependencies through production interfaces rather than module-loader mocks.

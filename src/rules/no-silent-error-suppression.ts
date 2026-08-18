@@ -57,7 +57,29 @@ function statementPropagatesFailure(statement: ESTree.Statement): boolean {
         (statement.handler !== null && statementsPropagateFailure(statement.handler.body.body)) ||
         (statement.finalizer !== null && statementsPropagateFailure(statement.finalizer.body))
       );
-    default:
+    case "BreakStatement":
+    case "ClassDeclaration":
+    case "ClassExpression":
+    case "ContinueStatement":
+    case "DebuggerStatement":
+    case "EmptyStatement":
+    case "ExportAllDeclaration":
+    case "ExportDefaultDeclaration":
+    case "ExportNamedDeclaration":
+    case "ExpressionStatement":
+    case "FunctionDeclaration":
+    case "FunctionExpression":
+    case "ImportDeclaration":
+    case "TSDeclareFunction":
+    case "TSEmptyBodyFunctionExpression":
+    case "TSEnumDeclaration":
+    case "TSExportAssignment":
+    case "TSImportEqualsDeclaration":
+    case "TSInterfaceDeclaration":
+    case "TSModuleDeclaration":
+    case "TSNamespaceExportDeclaration":
+    case "TSTypeAliasDeclaration":
+    case "VariableDeclaration":
       return false;
   }
 }
