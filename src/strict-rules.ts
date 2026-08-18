@@ -8,6 +8,7 @@ export const strictRules: DummyRuleMap = {
   "2h2d/no-object-parameters": "error",
   "2h2d/no-runtime-typeof": ["error", { allowInTypeGuards: true }],
   "2h2d/no-shape-in-symbol-names": "error",
+  "2h2d/no-silent-error-suppression": "error",
   "2h2d/no-unknown-returns": "error",
   "2h2d/no-unknown-type-aliases": "error",
   "2h2d/no-unreviewed-suppression-directives": "error",

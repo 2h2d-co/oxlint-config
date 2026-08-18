@@ -6,6 +6,7 @@ import { noModuleMockingRule } from "./rules/no-module-mocking.ts";
 import { noObjectParametersRule } from "./rules/no-object-parameters.ts";
 import { noRuntimeTypeofRule } from "./rules/no-runtime-typeof.ts";
 import { noForbiddenTermInSymbolNamesRule } from "./rules/no-shape-in-symbol-names.ts";
+import { noSilentErrorSuppressionRule } from "./rules/no-silent-error-suppression.ts";
 import { noUnknownReturnsRule } from "./rules/no-unknown-returns.ts";
 import { noUnknownTypeAliasesRule } from "./rules/no-unknown-type-aliases.ts";
 import { noUnreviewedSuppressionDirectivesRule } from "./rules/no-unreviewed-suppression-directives.ts";
@@ -20,6 +21,7 @@ const plugin = eslintCompatPlugin({
     "no-object-parameters": noObjectParametersRule,
     "no-runtime-typeof": noRuntimeTypeofRule,
     "no-shape-in-symbol-names": noForbiddenTermInSymbolNamesRule,
+    "no-silent-error-suppression": noSilentErrorSuppressionRule,
     "no-unknown-returns": noUnknownReturnsRule,
     "no-unknown-type-aliases": noUnknownTypeAliasesRule,
     "no-unreviewed-suppression-directives": noUnreviewedSuppressionDirectivesRule,

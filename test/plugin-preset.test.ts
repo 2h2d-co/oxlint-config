@@ -11,6 +11,7 @@ const expectedRules = [
   "no-object-parameters",
   "no-runtime-typeof",
   "no-shape-in-symbol-names",
+  "no-silent-error-suppression",
   "no-unknown-returns",
   "no-unknown-type-aliases",
   "no-unreviewed-suppression-directives",
