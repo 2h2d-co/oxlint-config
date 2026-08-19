@@ -7,8 +7,8 @@ dist/index.d.ts
 dist/index.js
 dist/plugin.d.ts
 dist/plugin.js
-dist/rules/no-known-value-widening.d.ts
-dist/rules/no-known-value-widening.js
+dist/rules/no-conditional-empty-object-spread.d.ts
+dist/rules/no-conditional-empty-object-spread.js
 dist/rules/no-module-mocking.d.ts
 dist/rules/no-module-mocking.js
 dist/rules/no-object-parameters.d.ts

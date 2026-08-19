@@ -1,12 +1,14 @@
 import { defineRule } from "@oxlint/plugins";
+
 import type { ESTree, Scope, SourceCode, Variable } from "@oxlint/plugins";
 
 type HandlerFunction = ESTree.ArrowFunctionExpression | ESTree.Function;
+type HandlingState = "handled" | "unhandled";
+type ClassifierPolarity = "negative" | "positive";
 
 type Flow = {
-  continuations: Set<boolean>;
-  propagates: boolean;
-  unclassifiedExit: boolean;
+  continuations: Set<HandlingState>;
+  unsafeExit: boolean;
 };
 
 type VisitorKeys = Readonly<Record<string, readonly string[]>>;
@@ -104,12 +106,11 @@ function collectDerivedCauseNames(
       node.init !== null &&
       node.parent.type === "VariableDeclaration" &&
       node.parent.kind === "const" &&
-      nodeReferencesName(node.init, names, visitorKeys)
+      isCauseDerivedValue(node.init, names, visitorKeys) &&
+      !names.has(node.id.name)
     ) {
-      if (!names.has(node.id.name)) {
-        names.add(node.id.name);
-        changed = true;
-      }
+      names.add(node.id.name);
+      changed = true;
     }
     for (const key of visitorKeys[node.type] ?? []) {
       const value: unknown = Reflect.get(node, key);
@@ -131,10 +132,14 @@ function collectDerivedCauseNames(
   return names;
 }
 
-function isPromiseRejectCall(expression: ESTree.Expression): boolean {
+function isPromiseRejectCall(
+  expression: ESTree.Expression,
+  causeNames: ReadonlySet<string>,
+  visitorKeys: VisitorKeys,
+): boolean {
   const current = unwrapExpression(expression);
   if (current.type === "AwaitExpression") {
-    return isPromiseRejectCall(current.argument);
+    return isPromiseRejectCall(current.argument, causeNames, visitorKeys);
   }
   if (current.type !== "CallExpression") return false;
 
@@ -144,53 +149,209 @@ function isPromiseRejectCall(expression: ESTree.Expression): boolean {
     !callee.computed &&
     callee.object.type === "Identifier" &&
     callee.object.name === "Promise" &&
-    callee.property.name === "reject"
+    callee.property.name === "reject" &&
+    current.arguments.some(
+      (argument) =>
+        argument.type !== "SpreadElement" && nodeReferencesName(argument, causeNames, visitorKeys),
+    )
   );
 }
 
-function continuation(classified: boolean): Flow {
+function calleeName(expression: ESTree.Expression): string | null {
+  const current = unwrapExpression(expression);
+  if (current.type === "Identifier") return current.name;
+  if (current.type !== "MemberExpression") return null;
+  if (current.computed) {
+    return current.property.type === "Literal" && typeof current.property.value === "string"
+      ? current.property.value
+      : null;
+  }
+  return current.property.name;
+}
+
+function isClassifierCall(
+  expression: ESTree.Expression,
+  causeNames: ReadonlySet<string>,
+  visitorKeys: VisitorKeys,
+): boolean {
+  const current = unwrapExpression(expression);
+  if (current.type !== "CallExpression") return false;
+  const name = calleeName(current.callee);
+  if (name === null || !/^(?:classify(?:[A-Z_]|$)|has[A-Z_]|is[A-Z_])/u.test(name)) {
+    return false;
+  }
+  return current.arguments.some(
+    (argument) =>
+      argument.type !== "SpreadElement" && nodeReferencesName(argument, causeNames, visitorKeys),
+  );
+}
+
+function isCauseDiscriminant(
+  expression: ESTree.Expression,
+  causeNames: ReadonlySet<string>,
+  visitorKeys: VisitorKeys,
+): boolean {
+  const current = unwrapExpression(expression);
+  return (
+    (current.type === "MemberExpression" &&
+      nodeReferencesName(current.object, causeNames, visitorKeys)) ||
+    isClassifierCall(current, causeNames, visitorKeys)
+  );
+}
+
+function classifierPolarity(
+  expression: ESTree.Expression,
+  causeNames: ReadonlySet<string>,
+  visitorKeys: VisitorKeys,
+): ClassifierPolarity | null {
+  const current = unwrapExpression(expression);
+  if (current.type === "UnaryExpression" && current.operator === "!") {
+    const nested = classifierPolarity(current.argument, causeNames, visitorKeys);
+    return nested === "positive" ? "negative" : nested === "negative" ? "positive" : null;
+  }
+  if (current.type === "BinaryExpression" && current.operator === "instanceof") {
+    return nodeReferencesName(current.left, causeNames, visitorKeys) ? "positive" : null;
+  }
+  if (
+    current.type === "BinaryExpression" &&
+    (current.operator === "===" ||
+      current.operator === "==" ||
+      current.operator === "!==" ||
+      current.operator === "!=")
+  ) {
+    const leftIsDiscriminant = isCauseDiscriminant(current.left, causeNames, visitorKeys);
+    const rightIsDiscriminant = isCauseDiscriminant(current.right, causeNames, visitorKeys);
+    if (leftIsDiscriminant === rightIsDiscriminant) return null;
+    return current.operator === "!==" || current.operator === "!=" ? "negative" : "positive";
+  }
+  if (current.type === "LogicalExpression") {
+    const left = classifierPolarity(current.left, causeNames, visitorKeys);
+    const right = classifierPolarity(current.right, causeNames, visitorKeys);
+    if (current.operator === "&&") {
+      if (left === "positive" || right === "positive") return "positive";
+      return left === "negative" && right === "negative" ? "negative" : null;
+    }
+    if (current.operator === "||") {
+      if (left === "negative" || right === "negative") return "negative";
+      return left === "positive" && right === "positive" ? "positive" : null;
+    }
+    return null;
+  }
+  return isClassifierCall(current, causeNames, visitorKeys) ? "positive" : null;
+}
+
+function isCauseDerivedValue(
+  expression: ESTree.Expression,
+  causeNames: ReadonlySet<string>,
+  visitorKeys: VisitorKeys,
+): boolean {
+  const current = unwrapExpression(expression);
+  if (!nodeReferencesName(current, causeNames, visitorKeys)) return false;
+  if (
+    current.type === "CallExpression" &&
+    (isClassifierCall(current, causeNames, visitorKeys) ||
+      (current.callee.type === "Identifier" &&
+        /^(?:BigInt|Boolean|Number|String|Symbol)$/u.test(current.callee.name)))
+  ) {
+    return false;
+  }
+  return (
+    current.type === "Identifier" ||
+    current.type === "MemberExpression" ||
+    current.type === "ObjectExpression" ||
+    current.type === "ArrayExpression" ||
+    current.type === "CallExpression" ||
+    current.type === "NewExpression" ||
+    current.type === "TemplateLiteral"
+  );
+}
+
+function expressionObservesCause(
+  expression: ESTree.Expression,
+  causeNames: ReadonlySet<string>,
+  visitorKeys: VisitorKeys,
+): boolean {
+  const current = unwrapExpression(expression);
+  if (current.type === "AwaitExpression") {
+    return expressionObservesCause(current.argument, causeNames, visitorKeys);
+  }
+  if (current.type === "CallExpression") {
+    const name = calleeName(current.callee);
+    const isObservableSink =
+      name !== null &&
+      (/^(?:debug|error|info|warn)$/u.test(name) ||
+        /^(?:add|append|capture|emit|log|notify|publish|push|record|report|save|send|set|store|trace|track|write)(?:[A-Z_]|$)/u.test(
+          name,
+        ) ||
+        /^on[A-Z].*(?:Diagnostic|Error|Failure|Warning)$/u.test(name));
+    return (
+      isObservableSink &&
+      current.arguments.some(
+        (argument) =>
+          argument.type !== "SpreadElement" &&
+          nodeReferencesName(argument, causeNames, visitorKeys),
+      )
+    );
+  }
+  if (current.type === "AssignmentExpression") {
+    if (current.left.type === "ArrayPattern" || current.left.type === "ObjectPattern") return false;
+    return (
+      unwrapExpression(current.left).type === "MemberExpression" &&
+      nodeReferencesName(current.right, causeNames, visitorKeys)
+    );
+  }
+  return false;
+}
+
+function isHandledReturnExpression(
+  expression: ESTree.Expression,
+  causeNames: ReadonlySet<string>,
+  visitorKeys: VisitorKeys,
+): boolean {
+  const current = unwrapExpression(expression);
+  if (isPromiseRejectCall(current, causeNames, visitorKeys)) return true;
+  if (expressionObservesCause(current, causeNames, visitorKeys)) return true;
+  return isCauseDerivedValue(current, causeNames, visitorKeys);
+}
+
+function continuation(state: HandlingState): Flow {
   return {
-    continuations: new Set([classified]),
-    propagates: false,
-    unclassifiedExit: false,
+    continuations: new Set([state]),
+    unsafeExit: false,
   };
 }
 
 function mergeFlows(flows: readonly Flow[]): Flow {
   const merged: Flow = {
     continuations: new Set(),
-    propagates: false,
-    unclassifiedExit: false,
+    unsafeExit: false,
   };
   for (const flow of flows) {
     for (const state of flow.continuations) merged.continuations.add(state);
-    merged.propagates ||= flow.propagates;
-    merged.unclassifiedExit ||= flow.unclassifiedExit;
+    merged.unsafeExit ||= flow.unsafeExit;
   }
   return merged;
 }
 
 function analyzeStatements(
   statements: readonly ESTree.Statement[],
-  initialStates: ReadonlySet<boolean>,
+  initialStates: ReadonlySet<HandlingState>,
   causeNames: ReadonlySet<string>,
   visitorKeys: VisitorKeys,
 ): Flow {
   let aggregate: Flow = {
     continuations: new Set(initialStates),
-    propagates: false,
-    unclassifiedExit: false,
+    unsafeExit: false,
   };
 
   for (const statement of statements) {
-    const next = [...aggregate.continuations].map((classified) =>
-      analyzeStatement(statement, classified, causeNames, visitorKeys),
+    const next = [...aggregate.continuations].map((state) =>
+      analyzeStatement(statement, state, causeNames, visitorKeys),
     );
     const analyzed = mergeFlows(next);
     aggregate = {
       continuations: analyzed.continuations,
-      propagates: aggregate.propagates || analyzed.propagates,
-      unclassifiedExit: aggregate.unclassifiedExit || analyzed.unclassifiedExit,
+      unsafeExit: aggregate.unsafeExit || analyzed.unsafeExit,
     };
   }
   return aggregate;
@@ -198,72 +359,83 @@ function analyzeStatements(
 
 function analyzeStatement(
   statement: ESTree.Statement,
-  classified: boolean,
+  state: HandlingState,
   causeNames: ReadonlySet<string>,
   visitorKeys: VisitorKeys,
 ): Flow {
   if (statement.type === "ThrowStatement") {
-    const preservesCause = nodeReferencesName(statement.argument, causeNames, visitorKeys);
     return {
       continuations: new Set(),
-      propagates: preservesCause,
-      unclassifiedExit: !preservesCause,
+      unsafeExit: !nodeReferencesName(statement.argument, causeNames, visitorKeys),
     };
   }
 
   if (statement.type === "ReturnStatement") {
-    const propagates =
-      statement.argument !== null &&
-      isPromiseRejectCall(statement.argument) &&
-      nodeReferencesName(statement.argument, causeNames, visitorKeys);
+    const handlesCause =
+      state === "handled" ||
+      (statement.argument !== null &&
+        isHandledReturnExpression(statement.argument, causeNames, visitorKeys));
     return {
       continuations: new Set(),
-      propagates,
-      unclassifiedExit: !propagates && !classified,
+      unsafeExit: !handlesCause,
     };
   }
 
   if (statement.type === "BreakStatement" || statement.type === "ContinueStatement") {
     return {
       continuations: new Set(),
-      propagates: false,
-      unclassifiedExit: !classified,
+      unsafeExit: state === "unhandled",
     };
   }
 
+  if (statement.type === "ExpressionStatement") {
+    return continuation(
+      state === "handled" || expressionObservesCause(statement.expression, causeNames, visitorKeys)
+        ? "handled"
+        : "unhandled",
+    );
+  }
+
   if (statement.type === "BlockStatement") {
-    return analyzeStatements(statement.body, new Set([classified]), causeNames, visitorKeys);
+    return analyzeStatements(statement.body, new Set([state]), causeNames, visitorKeys);
   }
 
   if (statement.type === "IfStatement") {
-    const branchClassified =
-      classified || nodeReferencesName(statement.test, causeNames, visitorKeys);
+    const polarity =
+      state === "handled" ? null : classifierPolarity(statement.test, causeNames, visitorKeys);
+    const consequentState =
+      state === "handled" || polarity === "positive" ? "handled" : "unhandled";
+    const alternateState = state === "handled" || polarity === "negative" ? "handled" : "unhandled";
     const consequent = analyzeStatement(
       statement.consequent,
-      branchClassified,
+      consequentState,
       causeNames,
       visitorKeys,
     );
     const alternate =
       statement.alternate === null
-        ? continuation(branchClassified)
-        : analyzeStatement(statement.alternate, branchClassified, causeNames, visitorKeys);
+        ? continuation(alternateState)
+        : analyzeStatement(statement.alternate, alternateState, causeNames, visitorKeys);
     return mergeFlows([consequent, alternate]);
   }
 
   if (statement.type === "SwitchStatement") {
-    const branchClassified =
-      classified || nodeReferencesName(statement.discriminant, causeNames, visitorKeys);
+    const classified =
+      state === "unhandled" &&
+      (isCauseDiscriminant(statement.discriminant, causeNames, visitorKeys) ||
+        isClassifierCall(statement.discriminant, causeNames, visitorKeys));
     const cases = statement.cases.map((switchCase) =>
       analyzeStatements(
         switchCase.consequent,
-        new Set([branchClassified]),
+        new Set<HandlingState>([
+          state === "handled" || (classified && switchCase.test !== null) ? "handled" : "unhandled",
+        ]),
         causeNames,
         visitorKeys,
       ),
     );
     if (!statement.cases.some((switchCase) => switchCase.test === null)) {
-      cases.push(continuation(branchClassified));
+      cases.push(continuation(state));
     }
     return mergeFlows(cases);
   }
@@ -275,27 +447,18 @@ function analyzeStatement(
     statement.type === "ForStatement" ||
     statement.type === "WhileStatement"
   ) {
-    const condition =
-      statement.type === "DoWhileStatement" || statement.type === "WhileStatement"
-        ? statement.test
-        : statement.type === "ForStatement"
-          ? statement.test
-          : statement.right;
-    const bodyClassified =
-      classified || (condition !== null && nodeReferencesName(condition, causeNames, visitorKeys));
     return mergeFlows([
-      continuation(bodyClassified),
-      analyzeStatement(statement.body, bodyClassified, causeNames, visitorKeys),
+      continuation(state),
+      analyzeStatement(statement.body, state, causeNames, visitorKeys),
     ]);
   }
 
   if (statement.type === "LabeledStatement" || statement.type === "WithStatement") {
-    return analyzeStatement(statement.body, classified, causeNames, visitorKeys);
+    return analyzeStatement(statement.body, state, causeNames, visitorKeys);
   }
 
-  // Nested try/catch control flow is intentionally conservative: a throw inside
-  // it may be intercepted before it can propagate the failure handled here.
-  return continuation(classified);
+  // Unsupported nested control flow cannot prove that the failure is handled.
+  return continuation(state);
 }
 
 function functionCauseNames(callback: HandlerFunction): ReadonlySet<string> {
@@ -305,28 +468,24 @@ function functionCauseNames(callback: HandlerFunction): ReadonlySet<string> {
   return names;
 }
 
-function blockPropagatesFailure(
+function blockHandlesFailure(
   body: ESTree.BlockStatement,
   initialCauseNames: ReadonlySet<string>,
   visitorKeys: VisitorKeys,
 ): boolean {
   if (initialCauseNames.size === 0) return false;
   const causeNames = collectDerivedCauseNames(body, initialCauseNames, visitorKeys);
-  const flow = analyzeStatements(body.body, new Set([false]), causeNames, visitorKeys);
-  return flow.propagates && !flow.unclassifiedExit && !flow.continuations.has(false);
+  const flow = analyzeStatements(body.body, new Set(["unhandled"]), causeNames, visitorKeys);
+  return !flow.unsafeExit && !flow.continuations.has("unhandled");
 }
 
-function callbackPropagatesFailure(callback: HandlerFunction, visitorKeys: VisitorKeys): boolean {
+function callbackHandlesFailure(callback: HandlerFunction, visitorKeys: VisitorKeys): boolean {
   const causeNames = functionCauseNames(callback);
   if (callback.type === "ArrowFunctionExpression" && callback.body.type !== "BlockStatement") {
-    return (
-      causeNames.size > 0 &&
-      isPromiseRejectCall(callback.body) &&
-      nodeReferencesName(callback.body, causeNames, visitorKeys)
-    );
+    return causeNames.size > 0 && isHandledReturnExpression(callback.body, causeNames, visitorKeys);
   }
   if (callback.body === null || callback.body.type !== "BlockStatement") return false;
-  return blockPropagatesFailure(callback.body, causeNames, visitorKeys);
+  return blockHandlesFailure(callback.body, causeNames, visitorKeys);
 }
 
 function resolveVariable(
@@ -372,19 +531,19 @@ function isCatchMethod(expression: ESTree.Expression): boolean {
   return callee.property.name === "catch";
 }
 
-/** Require every unclassified handler path to propagate the caught failure. */
+/** Require every handler path to propagate, classify, or observably report the caught failure. */
 export const noSilentErrorSuppressionRule = defineRule({
   meta: {
     type: "problem",
     docs: {
       description:
-        "Disallow catch handlers and Promise rejection callbacks with an unclassified path that can suppress the caught failure.",
+        "Disallow catch handlers and Promise rejection callbacks with a path that silently suppresses the caught failure.",
     },
     messages: {
       catchClause:
-        "This catch handler can suppress an unclassified failure. Classify an expected cause and preserve every other cause when throwing.",
+        "This catch handler can silently suppress a failure. Propagate it, classify an expected cause, report a cause-derived diagnostic, or add a narrow explained suppression.",
       promiseCatch:
-        "This Promise rejection callback can suppress an unclassified failure. Classify an expected cause and preserve every other cause when rejecting or throwing.",
+        "This Promise rejection callback can silently suppress a failure. Propagate it, report a cause-derived diagnostic, or add a narrow explained suppression.",
     },
   },
   createOnce(context) {
@@ -393,7 +552,7 @@ export const noSilentErrorSuppressionRule = defineRule({
         const visitorKeys = context.sourceCode.visitorKeys;
         const causeNames = new Set<string>();
         if (node.param !== null) collectBindingNames(node.param, causeNames);
-        if (!blockPropagatesFailure(node.body, causeNames, visitorKeys)) {
+        if (!blockHandlesFailure(node.body, causeNames, visitorKeys)) {
           context.report({ node, messageId: "catchClause" });
         }
       },
@@ -409,7 +568,7 @@ export const noSilentErrorSuppressionRule = defineRule({
             : candidate.type === "Identifier"
               ? resolvedCallback(context.sourceCode, candidate)
               : null;
-        if (callback === null || !callbackPropagatesFailure(callback, visitorKeys)) {
+        if (callback !== null && !callbackHandlesFailure(callback, visitorKeys)) {
           context.report({ node: candidate, messageId: "promiseCatch" });
         }
       },

@@ -1,6 +1,6 @@
 import { eslintCompatPlugin } from "@oxlint/plugins";
 
-import { noKnownValueWideningRule } from "./rules/no-known-value-widening.ts";
+import { noConditionalEmptyObjectSpreadRule } from "./rules/no-conditional-empty-object-spread.ts";
 import { noModuleMockingRule } from "./rules/no-module-mocking.ts";
 import { noObjectParametersRule } from "./rules/no-object-parameters.ts";
 import { noSilentErrorSuppressionRule } from "./rules/no-silent-error-suppression.ts";
@@ -12,7 +12,7 @@ import { noUnsafeDictionaryTypeRule } from "./rules/no-unsafe-dictionary-type.ts
 const plugin = eslintCompatPlugin({
   meta: { name: "@2h2d/oxlint-config" },
   rules: {
-    "no-known-value-widening": noKnownValueWideningRule,
+    "no-conditional-empty-object-spread": noConditionalEmptyObjectSpreadRule,
     "no-module-mocking": noModuleMockingRule,
     "no-object-parameters": noObjectParametersRule,
     "no-silent-error-suppression": noSilentErrorSuppressionRule,

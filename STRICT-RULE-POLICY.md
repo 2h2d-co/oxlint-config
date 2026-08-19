@@ -15,20 +15,15 @@ post-rollout review of the rules' actual effects across consumer repositories.
 
 ## Adopted custom rules
 
-### `2h2d/no-known-value-widening`
+### `2h2d/no-conditional-empty-object-spread`
 
-Require `satisfies` when a populated object literal, or a stable `const` initialized from one, is
-assigned to an open dictionary binding.
+Reject object spread operands selected by a conditional expression or logical operator, including
+ternary-empty, `&&`, `||`, and `??` forms.
 
-The rule does not reject:
-
-- explicit function return contracts;
-- inline structural object contracts;
-- deliberate `unknown` or `object` bindings;
-- empty mutable dictionary accumulators.
-
-This keeps the useful literal-key preservation from the original rule without treating every
-intentional abstraction boundary as evidence loss.
+Build the base object first and add condition-controlled fields in explicit statements. This makes
+the control flow searchable and prevents omission behavior from being hidden inside object
+expansion. Do not provide an autofixer: preserving evaluation order, getters, and overwrite
+semantics requires local judgment.
 
 ### `2h2d/no-module-mocking`
 
@@ -47,15 +42,24 @@ operation whose exact contract is intentionally only “non-primitive.”
 Analyze every reachable handler path instead of accepting any syntactic `throw` anywhere in the
 handler.
 
-- Require at least one path that throws or rejects with the caught cause or a value derived from it.
-- Permit a normally completing path only after a condition or switch that examines the cause.
+- Permit propagation through a throw or rejected Promise that retains the caught cause.
+- Permit returning the cause or a cause-derived structured failure result.
+- Permit intentionally consuming an expected failure only after `instanceof`, a cause-member
+  discriminant, or a credibly named classifier such as `isExpected(cause)`.
+- Permit observable handling through a reporting, diagnostic, logging, or state sink that receives
+  the cause or a cause-derived value.
+- Reject mere references, primitive coercions, transform calls whose result is discarded, and
+  unrelated branch conditions.
 - Reject unrelated replacement throws and rejections.
 - Resolve and analyze file-local named `.catch(handler)` callbacks.
-- Reject imported or otherwise uninspectable rejection callbacks unless narrowly suppressed.
+- Leave imported and otherwise uninspectable named `.catch(handler)` calls undiagnosed because a
+  syntax-only plugin cannot prove the callback's behavior or that the method belongs to a Promise.
 - Treat nested `try` control flow conservatively because an inner handler can intercept a throw.
 
-Terminal UI reporting, process-exit conversion, and best-effort cleanup may intentionally consume a
-failure, but each such case requires a narrow explained suppression.
+An expected capability probe may still need a narrow explained suppression when it intentionally
+does nothing. Degraded fallback paths should emit a structured diagnostic, secondary failures
+should be attached to the primary failure, and unexpected terminal failures should be logged or
+reported.
 
 ### `2h2d/no-unknown-returns`
 
@@ -134,12 +138,12 @@ Exhaustive switches use:
 
 The post-rollout review removed these rules from both the strict preset and the plugin:
 
-| Rule                                      | Reason                                                                                            |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `2h2d/no-conditional-empty-object-spread` | The rejected idiom precisely represents omission; mutation is often longer and less local.        |
-| `2h2d/no-runtime-typeof`                  | `typeof` is a sound narrowing primitive; wrapping it in a type guard merely moves the same check. |
-| `2h2d/no-shape-in-symbol-names`           | A vocabulary ban cannot objectively improve correctness and conflicts with legitimate domains.    |
-| `2h2d/no-unknown-type-aliases`            | Aliasing `unknown` can add domain meaning without weakening type safety.                          |
+| Rule                            | Reason                                                                                             |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `2h2d/no-known-value-widening`  | Syntax-only widening guesses encouraged `Object.assign` rewrites without proving lost type safety. |
+| `2h2d/no-runtime-typeof`        | `typeof` is a sound narrowing primitive; wrapping it in a type guard merely moves the same check.  |
+| `2h2d/no-shape-in-symbol-names` | A vocabulary ban cannot objectively improve correctness and conflicts with legitimate domains.     |
+| `2h2d/no-unknown-type-aliases`  | Aliasing `unknown` can add domain meaning without weakening type safety.                           |
 
 Do not reintroduce these rules without new evidence and a separate review.
 
@@ -151,6 +155,8 @@ Do not reintroduce these rules without new evidence and a separate review.
   and encouraged `void error` statements elsewhere.
 - The first non-null migration overused a `requiredValue` helper; a semantic review reduced it from
   82 uses to 13 genuine invariants.
+- Known-value widening enforcement introduced empty-object-plus-`Object.assign` rewrites that were
+  less direct than ordinary object construction without providing semantic type analysis.
 - Unsafe-propagation rules exposed inaccurate broad test fixtures, but upstream `any` declarations
   also created pressure to remove an integration block. Future migrations must preserve useful
   coverage and suppress a rule narrowly at an unavoidable third-party boundary instead.

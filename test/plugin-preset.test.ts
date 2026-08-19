@@ -5,7 +5,7 @@ import plugin from "../src/plugin.ts";
 import { strictRules } from "../src/strict-rules.ts";
 
 const expectedRules = [
-  "no-known-value-widening",
+  "no-conditional-empty-object-spread",
   "no-module-mocking",
   "no-object-parameters",
   "no-silent-error-suppression",

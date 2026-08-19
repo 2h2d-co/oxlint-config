@@ -80,7 +80,7 @@ export default defineConfig({
 
 The strict preset enables these custom rules as errors:
 
-- `2h2d/no-known-value-widening`
+- `2h2d/no-conditional-empty-object-spread`
 - `2h2d/no-module-mocking`
 - `2h2d/no-object-parameters`
 - `2h2d/no-silent-error-suppression`
@@ -94,10 +94,18 @@ The suppression-directive rule bans TypeScript suppression comments. Lint suppre
 `--`. `reportUnusedDisableDirectives: "error"` is a root configuration option rather than a rule,
 so consumer configurations must set it as shown above.
 
-The silent-error rule analyzes each reachable handler path. At least one path must preserve and
-propagate the caught cause, while every normally completing path must follow a condition or switch
-that examines that cause. File-local named Promise rejection handlers are resolved and analyzed;
-uninspectable handlers require a narrow explained suppression.
+The conditional-spread rule rejects object spread operands selected by conditional or logical
+expressions. Build the object first and add condition-controlled fields in explicit statements;
+the rule intentionally has no fixer because a mechanical rewrite can change evaluation order or
+property semantics.
+
+The silent-error rule analyzes each reachable handler path. A path must propagate the caught cause,
+return a cause-derived failure result, classify an expected cause with a credible predicate, or
+record the cause through an observable reporting or state sink. Merely referencing the cause,
+coercing it, or passing it to an arbitrary transform without surfacing the result is not handling.
+File-local named Promise rejection handlers are resolved and analyzed. Imported and otherwise
+uninspectable named handlers are not diagnosed because a syntax-only plugin cannot determine their
+semantics or whether a method named `catch` belongs to a Promise.
 
 The unpreserved-error rule rejects replacement built-in errors thrown from parameterless catches.
 It complements native `preserve-caught-error` without requiring dummy catch variables for
@@ -160,8 +168,8 @@ Importing a native rule through `strictRules` does not move it into the `2h2d` n
 
 - Parse uncertain values at their I/O boundary.
 - Propagate unexpected failures and preserve their original causes.
-- Preserve known keys, literals, and domain types.
-- Prefer `satisfies` to widening annotations.
+- Add condition-controlled object fields through explicit statements rather than hiding control
+  flow inside a spread operand.
 - Keep promises observable and use exhaustive union handling.
 - Use named contracts for meaningful inputs and outputs.
 - Use `unknown` for genuinely uncertain dictionary values and narrow each value before use.
