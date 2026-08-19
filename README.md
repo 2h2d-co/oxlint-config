@@ -102,11 +102,22 @@ The unpreserved-error rule rejects replacement built-in errors thrown from param
 It complements native `preserve-caught-error` without requiring dummy catch variables for
 best-effort cleanup.
 
-The strict preset deliberately does not infer whether a caught failure may be ignored. A
-syntax-only rule cannot distinguish intentional fallback, cleanup, and boundary handling from
-accidental suppression without project-specific naming heuristics or runtime contract changes.
-Use code review to assess those decisions. Do not add logging, failure wrappers, or throws solely to
-satisfy lint.
+## Advisory rules
+
+`2h2d/no-silent-error-suppression` is available separately as a review signal:
+
+```ts
+import { advisoryRules } from "@2h2d/oxlint-config/advisory-rules";
+```
+
+The rule analyzes reachable handler paths and reports failures that it cannot prove are propagated,
+classified, returned, or recorded. Its syntax-only sink and classifier recognition is heuristic:
+a finding is a prompt for human review, not proof of a defect.
+
+Do not combine `advisoryRules` with the strict preset in a lint invocation that denies warnings.
+Run it separately when reviewing error handling. Advisory findings require neither source
+suppressions nor code changes. In particular, do not add logging, failure wrappers, or throws
+solely to satisfy the advisory.
 
 ## Native rules
 
@@ -156,8 +167,8 @@ Rules retain the namespace of their implementation:
   displayed as `typescript(no-explicit-any)`;
 - native ESLint-compatible rules use IDs such as `preserve-caught-error` and are displayed as
   `eslint(preserve-caught-error)`;
-- rules implemented by this package use IDs such as `2h2d/no-conditional-empty-object-spread` and
-  are displayed as `2h2d(no-conditional-empty-object-spread)`.
+- rules implemented by this package use IDs such as `2h2d/no-silent-error-suppression` and are
+  displayed as `2h2d(no-silent-error-suppression)`.
 
 Importing a native rule through `strictRules` does not move it into the `2h2d` namespace.
 

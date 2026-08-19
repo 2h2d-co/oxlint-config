@@ -71,6 +71,20 @@ file-local alias containing one of those types.
 type-safe contract when each retrieved value must be narrowed. Use recursive `JsonValue` and
 `JsonObject` only after establishing that the data is actually JSON.
 
+## Advisory rules
+
+### `2h2d/no-silent-error-suppression`
+
+Retain silent-error analysis only as an optional review signal. Syntax-only sink and classifier
+recognition cannot distinguish intentional fallback, cleanup, and boundary handling from accidental
+suppression without project-specific assumptions.
+
+- Keep the rule out of the strict preset and every required lint invocation.
+- Report advisory findings as warnings in a separate audit.
+- Treat each finding as a prompt for human review rather than proof of a defect.
+- Do not add lint suppressions for advisory findings.
+- Do not add logging, diagnostics, failure wrappers, or throws solely to satisfy the advisory.
+
 ## Adopted native rules
 
 The following rules remain enabled as errors:
@@ -114,13 +128,12 @@ Exhaustive switches use:
 
 The post-rollout review removed these rules from both the strict preset and the plugin:
 
-| Rule                               | Reason                                                                                                        |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `2h2d/no-known-value-widening`     | Syntax-only widening guesses encouraged `Object.assign` rewrites without proving lost type safety.            |
-| `2h2d/no-runtime-typeof`           | `typeof` is a sound narrowing primitive; wrapping it in a type guard merely moves the same check.             |
-| `2h2d/no-shape-in-symbol-names`    | A vocabulary ban cannot objectively improve correctness and conflicts with legitimate domains.                |
-| `2h2d/no-silent-error-suppression` | Syntax cannot distinguish intentional fallback and cleanup without project heuristics or contract distortion. |
-| `2h2d/no-unknown-type-aliases`     | Aliasing `unknown` can add domain meaning without weakening type safety.                                      |
+| Rule                            | Reason                                                                                             |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `2h2d/no-known-value-widening`  | Syntax-only widening guesses encouraged `Object.assign` rewrites without proving lost type safety. |
+| `2h2d/no-runtime-typeof`        | `typeof` is a sound narrowing primitive; wrapping it in a type guard merely moves the same check.  |
+| `2h2d/no-shape-in-symbol-names` | A vocabulary ban cannot objectively improve correctness and conflicts with legitimate domains.     |
+| `2h2d/no-unknown-type-aliases`  | Aliasing `unknown` can add domain meaning without weakening type safety.                           |
 
 Do not reintroduce these rules without new evidence and a separate review.
 

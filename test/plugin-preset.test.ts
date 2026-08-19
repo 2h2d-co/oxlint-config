@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { advisoryRules } from "../src/advisory-rules.ts";
 import plugin from "../src/plugin.ts";
 import { strictRules } from "../src/strict-rules.ts";
 
-const expectedRules = [
+const expectedStrictRules = [
   "no-conditional-empty-object-spread",
   "no-module-mocking",
   "no-object-parameters",
@@ -13,18 +14,26 @@ const expectedRules = [
   "no-unreviewed-suppression-directives",
   "no-unsafe-dictionary-type",
 ];
+const expectedPluginRules = [...expectedStrictRules, "no-silent-error-suppression"].sort();
 
 test("plugin exports exactly the adopted custom rules", () => {
-  assert.deepEqual(Object.keys(plugin.rules ?? {}).sort(), expectedRules);
+  assert.deepEqual(Object.keys(plugin.rules ?? {}).sort(), expectedPluginRules);
 });
 
-test("strict preset enables every custom rule", () => {
+test("strict preset enables only blocking custom rules", () => {
   const configuredCustomRules = Object.keys(strictRules)
     .filter((name) => name.startsWith("2h2d/"))
     .map((name) => name.slice("2h2d/".length))
     .sort();
 
-  assert.deepEqual(configuredCustomRules, expectedRules);
+  assert.deepEqual(configuredCustomRules, expectedStrictRules);
+});
+
+test("advisory preset contains only non-blocking review signals", () => {
+  assert.deepEqual(advisoryRules, {
+    "2h2d/no-silent-error-suppression": "warn",
+  });
+  assert.equal(strictRules["2h2d/no-silent-error-suppression"], undefined);
 });
 
 test("strict preset enables the adopted native rules", () => {

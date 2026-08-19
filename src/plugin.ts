@@ -3,6 +3,7 @@ import { eslintCompatPlugin } from "@oxlint/plugins";
 import { noConditionalEmptyObjectSpreadRule } from "./rules/no-conditional-empty-object-spread.ts";
 import { noModuleMockingRule } from "./rules/no-module-mocking.ts";
 import { noObjectParametersRule } from "./rules/no-object-parameters.ts";
+import { noSilentErrorSuppressionRule } from "./rules/no-silent-error-suppression.ts";
 import { noUnknownReturnsRule } from "./rules/no-unknown-returns.ts";
 import { noUnpreservedCaughtErrorRule } from "./rules/no-unpreserved-caught-error.ts";
 import { noUnreviewedSuppressionDirectivesRule } from "./rules/no-unreviewed-suppression-directives.ts";
@@ -14,6 +15,7 @@ const plugin = eslintCompatPlugin({
     "no-conditional-empty-object-spread": noConditionalEmptyObjectSpreadRule,
     "no-module-mocking": noModuleMockingRule,
     "no-object-parameters": noObjectParametersRule,
+    "no-silent-error-suppression": noSilentErrorSuppressionRule,
     "no-unknown-returns": noUnknownReturnsRule,
     "no-unpreserved-caught-error": noUnpreservedCaughtErrorRule,
     "no-unreviewed-suppression-directives": noUnreviewedSuppressionDirectivesRule,
