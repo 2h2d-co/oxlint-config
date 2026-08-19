@@ -49,6 +49,18 @@ Reject the broad `object` type on function parameters. Use a specific owner cont
 generic constraint such as `Value extends object`. A reviewed suppression is permitted for an
 operation whose exact contract is intentionally only “non-primitive.”
 
+### `2h2d/no-typebox-unsafe`
+
+Reject calls to TypeBox's `Unsafe` schema constructor through named, aliased, default, or namespace
+imports from `typebox`. `Type.Unsafe` manually pairs a runtime schema with an independently stated
+static type, allowing either contract to drift without a compiler error.
+
+Use TypeBox constructors and derive with `Static<typeof schema>`, or preserve an exact native JSON
+Schema as a const object literal and derive its type the same way. The rule resolves import bindings
+to avoid rejecting unrelated local APIs named `Type` or `Unsafe`. It intentionally has no fixer
+because selecting the authoritative runtime schema and preserving protocol-specific serialization
+requires review.
+
 ### `2h2d/no-unknown-returns`
 
 Reject explicit function contracts returning `unknown`, a union containing `unknown`,

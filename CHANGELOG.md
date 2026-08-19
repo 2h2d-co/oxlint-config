@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Add `2h2d/no-unpreserved-caught-error` for replacement errors thrown from parameterless catches.
 - Add `2h2d/no-bivariant-method-signatures` to require contravariantly checked function properties
   in object type declarations.
+- Add `2h2d/no-typebox-unsafe` to require static types to be derived from their runtime schemas.
 
 ### Changed
 

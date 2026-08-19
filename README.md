@@ -84,6 +84,7 @@ The strict preset enables these custom rules as errors:
 - `2h2d/no-conditional-empty-object-spread`
 - `2h2d/no-module-mocking`
 - `2h2d/no-object-parameters`
+- `2h2d/no-typebox-unsafe`
 - `2h2d/no-unknown-returns`
 - `2h2d/no-unpreserved-caught-error`
 - `2h2d/no-unreviewed-suppression-directives`
@@ -97,6 +98,10 @@ so consumer configurations must set it as shown above.
 The bivariant-method-signature rule rejects method syntax in object type declarations. Declare
 callable members as function properties so `strictFunctionTypes` checks their parameter types
 contravariantly. Actual class and object implementation methods remain allowed.
+
+The TypeBox rule rejects `Unsafe` calls imported from `typebox`, including named, aliased, default,
+and namespace import forms. Build schemas with TypeBox constructors or declare const native JSON
+Schema and derive the static type with `Static<typeof schema>`.
 
 The conditional-spread rule rejects object spread operands selected by conditional or logical
 expressions. Build the object first and add condition-controlled fields in explicit statements;
@@ -182,6 +187,7 @@ Importing a native rule through `strictRules` does not move it into the `2h2d` n
 - Parse uncertain values at their I/O boundary.
 - Declare callable object-type members as function properties so their parameters are checked
   contravariantly.
+- Derive static types from their runtime schemas instead of pairing them through `Type.Unsafe`.
 - Propagate unexpected failures and preserve their original causes.
 - Add condition-controlled object fields through explicit statements rather than hiding control
   flow inside a spread operand.

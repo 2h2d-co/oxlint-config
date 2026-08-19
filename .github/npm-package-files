@@ -19,6 +19,8 @@ dist/rules/no-object-parameters.d.ts
 dist/rules/no-object-parameters.js
 dist/rules/no-silent-error-suppression.d.ts
 dist/rules/no-silent-error-suppression.js
+dist/rules/no-typebox-unsafe.d.ts
+dist/rules/no-typebox-unsafe.js
 dist/rules/no-unknown-returns.d.ts
 dist/rules/no-unknown-returns.js
 dist/rules/no-unpreserved-caught-error.d.ts

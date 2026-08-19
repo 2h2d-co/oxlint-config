@@ -10,6 +10,7 @@ const expectedStrictRules = [
   "no-conditional-empty-object-spread",
   "no-module-mocking",
   "no-object-parameters",
+  "no-typebox-unsafe",
   "no-unknown-returns",
   "no-unpreserved-caught-error",
   "no-unreviewed-suppression-directives",

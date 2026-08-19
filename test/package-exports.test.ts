@@ -48,6 +48,7 @@ test("Oxlint loads the built plugin by package specifier", async () => {
           rules: {
             "2h2d/no-bivariant-method-signatures": "error",
             "2h2d/no-object-parameters": "error",
+            "2h2d/no-typebox-unsafe": "error",
             "preserve-caught-error": ["error", { requireCatchParameter: true }],
             "typescript/no-explicit-any": "error",
           },
@@ -62,6 +63,7 @@ test("Oxlint loads the built plugin by package specifier", async () => {
         "const response: any = 1;",
         "function accept(value: object) { return value; }",
         "interface Handler { handle(value: string): void }",
+        "import { Type } from 'typebox'; Type.Unsafe<string>({ type: 'string' });",
         "try {",
         "  operation();",
         "} catch (cause) {",
@@ -83,6 +85,7 @@ test("Oxlint loads the built plugin by package specifier", async () => {
     assert.equal(result.status, 1, result.stderr);
     assert.match(result.stdout, /2h2d\(no-bivariant-method-signatures\)/u);
     assert.match(result.stdout, /2h2d\(no-object-parameters\)/u);
+    assert.match(result.stdout, /2h2d\(no-typebox-unsafe\)/u);
     assert.match(result.stdout, /eslint\(preserve-caught-error\)/u);
     assert.match(result.stdout, /typescript\(no-explicit-any\)/u);
   } finally {
