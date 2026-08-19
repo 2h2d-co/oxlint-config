@@ -8,7 +8,6 @@ const expectedRules = [
   "no-conditional-empty-object-spread",
   "no-module-mocking",
   "no-object-parameters",
-  "no-silent-error-suppression",
   "no-unknown-returns",
   "no-unpreserved-caught-error",
   "no-unreviewed-suppression-directives",

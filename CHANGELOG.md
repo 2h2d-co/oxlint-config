@@ -18,12 +18,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 
 - Update the supported Oxlint and `@oxlint/plugins` version to 1.78.0.
-- Analyze silent-error handling across reachable paths, accept explicit diagnostics and credible
-  expected-error classification, and reject cause mentions that do not handle a failure.
 - Restore conditional object-spread enforcement and cover ternary and logical operand forms without
   an unsafe autofixer.
 - Remove syntax-only known-value widening enforcement after it encouraged indirect
   empty-object-plus-`Object.assign` rewrites.
+- Remove syntax-only silent-error suppression enforcement after it encouraged project-specific
+  naming heuristics, redundant directives, and runtime contract changes.
 - Permit `unknown` dictionary values while continuing to reject `any`, `object`, and `{}` values.
 - Require actual Promise rejection handling instead of accepting the `void` operator.
 - Limit caught-error parameters to handlers that construct replacement errors.

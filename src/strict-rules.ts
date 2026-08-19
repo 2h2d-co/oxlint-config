@@ -5,7 +5,6 @@ export const strictRules: DummyRuleMap = {
   "2h2d/no-conditional-empty-object-spread": "error",
   "2h2d/no-module-mocking": "error",
   "2h2d/no-object-parameters": "error",
-  "2h2d/no-silent-error-suppression": "error",
   "2h2d/no-unknown-returns": "error",
   "2h2d/no-unpreserved-caught-error": "error",
   "2h2d/no-unreviewed-suppression-directives": "error",

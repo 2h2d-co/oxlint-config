@@ -83,7 +83,6 @@ The strict preset enables these custom rules as errors:
 - `2h2d/no-conditional-empty-object-spread`
 - `2h2d/no-module-mocking`
 - `2h2d/no-object-parameters`
-- `2h2d/no-silent-error-suppression`
 - `2h2d/no-unknown-returns`
 - `2h2d/no-unpreserved-caught-error`
 - `2h2d/no-unreviewed-suppression-directives`
@@ -99,17 +98,15 @@ expressions. Build the object first and add condition-controlled fields in expli
 the rule intentionally has no fixer because a mechanical rewrite can change evaluation order or
 property semantics.
 
-The silent-error rule analyzes each reachable handler path. A path must propagate the caught cause,
-return a cause-derived failure result, classify an expected cause with a credible predicate, or
-record the cause through an observable reporting, assignment, or state sink. Merely referencing the cause,
-coercing it, or passing it to an arbitrary transform without surfacing the result is not handling.
-File-local named Promise rejection handlers are resolved and analyzed. Imported and otherwise
-uninspectable named handlers are not diagnosed because a syntax-only plugin cannot determine their
-semantics or whether a method named `catch` belongs to a Promise.
-
 The unpreserved-error rule rejects replacement built-in errors thrown from parameterless catches.
 It complements native `preserve-caught-error` without requiring dummy catch variables for
 best-effort cleanup.
+
+The strict preset deliberately does not infer whether a caught failure may be ignored. A
+syntax-only rule cannot distinguish intentional fallback, cleanup, and boundary handling from
+accidental suppression without project-specific naming heuristics or runtime contract changes.
+Use code review to assess those decisions. Do not add logging, failure wrappers, or throws solely to
+satisfy lint.
 
 ## Native rules
 
@@ -159,8 +156,8 @@ Rules retain the namespace of their implementation:
   displayed as `typescript(no-explicit-any)`;
 - native ESLint-compatible rules use IDs such as `preserve-caught-error` and are displayed as
   `eslint(preserve-caught-error)`;
-- rules implemented by this package use IDs such as `2h2d/no-silent-error-suppression` and are
-  displayed as `2h2d(no-silent-error-suppression)`.
+- rules implemented by this package use IDs such as `2h2d/no-conditional-empty-object-spread` and
+  are displayed as `2h2d(no-conditional-empty-object-spread)`.
 
 Importing a native rule through `strictRules` does not move it into the `2h2d` namespace.
 

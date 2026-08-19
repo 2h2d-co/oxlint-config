@@ -37,31 +37,6 @@ Reject the broad `object` type on function parameters. Use a specific owner cont
 generic constraint such as `Value extends object`. A reviewed suppression is permitted for an
 operation whose exact contract is intentionally only “non-primitive.”
 
-### `2h2d/no-silent-error-suppression`
-
-Analyze every reachable handler path instead of accepting any syntactic `throw` anywhere in the
-handler.
-
-- Permit propagation through a throw or rejected Promise that retains the caught cause.
-- Permit returning the cause or a cause-derived structured failure result.
-- Permit intentionally consuming an expected failure only after `instanceof`, a cause-member or
-  extractor discriminant such as `nodeErrorCode(cause)`, or a credibly named classifier such as
-  `isExpected(cause)`.
-- Permit observable handling through a reporting, diagnostic, logging, or state sink that receives
-  the cause or a cause-derived value, including explicit assignment for later propagation.
-- Reject mere references, primitive coercions, transform calls whose result is discarded, and
-  unrelated branch conditions.
-- Reject unrelated replacement throws and rejections.
-- Resolve and analyze file-local named `.catch(handler)` callbacks.
-- Leave imported and otherwise uninspectable named `.catch(handler)` calls undiagnosed because a
-  syntax-only plugin cannot prove the callback's behavior or that the method belongs to a Promise.
-- Treat nested `try` control flow conservatively because an inner handler can intercept a throw.
-
-An expected capability probe may still need a narrow explained suppression when it intentionally
-does nothing. Degraded fallback paths should emit a structured diagnostic, secondary failures
-should be attached to the primary failure, and unexpected terminal failures should be logged or
-reported.
-
 ### `2h2d/no-unknown-returns`
 
 Reject explicit function contracts returning `unknown`, a union containing `unknown`,
@@ -139,12 +114,13 @@ Exhaustive switches use:
 
 The post-rollout review removed these rules from both the strict preset and the plugin:
 
-| Rule                            | Reason                                                                                             |
-| ------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `2h2d/no-known-value-widening`  | Syntax-only widening guesses encouraged `Object.assign` rewrites without proving lost type safety. |
-| `2h2d/no-runtime-typeof`        | `typeof` is a sound narrowing primitive; wrapping it in a type guard merely moves the same check.  |
-| `2h2d/no-shape-in-symbol-names` | A vocabulary ban cannot objectively improve correctness and conflicts with legitimate domains.     |
-| `2h2d/no-unknown-type-aliases`  | Aliasing `unknown` can add domain meaning without weakening type safety.                           |
+| Rule                               | Reason                                                                                                        |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `2h2d/no-known-value-widening`     | Syntax-only widening guesses encouraged `Object.assign` rewrites without proving lost type safety.            |
+| `2h2d/no-runtime-typeof`           | `typeof` is a sound narrowing primitive; wrapping it in a type guard merely moves the same check.             |
+| `2h2d/no-shape-in-symbol-names`    | A vocabulary ban cannot objectively improve correctness and conflicts with legitimate domains.                |
+| `2h2d/no-silent-error-suppression` | Syntax cannot distinguish intentional fallback and cleanup without project heuristics or contract distortion. |
+| `2h2d/no-unknown-type-aliases`     | Aliasing `unknown` can add domain meaning without weakening type safety.                                      |
 
 Do not reintroduce these rules without new evidence and a separate review.
 
