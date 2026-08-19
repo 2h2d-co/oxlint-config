@@ -195,6 +195,13 @@ function isCauseDiscriminant(
   return (
     (current.type === "MemberExpression" &&
       nodeReferencesName(current.object, causeNames, visitorKeys)) ||
+    (current.type === "CallExpression" &&
+      /(?:Code|Kind|Name|Status|Type)$/u.test(calleeName(current.callee) ?? "") &&
+      current.arguments.some(
+        (argument) =>
+          argument.type !== "SpreadElement" &&
+          nodeReferencesName(argument, causeNames, visitorKeys),
+      )) ||
     isClassifierCall(current, causeNames, visitorKeys)
   );
 }
@@ -294,11 +301,7 @@ function expressionObservesCause(
     );
   }
   if (current.type === "AssignmentExpression") {
-    if (current.left.type === "ArrayPattern" || current.left.type === "ObjectPattern") return false;
-    return (
-      unwrapExpression(current.left).type === "MemberExpression" &&
-      nodeReferencesName(current.right, causeNames, visitorKeys)
-    );
+    return nodeReferencesName(current.right, causeNames, visitorKeys);
   }
   return false;
 }

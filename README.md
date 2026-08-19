@@ -101,7 +101,7 @@ property semantics.
 
 The silent-error rule analyzes each reachable handler path. A path must propagate the caught cause,
 return a cause-derived failure result, classify an expected cause with a credible predicate, or
-record the cause through an observable reporting or state sink. Merely referencing the cause,
+record the cause through an observable reporting, assignment, or state sink. Merely referencing the cause,
 coercing it, or passing it to an arbitrary transform without surfacing the result is not handling.
 File-local named Promise rejection handlers are resolved and analyzed. Imported and otherwise
 uninspectable named handlers are not diagnosed because a syntax-only plugin cannot determine their

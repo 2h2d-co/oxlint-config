@@ -44,10 +44,11 @@ handler.
 
 - Permit propagation through a throw or rejected Promise that retains the caught cause.
 - Permit returning the cause or a cause-derived structured failure result.
-- Permit intentionally consuming an expected failure only after `instanceof`, a cause-member
-  discriminant, or a credibly named classifier such as `isExpected(cause)`.
+- Permit intentionally consuming an expected failure only after `instanceof`, a cause-member or
+  extractor discriminant such as `nodeErrorCode(cause)`, or a credibly named classifier such as
+  `isExpected(cause)`.
 - Permit observable handling through a reporting, diagnostic, logging, or state sink that receives
-  the cause or a cause-derived value.
+  the cause or a cause-derived value, including explicit assignment for later propagation.
 - Reject mere references, primitive coercions, transform calls whose result is discarded, and
   unrelated branch conditions.
 - Reject unrelated replacement throws and rejections.
