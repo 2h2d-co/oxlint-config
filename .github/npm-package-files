@@ -9,6 +9,8 @@ dist/index.d.ts
 dist/index.js
 dist/plugin.d.ts
 dist/plugin.js
+dist/rules/no-bivariant-method-signatures.d.ts
+dist/rules/no-bivariant-method-signatures.js
 dist/rules/no-conditional-empty-object-spread.d.ts
 dist/rules/no-conditional-empty-object-spread.js
 dist/rules/no-module-mocking.d.ts

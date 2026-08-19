@@ -6,6 +6,7 @@ import plugin from "../src/plugin.ts";
 import { strictRules } from "../src/strict-rules.ts";
 
 const expectedStrictRules = [
+  "no-bivariant-method-signatures",
   "no-conditional-empty-object-spread",
   "no-module-mocking",
   "no-object-parameters",

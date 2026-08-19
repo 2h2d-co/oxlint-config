@@ -80,6 +80,7 @@ export default defineConfig({
 
 The strict preset enables these custom rules as errors:
 
+- `2h2d/no-bivariant-method-signatures`
 - `2h2d/no-conditional-empty-object-spread`
 - `2h2d/no-module-mocking`
 - `2h2d/no-object-parameters`
@@ -92,6 +93,10 @@ The suppression-directive rule bans TypeScript suppression comments. Lint suppre
 `disable-line` or `disable-next-line`, name exactly one rule, and include an explanation after
 `--`. `reportUnusedDisableDirectives: "error"` is a root configuration option rather than a rule,
 so consumer configurations must set it as shown above.
+
+The bivariant-method-signature rule rejects method syntax in object type declarations. Declare
+callable members as function properties so `strictFunctionTypes` checks their parameter types
+contravariantly. Actual class and object implementation methods remain allowed.
 
 The conditional-spread rule rejects object spread operands selected by conditional or logical
 expressions. Build the object first and add condition-controlled fields in explicit statements;
@@ -175,6 +180,8 @@ Importing a native rule through `strictRules` does not move it into the `2h2d` n
 ## Rule design
 
 - Parse uncertain values at their I/O boundary.
+- Declare callable object-type members as function properties so their parameters are checked
+  contravariantly.
 - Propagate unexpected failures and preserve their original causes.
 - Add condition-controlled object fields through explicit statements rather than hiding control
   flow inside a spread operand.

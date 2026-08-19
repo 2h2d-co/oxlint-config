@@ -2,6 +2,7 @@ import type { DummyRuleMap } from "oxlint";
 
 /** Shared 2h2d Oxlint policy. */
 export const strictRules: DummyRuleMap = {
+  "2h2d/no-bivariant-method-signatures": "error",
   "2h2d/no-conditional-empty-object-spread": "error",
   "2h2d/no-module-mocking": "error",
   "2h2d/no-object-parameters": "error",

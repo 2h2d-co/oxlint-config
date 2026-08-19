@@ -15,6 +15,18 @@ post-rollout review of the rules' actual effects across consumer repositories.
 
 ## Adopted custom rules
 
+### `2h2d/no-bivariant-method-signatures`
+
+Reject method signatures in object type declarations. TypeScript checks method parameters
+bivariantly, which can admit implementations with narrower parameter types and lead to runtime
+failures. Declare callable members as function properties so `strictFunctionTypes` checks their
+parameters contravariantly.
+
+The rule applies to interface and type-literal method signatures, including optional, generic,
+quoted, and computed methods. It does not reject call signatures, construct signatures, class
+methods, or object implementation methods. It intentionally has no fixer because safely rewriting
+comments, overloads, generics, and computed members requires local judgment.
+
 ### `2h2d/no-conditional-empty-object-spread`
 
 Reject object spread operands selected by a conditional expression or logical operator, including

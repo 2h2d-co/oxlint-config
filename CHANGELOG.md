@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Add rule, preset, package-export, and Oxlint package-consumer tests.
 - Add anti-slop attribution and license notices for adapted rule implementations.
 - Add `2h2d/no-unpreserved-caught-error` for replacement errors thrown from parameterless catches.
+- Add `2h2d/no-bivariant-method-signatures` to require contravariantly checked function properties
+  in object type declarations.
 
 ### Changed
 
