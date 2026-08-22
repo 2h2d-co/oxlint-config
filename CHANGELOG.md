@@ -38,3 +38,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - Reject primitive JSON values where release validation requires package metadata objects.
+- Move `2h2d/no-unknown-returns` from the strict preset to the advisory preset so truthful generic
+  `unknown` contracts do not require suppressions or weaker replacement types.

@@ -61,14 +61,6 @@ to avoid rejecting unrelated local APIs named `Type` or `Unsafe`. It intentional
 because selecting the authoritative runtime schema and preserving protocol-specific serialization
 requires review.
 
-### `2h2d/no-unknown-returns`
-
-Reject explicit function contracts returning `unknown`, a union containing `unknown`,
-`Promise<unknown>`, `PromiseLike<unknown>`, or a file-local alias resolving to one of those types.
-
-Parse or validate uncertain data before returning it from an application boundary. A genuinely
-generic decoding API may use a narrow reviewed suppression rather than claim a false domain type.
-
 ### `2h2d/no-unpreserved-caught-error`
 
 Reject a parameterless catch that throws a replacement global `Error`, `TypeError`, or
@@ -96,6 +88,18 @@ type-safe contract when each retrieved value must be narrowed. Use recursive `Js
 `JsonObject` only after establishing that the data is actually JSON.
 
 ## Advisory rules
+
+### `2h2d/no-unknown-returns`
+
+Report explicit function contracts returning `unknown`, a union containing
+`unknown`, `Promise<unknown>`, `PromiseLike<unknown>`, or a file-local alias
+resolving to one of those types.
+
+An application function that knows its result domain should usually validate uncertain
+data before returning it. The syntax-only rule cannot distinguish that case from a
+generic decoder, opaque callable contract, or other API where `unknown` is the truthful
+safe result. Keep the rule out of the strict preset, require no suppressions or source
+changes, and treat each finding only as a boundary-review prompt.
 
 ### `2h2d/no-silent-error-suppression`
 
@@ -171,6 +175,9 @@ Do not reintroduce these rules without new evidence and a separate review.
   82 uses to 13 genuine invariants.
 - Known-value widening enforcement introduced empty-object-plus-`Object.assign` rewrites that were
   less direct than ordinary object construction without providing semantic type analysis.
+- Unknown-return enforcement rejected truthful generic contracts and could be bypassed through
+  inference, imported aliases, or object wrappers, so it now serves only as an advisory boundary
+  review.
 - Unsafe-propagation rules exposed inaccurate broad test fixtures, but upstream `any` declarations
   also created pressure to remove an integration block. Future migrations must preserve useful
   coverage and suppress a rule narrowly at an unavoidable third-party boundary instead.

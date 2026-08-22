@@ -23,17 +23,17 @@ function referencedAliasName(type: ESTree.TSType): string | null {
     : null;
 }
 
-/** Ban function contracts that return unknown instead of a parsed domain type. */
+/** Report function contracts that may defer boundary parsing to their callers. */
 export const noUnknownReturnsRule = defineRule({
   meta: {
     type: "problem",
     docs: {
       description:
-        "Disallow functions whose explicit return contract is unknown or Promise<unknown>.",
+        "Report functions whose explicit return contract is unknown or Promise<unknown>.",
     },
     messages: {
       unknownReturn:
-        "This function exposes `unknown` to its caller. Parse the value at its boundary and return a named domain type.",
+        "This function exposes `unknown` to its caller. Review whether its boundary can return a named domain type.",
     },
   },
   createOnce(context) {

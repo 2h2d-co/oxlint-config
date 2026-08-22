@@ -85,7 +85,6 @@ The strict preset enables these custom rules as errors:
 - `2h2d/no-module-mocking`
 - `2h2d/no-object-parameters`
 - `2h2d/no-typebox-unsafe`
-- `2h2d/no-unknown-returns`
 - `2h2d/no-unpreserved-caught-error`
 - `2h2d/no-unreviewed-suppression-directives`
 - `2h2d/no-unsafe-dictionary-type`
@@ -114,20 +113,28 @@ best-effort cleanup.
 
 ## Advisory rules
 
-`2h2d/no-silent-error-suppression` is available separately as a review signal:
+`2h2d/no-silent-error-suppression` and `2h2d/no-unknown-returns` are available
+separately as review signals:
 
 ```ts
 import { advisoryRules } from "@2h2d/oxlint-config/advisory-rules";
 ```
 
-The rule analyzes reachable handler paths and reports failures that it cannot prove are propagated,
-classified, returned, or recorded. Its syntax-only sink and classifier recognition is heuristic:
-a finding is a prompt for human review, not proof of a defect.
+The silent-error rule analyzes reachable handler paths and reports failures that it cannot prove are
+propagated, classified, returned, or recorded. Its syntax-only sink and classifier recognition is
+heuristic: a finding is a prompt for human review, not proof of a defect.
 
-Do not combine `advisoryRules` with the strict preset in a lint invocation that denies warnings.
-Run it separately when reviewing error handling. Advisory findings require neither source
-suppressions nor code changes. In particular, do not add logging, failure wrappers, or throws
-solely to satisfy the advisory.
+The unknown-return rule reports explicit `unknown`, unions containing `unknown`,
+`Promise<unknown>`, and file-local aliases resolving to those types. It prompts a
+review of whether the function knows a domain it should validate. Generic decoders,
+opaque callable contracts, and other intentionally uncertain results are valid and
+need not change.
+
+Do not combine `advisoryRules` with the strict preset in a lint invocation that denies
+warnings. Run it separately during focused review. Advisory findings require neither
+source suppressions nor code changes. In particular, do not distort a truthful
+`unknown` contract or add logging, failure wrappers, or throws solely to satisfy an
+advisory.
 
 ## Native rules
 

@@ -11,12 +11,12 @@ const expectedStrictRules = [
   "no-module-mocking",
   "no-object-parameters",
   "no-typebox-unsafe",
-  "no-unknown-returns",
   "no-unpreserved-caught-error",
   "no-unreviewed-suppression-directives",
   "no-unsafe-dictionary-type",
 ];
-const expectedPluginRules = [...expectedStrictRules, "no-silent-error-suppression"].sort();
+const expectedAdvisoryRules = ["no-silent-error-suppression", "no-unknown-returns"];
+const expectedPluginRules = [...expectedStrictRules, ...expectedAdvisoryRules].sort();
 
 test("plugin exports exactly the adopted custom rules", () => {
   assert.deepEqual(Object.keys(plugin.rules ?? {}).sort(), expectedPluginRules);
@@ -34,8 +34,11 @@ test("strict preset enables only blocking custom rules", () => {
 test("advisory preset contains only non-blocking review signals", () => {
   assert.deepEqual(advisoryRules, {
     "2h2d/no-silent-error-suppression": "warn",
+    "2h2d/no-unknown-returns": "warn",
   });
-  assert.equal(strictRules["2h2d/no-silent-error-suppression"], undefined);
+  for (const name of expectedAdvisoryRules) {
+    assert.equal(strictRules[`2h2d/${name}`], undefined);
+  }
 });
 
 test("strict preset enables the adopted native rules", () => {
