@@ -26,11 +26,12 @@ Loading a framework plugin also activates its unrelated correctness-category rul
 both Jest and Vitest restrictions produces duplicate diagnostics for shared methods. Keep the
 focused custom scope analysis until Oxlint can enable the restriction without those side effects.
 
-### `2h2d/no-object-parameters`
+### `2h2d/no-broad-object-parameters`
 
 Reject the broad `object` type on function parameters. Use a specific owner contract or a genuine
-generic constraint such as `Value extends object`. A reviewed suppression is permitted for an
-operation whose exact contract is intentionally only “non-primitive.”
+generic constraint such as `Value extends object`. Resolve local generic aliases and defaults so
+they cannot hide a broad contract. A reviewed suppression is permitted for an operation whose exact
+contract is intentionally only “non-primitive.”
 
 ### `2h2d/no-typebox-unsafe`
 
@@ -44,17 +45,17 @@ to avoid rejecting unrelated local APIs named `Type` or `Unsafe`. It intentional
 because selecting the authoritative runtime schema and preserving protocol-specific serialization
 requires review.
 
-### `2h2d/no-unreviewed-suppression-directives`
+### `2h2d/require-narrow-suppression-directives`
 
 - Ban range-wide `oxlint-disable`, `eslint-disable`, and matching enable directives.
 - Permit only same-line and next-line lint suppressions.
 - Require exactly one named lint rule.
-- Require a non-empty explanation after `--`.
+- Require an explanation of at least ten characters after `--`.
 - Let native `typescript/ban-ts-comment` govern TypeScript directives: ban `@ts-ignore` and
   `@ts-nocheck`, permit `@ts-check`, and require a meaningful description on `@ts-expect-error`.
 - Set the root Oxlint option `reportUnusedDisableDirectives` to `error` in every consumer.
 
-### `2h2d/no-unsafe-dictionary-type`
+### `2h2d/no-broad-dictionary-values`
 
 Reject object dictionaries whose direct value contract is `object`, or a union or local alias
 containing that broad contract. Also reject semantically empty contracts hidden where the native

@@ -5,6 +5,8 @@ type LintDirective = {
   remainder: string;
 };
 
+const minimumDescriptionLength = 10;
+
 function normalizeCommentLine(line: string): string {
   return line.trim().replace(/^\*\s*/u, "");
 }
@@ -27,7 +29,7 @@ function hasExactlyOneRule(targets: string): boolean {
 }
 
 /** Require every lint suppression to be narrow, specific, and explained. */
-export const noUnreviewedSuppressionDirectivesRule = defineRule({
+export const requireNarrowSuppressionDirectivesRule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -36,7 +38,8 @@ export const noUnreviewedSuppressionDirectivesRule = defineRule({
     messages: {
       broad:
         "Range-wide lint suppression is prohibited. Use a same-line or next-line directive for exactly one rule.",
-      explanation: "Lint suppression directives require a specific explanation after `--`.",
+      explanation:
+        "Lint suppression directives require an explanation of at least 10 characters after `--`.",
       oneRule: "Lint suppression directives must name exactly one rule.",
     },
   },
@@ -68,7 +71,7 @@ export const noUnreviewedSuppressionDirectivesRule = defineRule({
               separatorIndex === -1
                 ? ""
                 : directive.remainder.slice(separatorIndex + "--".length).trim();
-            if (explanation.length === 0) {
+            if (explanation.length < minimumDescriptionLength) {
               context.report({ node: comment, messageId: "explanation" });
             }
           }

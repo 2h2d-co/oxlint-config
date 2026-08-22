@@ -10,6 +10,7 @@ tester.run("2h2d/no-module-mocking", noModuleMockingRule, {
     "const store = new InMemoryUserStore();",
     "vi.spyOn(store, 'save');",
     "const vi = { mock() {} }; vi.mock();",
+    "const vitest = { mock() {} }; vitest.mock();",
     "function test(jest: { mock(): void }) { jest.mock(); }",
     "import { vi as localVi } from './helpers'; localVi.mock('./module');",
   ],
@@ -25,6 +26,14 @@ tester.run("2h2d/no-module-mocking", noModuleMockingRule, {
     },
     {
       code: "import { vi as testApi } from 'vitest'; testApi['doMock']('./user-store');",
+      errors: [error],
+    },
+    {
+      code: "import { vitest } from 'vitest'; vitest.mock('./user-store');",
+      errors: [error],
+    },
+    {
+      code: "import { vitest as testApi } from 'vitest'; testApi['doMock']('./user-store');",
       errors: [error],
     },
     {

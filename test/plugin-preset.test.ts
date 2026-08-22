@@ -6,11 +6,11 @@ import plugin from "../src/plugin.ts";
 import { strictRules } from "../src/strict-rules.ts";
 
 const expectedStrictRules = [
+  "no-broad-dictionary-values",
+  "no-broad-object-parameters",
   "no-module-mocking",
-  "no-object-parameters",
   "no-typebox-unsafe",
-  "no-unreviewed-suppression-directives",
-  "no-unsafe-dictionary-type",
+  "require-narrow-suppression-directives",
 ];
 const expectedAdvisoryRules = ["no-unknown-returns"];
 const expectedPluginRules = [...expectedStrictRules, ...expectedAdvisoryRules].sort();

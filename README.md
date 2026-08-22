@@ -80,18 +80,18 @@ export default defineConfig({
 
 The strict preset enables these custom rules as errors:
 
+- `2h2d/no-broad-dictionary-values`
+- `2h2d/no-broad-object-parameters`
 - `2h2d/no-module-mocking`
-- `2h2d/no-object-parameters`
 - `2h2d/no-typebox-unsafe`
-- `2h2d/no-unreviewed-suppression-directives`
-- `2h2d/no-unsafe-dictionary-type`
+- `2h2d/require-narrow-suppression-directives`
 
 The suppression-directive rule requires lint suppressions to use `disable-line` or
 `disable-next-line`, name exactly one rule, and include an explanation after `--`. Native
 `typescript/ban-ts-comment` separately bans `@ts-ignore` and `@ts-nocheck` while allowing
-`@ts-expect-error` with a meaningful description. `reportUnusedDisableDirectives: "error"` is a
-root configuration option rather than a rule, so consumer configurations must set it as shown
-above.
+`@ts-expect-error` with a meaningful description. Both explanations require at least ten
+characters. `reportUnusedDisableDirectives: "error"` is a root configuration option rather than a
+rule, so consumer configurations must set it as shown above.
 
 The module-mocking rule prohibits `mock`, `doMock`, and `unstable_mockModule` calls on Jest and
 Vitest APIs. Tests replace dependencies through production interfaces or faithful implementations.
@@ -102,9 +102,10 @@ The TypeBox rule rejects `Unsafe` calls imported from `typebox`, including named
 and namespace import forms. Build schemas with TypeBox constructors or declare const native JSON
 Schema and derive the static type with `Static<typeof schema>`.
 
-The object-parameter rule rejects the broad lowercase `object` contract on function inputs while
-allowing meaningful generic constraints such as `Value extends object`. Suppress it narrowly when
-“any non-primitive” is the exact intended API.
+The broad-object-parameter rule rejects the lowercase `object` contract on function inputs,
+including local generic aliases that resolve to it, while allowing meaningful generic constraints
+such as `Value extends object`. Suppress it narrowly when “any non-primitive” is the exact intended
+API.
 
 The dictionary rule rejects direct value contracts based on `object` and semantically empty
 contracts hidden behind intersections or utility types. Native `typescript/no-empty-object-type`
@@ -225,8 +226,8 @@ Rules retain the namespace of their implementation:
   displayed as `typescript(no-explicit-any)`;
 - native ESLint-compatible rules use IDs such as `preserve-caught-error` and are displayed as
   `eslint(preserve-caught-error)`;
-- rules implemented by this package use IDs such as `2h2d/no-object-parameters` and are displayed
-  as `2h2d(no-object-parameters)`.
+- rules implemented by this package use IDs such as `2h2d/no-broad-object-parameters` and are
+  displayed as `2h2d(no-broad-object-parameters)`.
 
 Importing a native rule through `strictRules` does not move it into the `2h2d` namespace.
 

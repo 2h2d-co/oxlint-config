@@ -46,7 +46,7 @@ test("Oxlint loads the built plugin by package specifier", async () => {
             },
           ],
           rules: {
-            "2h2d/no-object-parameters": "error",
+            "2h2d/no-broad-object-parameters": "error",
             "2h2d/no-typebox-unsafe": "error",
             "preserve-caught-error": ["error", { requireCatchParameter: true }],
             "typescript/ban-ts-comment": [
@@ -98,7 +98,7 @@ test("Oxlint loads the built plugin by package specifier", async () => {
     );
 
     assert.equal(result.status, 1, result.stderr);
-    assert.match(result.stdout, /2h2d\(no-object-parameters\)/u);
+    assert.match(result.stdout, /2h2d\(no-broad-object-parameters\)/u);
     assert.match(result.stdout, /2h2d\(no-typebox-unsafe\)/u);
     assert.match(result.stdout, /eslint\(preserve-caught-error\)/u);
     assert.match(result.stdout, /typescript\(ban-ts-comment\)/u);
@@ -137,7 +137,7 @@ test("native and custom rules divide empty and object dictionary ownership", asy
             },
           ],
           rules: {
-            "2h2d/no-unsafe-dictionary-type": "error",
+            "2h2d/no-broad-dictionary-values": "error",
             "typescript/no-empty-object-type": "error",
           },
         },
@@ -180,7 +180,7 @@ test("native and custom rules divide empty and object dictionary ownership", asy
       JSON.stringify(report, null, 2),
     );
     assert.equal(
-      codes.filter((code) => code === "2h2d(no-unsafe-dictionary-type)").length,
+      codes.filter((code) => code === "2h2d(no-broad-dictionary-values)").length,
       2,
       JSON.stringify(report, null, 2),
     );

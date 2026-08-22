@@ -1,11 +1,11 @@
 import { RuleTester } from "oxlint/plugins-dev";
 
-import { noUnsafeDictionaryTypeRule } from "../src/rules/no-unsafe-dictionary-type.ts";
+import { noBroadDictionaryValuesRule } from "../src/rules/no-broad-dictionary-values.ts";
 
 const tester = new RuleTester({ languageOptions: { parserOptions: { lang: "ts" } } });
-const error = { messageId: "unsafeDictionary" };
+const error = { messageId: "broadDictionary" };
 
-tester.run("2h2d/no-unsafe-dictionary-type", noUnsafeDictionaryTypeRule, {
+tester.run("2h2d/no-broad-dictionary-values", noBroadDictionaryValuesRule, {
   valid: [
     "type Commands = Record<string, Command>;",
     "type Metadata = Record<PropertyKey, JsonValue>;",

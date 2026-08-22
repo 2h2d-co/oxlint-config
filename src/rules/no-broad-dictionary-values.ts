@@ -1,10 +1,10 @@
 import { defineRule } from "@oxlint/plugins";
 
 import {
-  classifyUnsafeDictionary,
-  classifyUnsafeDictionaryValue,
+  classifyBroadDictionary,
+  classifyBroadDictionaryValue,
   isLocalTypeAliasReference,
-} from "../shared/dictionary-types.ts";
+} from "../shared/broad-dictionary-types.ts";
 import { lexicalTypeParameterNames } from "../shared/lexical-type-parameters.ts";
 
 import type { ESTree } from "@oxlint/plugins";
@@ -82,7 +82,7 @@ function shouldReportType(
 }
 
 /** Disallow object-dictionary contracts whose direct value type is too broad to describe a domain. */
-export const noUnsafeDictionaryTypeRule = defineRule({
+export const noBroadDictionaryValuesRule = defineRule({
   meta: {
     type: "problem",
     docs: {
@@ -90,40 +90,40 @@ export const noUnsafeDictionaryTypeRule = defineRule({
         "Disallow object-dictionary contracts whose value type resolves to object or a derived semantically empty contract not owned by the native empty-object rule.",
     },
     messages: {
-      unsafeDictionary:
+      broadDictionary:
         "This dictionary's {{value}} value type is too broad. Use `unknown` for genuinely uncertain values or an owner/schema-derived value type.",
     },
   },
   createOnce(context) {
     const report = (node: ESTree.Node, value: string) => {
-      context.report({ node, messageId: "unsafeDictionary", data: { value } });
+      context.report({ node, messageId: "broadDictionary", data: { value } });
     };
-    const reportIfUnsafe = (node: ESTree.TSType) => {
+    const reportIfBroad = (node: ESTree.TSType) => {
       const classify = (type: ESTree.TSType) =>
-        classifyUnsafeDictionary(
+        classifyBroadDictionary(
           type,
           lexicalTypeParameterNames(type, context.sourceCode.visitorKeys),
         ) !== null;
       if (!shouldReportType(node, classify)) return;
-      const unsafe = classifyUnsafeDictionary(
+      const broad = classifyBroadDictionary(
         node,
         lexicalTypeParameterNames(node, context.sourceCode.visitorKeys),
       );
-      if (unsafe === null) return;
-      report(node, unsafe.unsafeValue);
+      if (broad === null) return;
+      report(node, broad.broadValue);
     };
 
     return {
-      TSTypeReference: reportIfUnsafe,
-      TSTypeLiteral: reportIfUnsafe,
-      TSMappedType: reportIfUnsafe,
+      TSTypeReference: reportIfBroad,
+      TSTypeLiteral: reportIfBroad,
+      TSMappedType: reportIfBroad,
       TSIndexSignature(node) {
         if (node.typeAnnotation === null || node.parent.type === "TSTypeLiteral") return;
-        const unsafe = classifyUnsafeDictionaryValue(
+        const broad = classifyBroadDictionaryValue(
           node.typeAnnotation.typeAnnotation,
           lexicalTypeParameterNames(node, context.sourceCode.visitorKeys),
         );
-        if (unsafe !== null) report(node, unsafe.unsafeValue);
+        if (broad !== null) report(node, broad.broadValue);
       },
     };
   },

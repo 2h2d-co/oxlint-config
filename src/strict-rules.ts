@@ -2,11 +2,11 @@ import type { DummyRuleMap } from "oxlint";
 
 /** Shared 2h2d Oxlint policy. */
 export const strictRules: DummyRuleMap = {
+  "2h2d/no-broad-dictionary-values": "error",
+  "2h2d/no-broad-object-parameters": "error",
   "2h2d/no-module-mocking": "error",
-  "2h2d/no-object-parameters": "error",
   "2h2d/no-typebox-unsafe": "error",
-  "2h2d/no-unreviewed-suppression-directives": "error",
-  "2h2d/no-unsafe-dictionary-type": "error",
+  "2h2d/require-narrow-suppression-directives": "error",
   "array-callback-return": "error",
   eqeqeq: ["error", "always", { null: "ignore" }],
   "no-new-func": "error",

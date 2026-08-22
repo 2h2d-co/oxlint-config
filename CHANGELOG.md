@@ -16,6 +16,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Rename custom rules whose identifiers overclaimed their enforcement:
+  `no-object-parameters` to `no-broad-object-parameters`, `no-unsafe-dictionary-type` to
+  `no-broad-dictionary-values`, and `no-unreviewed-suppression-directives` to
+  `require-narrow-suppression-directives`.
+- Resolve generic local aliases and defaults in broad object parameter contracts.
+- Recognize Vitest's `vitest` alias in module-mocking enforcement.
+- Require lint suppression explanations to contain at least ten characters.
 - Replace custom method-signature enforcement with native
   `typescript/method-signature-style`.
 - Require every catch to bind its failure through native `preserve-caught-error`.
