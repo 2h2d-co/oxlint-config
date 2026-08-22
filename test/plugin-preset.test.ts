@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { advisoryRules } from "../src/advisory-rules.ts";
 import plugin from "../src/plugin.ts";
 import { strictRules } from "../src/strict-rules.ts";
 
@@ -12,11 +11,9 @@ const expectedStrictRules = [
   "no-typebox-unsafe",
   "require-narrow-suppression-directives",
 ];
-const expectedAdvisoryRules = ["no-unknown-returns"];
-const expectedPluginRules = [...expectedStrictRules, ...expectedAdvisoryRules].sort();
 
 test("plugin exports exactly the adopted custom rules", () => {
-  assert.deepEqual(Object.keys(plugin.rules ?? {}).sort(), expectedPluginRules);
+  assert.deepEqual(Object.keys(plugin.rules ?? {}).sort(), expectedStrictRules);
 });
 
 test("strict preset enables only blocking custom rules", () => {
@@ -26,15 +23,6 @@ test("strict preset enables only blocking custom rules", () => {
     .sort();
 
   assert.deepEqual(configuredCustomRules, expectedStrictRules);
-});
-
-test("advisory preset contains only non-blocking review signals", () => {
-  assert.deepEqual(advisoryRules, {
-    "2h2d/no-unknown-returns": "warn",
-  });
-  for (const name of expectedAdvisoryRules) {
-    assert.equal(strictRules[`2h2d/${name}`], undefined);
-  }
 });
 
 test("strict preset enables the adopted native rules", () => {

@@ -35,10 +35,6 @@
       "types": "./dist/plugin.d.ts",
       "default": "./dist/plugin.js"
     },
-    "./advisory-rules": {
-      "types": "./dist/advisory-rules.d.ts",
-      "default": "./dist/advisory-rules.js"
-    },
     "./strict-rules": {
       "types": "./dist/strict-rules.d.ts",
       "default": "./dist/strict-rules.js"

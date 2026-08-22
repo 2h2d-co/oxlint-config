@@ -39,6 +39,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Remove custom conditional object-spread enforcement because the rejected construction is valid,
   concise, and often preserves useful inference.
+- Remove `2h2d/no-unknown-returns` and the advisory package surface because `unknown` is safe,
+  truthful boundary contracts were its only known finding, and syntax cannot prove a narrower
+  domain.
 - Remove custom silent-error and parameterless-catch analysis in favor of native error rules and
   human review of logging policy.
 - Remove the unused analysis left by `2h2d/no-known-value-widening`.

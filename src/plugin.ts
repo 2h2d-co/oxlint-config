@@ -4,7 +4,6 @@ import { noBroadDictionaryValuesRule } from "./rules/no-broad-dictionary-values.
 import { noBroadObjectParametersRule } from "./rules/no-broad-object-parameters.ts";
 import { noModuleMockingRule } from "./rules/no-module-mocking.ts";
 import { noTypeboxUnsafeRule } from "./rules/no-typebox-unsafe.ts";
-import { noUnknownReturnsRule } from "./rules/no-unknown-returns.ts";
 import { requireNarrowSuppressionDirectivesRule } from "./rules/require-narrow-suppression-directives.ts";
 
 const plugin = eslintCompatPlugin({
@@ -14,7 +13,6 @@ const plugin = eslintCompatPlugin({
     "no-broad-object-parameters": noBroadObjectParametersRule,
     "no-module-mocking": noModuleMockingRule,
     "no-typebox-unsafe": noTypeboxUnsafeRule,
-    "no-unknown-returns": noUnknownReturnsRule,
     "require-narrow-suppression-directives": requireNarrowSuppressionDirectivesRule,
   },
 });

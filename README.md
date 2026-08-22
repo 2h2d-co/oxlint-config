@@ -112,25 +112,6 @@ contracts hidden behind intersections or utility types. Native `typescript/no-em
 owns explicit `{}` and empty declaration diagnostics, while `typescript/no-explicit-any` owns
 explicit `any`. Use `unknown` when values are genuinely uncertain and narrow them before use.
 
-## Advisory rules
-
-`2h2d/no-unknown-returns` is available separately as a review signal:
-
-```ts
-import { advisoryRules } from "@2h2d/oxlint-config/advisory-rules";
-```
-
-The unknown-return rule reports explicit `unknown`, unions containing `unknown`,
-`Promise<unknown>`, and file-local aliases resolving to those types. It prompts a
-review of whether the function knows a domain it should validate. Generic decoders,
-opaque callable contracts, and other intentionally uncertain results are valid and
-need not change.
-
-Do not combine `advisoryRules` with the strict preset in a lint invocation that denies
-warnings. Run it separately during focused review. Advisory findings require neither
-source suppressions nor code changes. In particular, do not distort a truthful
-`unknown` contract solely to satisfy an advisory.
-
 ## Native rules
 
 The strict rule map explicitly enables these native Oxlint rules. The required

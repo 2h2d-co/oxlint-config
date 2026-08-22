@@ -12,19 +12,21 @@ function isObject(value: unknown): value is object {
 }
 
 test("built package exports resolve through the package name", async () => {
-  const advisoryRulesUrl = import.meta.resolve("@2h2d/oxlint-config/advisory-rules");
   const pluginUrl = import.meta.resolve("@2h2d/oxlint-config/plugin");
+  const rootUrl = import.meta.resolve("@2h2d/oxlint-config");
   const rulesUrl = import.meta.resolve("@2h2d/oxlint-config/strict-rules");
-  const advisoryRulesModule: unknown = await import(advisoryRulesUrl);
   const pluginModule: unknown = await import(pluginUrl);
+  const rootModule: unknown = await import(rootUrl);
   const rulesModule: unknown = await import(rulesUrl);
 
-  assert.ok(isObject(advisoryRulesModule));
-  assert.ok("advisoryRules" in advisoryRulesModule);
-  assert.ok(isObject(advisoryRulesModule.advisoryRules));
   assert.ok(isObject(pluginModule));
   assert.ok("default" in pluginModule);
   assert.ok(isObject(pluginModule.default));
+  assert.ok(isObject(rootModule));
+  assert.ok("plugin" in rootModule);
+  assert.ok(isObject(rootModule.plugin));
+  assert.ok("strictRules" in rootModule);
+  assert.ok(isObject(rootModule.strictRules));
   assert.ok(isObject(rulesModule));
   assert.ok("strictRules" in rulesModule);
   assert.ok(isObject(rulesModule.strictRules));

@@ -3,8 +3,6 @@ LICENSE
 LICENSES/anti-slop-MIT.txt
 README.md
 THIRD_PARTY_NOTICES.md
-dist/advisory-rules.d.ts
-dist/advisory-rules.js
 dist/index.d.ts
 dist/index.js
 dist/plugin.d.ts
@@ -17,8 +15,6 @@ dist/rules/no-module-mocking.d.ts
 dist/rules/no-module-mocking.js
 dist/rules/no-typebox-unsafe.d.ts
 dist/rules/no-typebox-unsafe.js
-dist/rules/no-unknown-returns.d.ts
-dist/rules/no-unknown-returns.js
 dist/rules/require-narrow-suppression-directives.d.ts
 dist/rules/require-narrow-suppression-directives.js
 dist/shared/broad-dictionary-types.d.ts
