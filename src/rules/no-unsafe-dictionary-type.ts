@@ -3,9 +3,9 @@ import { defineRule } from "@oxlint/plugins";
 import {
   classifyUnsafeDictionary,
   classifyUnsafeDictionaryValue,
-  createTypeEnvironment,
-  type TypeEnvironment,
+  isLocalTypeAliasReference,
 } from "../shared/dictionary-types.ts";
+import { lexicalTypeParameterNames } from "../shared/lexical-type-parameters.ts";
 
 import type { ESTree } from "@oxlint/plugins";
 
@@ -53,10 +53,6 @@ function isTypeNode(node: ESTree.Node): node is ESTree.TSType {
   return typeNodeKinds.has(node.type);
 }
 
-function typeReferenceName(type: ESTree.TSTypeReference): string | null {
-  return type.typeName.type === "Identifier" ? type.typeName.name : null;
-}
-
 function isInsideTypeAliasDeclaration(node: ESTree.Node): boolean {
   let current: ESTree.Node | null = node.parent;
   while (current !== null && current.type !== "Program") {
@@ -66,66 +62,66 @@ function isInsideTypeAliasDeclaration(node: ESTree.Node): boolean {
   return false;
 }
 
-function isPlainAliasConsumerUse(node: ESTree.TSType, environment: TypeEnvironment): boolean {
+function isPlainAliasConsumerUse(node: ESTree.TSType): boolean {
   if (node.type !== "TSTypeReference" || node.typeArguments?.params.length) return false;
-  const name = typeReferenceName(node);
-  return name !== null && environment.aliases.has(name) && !isInsideTypeAliasDeclaration(node);
+  return isLocalTypeAliasReference(node) && !isInsideTypeAliasDeclaration(node);
 }
 
-function shouldReportType(node: ESTree.TSType, environment: TypeEnvironment): boolean {
-  if (isPlainAliasConsumerUse(node, environment)) return false;
-  if (classifyUnsafeDictionary(node, environment) === null) return false;
+function shouldReportType(
+  node: ESTree.TSType,
+  classify: (type: ESTree.TSType) => boolean,
+): boolean {
+  if (isPlainAliasConsumerUse(node)) return false;
+  if (!classify(node)) return false;
   let current: ESTree.Node | null = node.parent;
   while (current !== null && current.type !== "Program") {
-    if (isTypeNode(current) && classifyUnsafeDictionary(current, environment) !== null)
-      return false;
+    if (isTypeNode(current) && classify(current)) return false;
     current = current.parent;
   }
   return true;
 }
 
-/** Disallow object-dictionary contracts whose direct value type is an unsafe escape hatch. */
+/** Disallow object-dictionary contracts whose direct value type is too broad to describe a domain. */
 export const noUnsafeDictionaryTypeRule = defineRule({
   meta: {
     type: "problem",
     docs: {
       description:
-        "Disallow object-dictionary contracts whose direct value type is any, object, {}, or a union/alias containing one of those escape hatches.",
+        "Disallow object-dictionary contracts whose direct value type is object, {}, or a union/local alias containing one of those broad contracts.",
     },
     messages: {
       unsafeDictionary:
-        "This dictionary's {{value}} value type bypasses a concrete value contract. Use `unknown` for genuinely uncertain values or an owner/schema-derived value type.",
+        "This dictionary's {{value}} value type is too broad. Use `unknown` for genuinely uncertain values or an owner/schema-derived value type.",
     },
   },
   createOnce(context) {
-    let environment: TypeEnvironment | null = null;
     const report = (node: ESTree.Node, value: string) => {
       context.report({ node, messageId: "unsafeDictionary", data: { value } });
     };
     const reportIfUnsafe = (node: ESTree.TSType) => {
-      if (environment === null || !shouldReportType(node, environment)) return;
-      const unsafe = classifyUnsafeDictionary(node, environment);
+      const classify = (type: ESTree.TSType) =>
+        classifyUnsafeDictionary(
+          type,
+          lexicalTypeParameterNames(type, context.sourceCode.visitorKeys),
+        ) !== null;
+      if (!shouldReportType(node, classify)) return;
+      const unsafe = classifyUnsafeDictionary(
+        node,
+        lexicalTypeParameterNames(node, context.sourceCode.visitorKeys),
+      );
       if (unsafe === null) return;
       report(node, unsafe.unsafeValue);
     };
 
     return {
-      Program(node) {
-        environment = createTypeEnvironment(node);
-      },
       TSTypeReference: reportIfUnsafe,
       TSTypeLiteral: reportIfUnsafe,
       TSMappedType: reportIfUnsafe,
       TSIndexSignature(node) {
-        if (
-          environment === null ||
-          node.typeAnnotation === null ||
-          node.parent.type === "TSTypeLiteral"
-        )
-          return;
+        if (node.typeAnnotation === null || node.parent.type === "TSTypeLiteral") return;
         const unsafe = classifyUnsafeDictionaryValue(
           node.typeAnnotation.typeAnnotation,
-          environment,
+          lexicalTypeParameterNames(node, context.sourceCode.visitorKeys),
         );
         if (unsafe !== null) report(node, unsafe.unsafeValue);
       },

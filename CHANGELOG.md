@@ -6,37 +6,123 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Replace custom method-signature enforcement with native
+  `typescript/method-signature-style`.
+- Require every catch to bind its failure through native `preserve-caught-error`.
+- Limit the floating-Promise exemption to declarations imported from `node:test`.
+- Allow explained `@ts-expect-error` directives through native `typescript/ban-ts-comment` while
+  continuing to prohibit `@ts-ignore` and `@ts-nocheck`.
+- Resolve dictionary aliases in their lexical scopes, respect type-parameter shadowing, and classify
+  unions and intersections according to their effective broad value contract.
+
+### Removed
+
+- Remove custom conditional object-spread enforcement because the rejected construction is valid,
+  concise, and often preserves useful inference.
+- Remove custom silent-error and parameterless-catch analysis in favor of native error rules and
+  human review of logging policy.
+- Remove the unused analysis left by `2h2d/no-known-value-widening`.
+
+### Fixed
+
+- Install the current prerelease through the npm `alpha` tag in the README.
+- Restore versioned release history instead of describing every published version as unreleased.
+
+## [0.1.0-alpha.9] - 2026-08-22
+
+### Changed
+
+- Move `2h2d/no-unknown-returns` from strict enforcement to the advisory preset.
+
+## [0.1.0-alpha.8] - 2026-08-19
+
 ### Added
 
-- Add the shared `2h2d` Oxlint plugin with adopted custom rules.
-- Add a strict preset covering unsafe type propagation, Promise handling, exhaustive switches,
-  error propagation, and bans on `any`, non-null assertions, and non-const type assertions.
-- Add rule, preset, package-export, and Oxlint package-consumer tests.
-- Add anti-slop attribution and license notices for adapted rule implementations.
-- Add `2h2d/no-unpreserved-caught-error` for replacement errors thrown from parameterless catches.
-- Add `2h2d/no-bivariant-method-signatures` to require contravariantly checked function properties
-  in object type declarations.
-- Add `2h2d/no-typebox-unsafe` to require static types to be derived from their runtime schemas.
+- Add `2h2d/no-typebox-unsafe` to require static types to be derived from runtime schemas.
+
+## [0.1.0-alpha.7] - 2026-08-19
+
+### Added
+
+- Add custom enforcement for contravariantly checked function-property signatures.
+
+## [0.1.0-alpha.6] - 2026-08-19
+
+### Changed
+
+- Restore silent-error analysis as an advisory review signal.
+
+## [0.1.0-alpha.5] - 2026-08-19
+
+### Removed
+
+- Remove silent-error analysis from the plugin.
+
+## [0.1.0-alpha.4] - 2026-08-19
+
+### Changed
+
+- Replace known-value widening guesses with conditional object-spread enforcement.
+- Refine silent-error path, classifier, diagnostic, and returned-failure analysis.
+
+### Fixed
+
+- Recognize explicit cause-derived failure-state capture.
+
+## [0.1.0-alpha.3] - 2026-08-19
+
+### Added
+
+- Add targeted parameterless-catch enforcement.
+
+### Changed
+
+- Require actual Promise rejection handling instead of accepting `void`.
+- Permit `unknown` dictionary values while rejecting broad object value contracts.
+- Narrow widening and silent-error analysis.
+
+### Removed
+
+- Remove runtime `typeof`, shape naming, and `unknown` alias restrictions after review found no
+  objective safety benefit.
+
+## [0.1.0-alpha.2] - 2026-08-18
+
+### Added
+
+- Add reviewed suppression directives and silent-error custom rules.
+- Add native rules for unsafe type propagation, Promise handling, assertions, exhaustive switches,
+  and error handling.
+- Add strict-rule policy and package-consumer integration coverage.
+
+## [0.1.0-alpha.1] - 2026-08-18
 
 ### Changed
 
 - Update the supported Oxlint and `@oxlint/plugins` version to 1.78.0.
-- Analyze silent-error handling across reachable paths, accept explicit diagnostics and credible
-  expected-error classification, and reject cause mentions that do not handle a failure.
-- Move silent-error suppression analysis out of the strict preset and into a separate advisory
-  preset so its heuristic findings do not require suppressions or runtime contract changes.
-- Restore conditional object-spread enforcement and cover ternary and logical operand forms without
-  an unsafe autofixer.
-- Remove syntax-only known-value widening enforcement after it encouraged indirect
-  empty-object-plus-`Object.assign` rewrites.
-- Permit `unknown` dictionary values while continuing to reject `any`, `object`, and `{}` values.
-- Require actual Promise rejection handling instead of accepting the `void` operator.
-- Limit caught-error parameters to handlers that construct replacement errors.
-- Remove runtime `typeof`, `shape` naming, and `unknown` alias rules after the post-rollout review
-  found no objective safety benefit.
 
 ### Fixed
 
 - Reject primitive JSON values where release validation requires package metadata objects.
-- Move `2h2d/no-unknown-returns` from the strict preset to the advisory preset so truthful generic
-  `unknown` contracts do not require suppressions or weaker replacement types.
+
+## [0.1.0-alpha.0] - 2026-08-18
+
+### Added
+
+- Add the shared `2h2d` Oxlint plugin, strict preset, release workflow, rule tests, and package
+  integration tests.
+- Add anti-slop attribution and license notices for adapted implementations.
+
+[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.9...HEAD
+[0.1.0-alpha.9]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.8...v0.1.0-alpha.9
+[0.1.0-alpha.8]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.7...v0.1.0-alpha.8
+[0.1.0-alpha.7]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.6...v0.1.0-alpha.7
+[0.1.0-alpha.6]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.5...v0.1.0-alpha.6
+[0.1.0-alpha.5]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.4...v0.1.0-alpha.5
+[0.1.0-alpha.4]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.3...v0.1.0-alpha.4
+[0.1.0-alpha.3]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.2...v0.1.0-alpha.3
+[0.1.0-alpha.2]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.1...v0.1.0-alpha.2
+[0.1.0-alpha.1]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.0...v0.1.0-alpha.1
+[0.1.0-alpha.0]: https://github.com/2h2d-co/oxlint-config/releases/tag/v0.1.0-alpha.0

@@ -6,16 +6,13 @@ import plugin from "../src/plugin.ts";
 import { strictRules } from "../src/strict-rules.ts";
 
 const expectedStrictRules = [
-  "no-bivariant-method-signatures",
-  "no-conditional-empty-object-spread",
   "no-module-mocking",
   "no-object-parameters",
   "no-typebox-unsafe",
-  "no-unpreserved-caught-error",
   "no-unreviewed-suppression-directives",
   "no-unsafe-dictionary-type",
 ];
-const expectedAdvisoryRules = ["no-silent-error-suppression", "no-unknown-returns"];
+const expectedAdvisoryRules = ["no-unknown-returns"];
 const expectedPluginRules = [...expectedStrictRules, ...expectedAdvisoryRules].sort();
 
 test("plugin exports exactly the adopted custom rules", () => {
@@ -33,7 +30,6 @@ test("strict preset enables only blocking custom rules", () => {
 
 test("advisory preset contains only non-blocking review signals", () => {
   assert.deepEqual(advisoryRules, {
-    "2h2d/no-silent-error-suppression": "warn",
     "2h2d/no-unknown-returns": "warn",
   });
   for (const name of expectedAdvisoryRules) {
@@ -42,15 +38,32 @@ test("advisory preset contains only non-blocking review signals", () => {
 });
 
 test("strict preset enables the adopted native rules", () => {
+  assert.deepEqual(strictRules["typescript/ban-ts-comment"], [
+    "error",
+    {
+      minimumDescriptionLength: 10,
+      "ts-check": false,
+      "ts-expect-error": "allow-with-description",
+      "ts-ignore": true,
+      "ts-nocheck": true,
+    },
+  ]);
   assert.deepEqual(strictRules["typescript/consistent-type-assertions"], [
     "error",
     { assertionStyle: "never" },
   ]);
+  assert.deepEqual(strictRules["typescript/method-signature-style"], ["error", "property"]);
   assert.equal(strictRules["typescript/no-explicit-any"], "error");
   assert.deepEqual(strictRules["typescript/no-floating-promises"], [
     "error",
     {
-      allowForKnownSafeCalls: ["describe", "it", "test"],
+      allowForKnownSafeCalls: [
+        {
+          from: "package",
+          name: ["describe", "it", "test"],
+          package: "node:test",
+        },
+      ],
       ignoreVoid: false,
     },
   ]);
@@ -72,6 +85,6 @@ test("strict preset enables the adopted native rules", () => {
   assert.equal(strictRules["typescript/use-unknown-in-catch-callback-variable"], "error");
   assert.deepEqual(strictRules["preserve-caught-error"], [
     "error",
-    { requireCatchParameter: false },
+    { requireCatchParameter: true },
   ]);
 });

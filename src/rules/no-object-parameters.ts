@@ -2,6 +2,7 @@ import { defineRule } from "@oxlint/plugins";
 
 import type { ESTree, SourceCode } from "@oxlint/plugins";
 
+import { resolveLexicalTypeBinding } from "../shared/lexical-type-bindings.ts";
 import { lexicalTypeParameterNames } from "../shared/lexical-type-parameters.ts";
 
 type Parameter = ESTree.ParamPattern;
@@ -39,15 +40,58 @@ export const noObjectParametersRule = defineRule({
     type: "problem",
     docs: {
       description:
-        "Disallow object function parameters; inputs must use an owner-provided type and be parsed at their boundary.",
+        "Disallow broad object function parameters; use a specific input contract or a generic object constraint.",
     },
     messages: {
       objectParameter:
-        "Parameter `{{parameter}}` uses the broad `object` type. Accept a named owner type; parse external input at its boundary before calling this function.",
+        "Parameter `{{parameter}}` uses the broad `object` contract. Use a specific input type or a generic constrained by `object`; suppress this rule when any non-primitive is the exact API.",
     },
   },
   createOnce(context) {
-    const aliases = new Map<string, ESTree.TSType>();
+    const resolvesToTopType = (
+      type: ESTree.TSType,
+      shadowedAliases: ReadonlySet<string>,
+      visited = new Set<string>(),
+    ): "any" | "unknown" | null => {
+      if (type.type === "TSAnyKeyword") return "any";
+      if (type.type === "TSUnknownKeyword") return "unknown";
+      if (type.type === "TSParenthesizedType") {
+        return resolvesToTopType(type.typeAnnotation, shadowedAliases, visited);
+      }
+      if (
+        type.type !== "TSTypeReference" ||
+        type.typeName.type !== "Identifier" ||
+        (type.typeArguments !== null &&
+          type.typeArguments !== undefined &&
+          type.typeArguments.params.length > 0) ||
+        visited.has(type.typeName.name) ||
+        shadowedAliases.has(type.typeName.name)
+      ) {
+        return null;
+      }
+      const binding = resolveLexicalTypeBinding(type.typeName.name, type);
+      if (
+        binding?.kind !== "alias" ||
+        (binding.declaration.typeParameters !== null &&
+          binding.declaration.typeParameters !== undefined)
+      ) {
+        return null;
+      }
+      const nextVisited = new Set(visited);
+      nextVisited.add(type.typeName.name);
+      return resolvesToTopType(binding.declaration.typeAnnotation, shadowedAliases, nextVisited);
+    };
+
+    const isIntersectionNeutral = (
+      type: ESTree.TSType,
+      shadowedAliases: ReadonlySet<string>,
+    ): boolean => {
+      if (resolvesToTopType(type, shadowedAliases) === "unknown") return true;
+      if (type.type === "TSParenthesizedType") {
+        return isIntersectionNeutral(type.typeAnnotation, shadowedAliases);
+      }
+      return type.type === "TSTypeLiteral" && type.members.length === 0;
+    };
 
     const resolvesToObject = (
       type: ESTree.TSType,
@@ -58,7 +102,26 @@ export const noObjectParametersRule = defineRule({
       if (type.type === "TSParenthesizedType")
         return resolvesToObject(type.typeAnnotation, shadowedAliases, visited);
       if (type.type === "TSUnionType") {
+        if (type.types.some((member) => resolvesToTopType(member, shadowedAliases) !== null)) {
+          return false;
+        }
         return type.types.some((member) => resolvesToObject(member, shadowedAliases, visited));
+      }
+      if (type.type === "TSIntersectionType") {
+        if (type.types.some((member) => resolvesToTopType(member, shadowedAliases) === "any")) {
+          return false;
+        }
+        const hasObject = type.types.some((member) =>
+          resolvesToObject(member, shadowedAliases, visited),
+        );
+        return (
+          hasObject &&
+          type.types.every(
+            (member) =>
+              resolvesToObject(member, shadowedAliases, visited) ||
+              isIntersectionNeutral(member, shadowedAliases),
+          )
+        );
       }
       if (
         type.type !== "TSTypeReference" ||
@@ -71,11 +134,17 @@ export const noObjectParametersRule = defineRule({
       ) {
         return false;
       }
-      const alias = aliases.get(type.typeName.name);
-      if (alias === undefined) return false;
+      const binding = resolveLexicalTypeBinding(type.typeName.name, type);
+      if (
+        binding?.kind !== "alias" ||
+        (binding.declaration.typeParameters !== null &&
+          binding.declaration.typeParameters !== undefined)
+      ) {
+        return false;
+      }
       const nextVisited = new Set(visited);
       nextVisited.add(type.typeName.name);
-      return resolvesToObject(alias, shadowedAliases, nextVisited);
+      return resolvesToObject(binding.declaration.typeAnnotation, shadowedAliases, nextVisited);
     };
 
     const checkParameters = (node: ParameterOwner) => {
@@ -93,19 +162,6 @@ export const noObjectParametersRule = defineRule({
     };
 
     return {
-      Program(node) {
-        aliases.clear();
-        for (const statement of node.body) {
-          const declaration =
-            statement.type === "ExportNamedDeclaration" ? statement.declaration : statement;
-          if (
-            declaration?.type === "TSTypeAliasDeclaration" &&
-            (declaration.typeParameters === null || declaration.typeParameters === undefined)
-          ) {
-            aliases.set(declaration.id.name, declaration.typeAnnotation);
-          }
-        }
-      },
       ArrowFunctionExpression: checkParameters,
       FunctionDeclaration: checkParameters,
       FunctionExpression: checkParameters,

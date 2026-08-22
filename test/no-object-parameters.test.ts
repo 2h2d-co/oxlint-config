@@ -14,7 +14,11 @@ tester.run("2h2d/no-object-parameters", noObjectParametersRule, {
     "function f<Value extends object>(value: Value) {}",
     "function f<Value extends Owner, Owner extends { readonly id: string }>(value: Value) {}",
     "type Owner = { readonly id: string }; function f<Value extends Owner>(value: Value) {}",
+    "function f(value: object | unknown) {}",
+    "type UnknownValue = unknown; function f(value: object | UnknownValue) {}",
+    "interface Owner { readonly id: string } function f(value: object & Owner) {}",
     "type Alias = object; function consume<Alias>(value: Alias) {}",
+    "type Alias = object; function outer() { type Alias = { id: string }; function consume(value: Alias) {} }",
     "type Alias = object; type Consumer<Alias> = (value: Alias) => void;",
     "type Alias = object; interface Consumer<Alias> { consume(value: Alias): void }",
     "type Key = object; type Mapped<Input> = { [Key in keyof Input]: (value: Key) => void };",
@@ -24,6 +28,15 @@ tester.run("2h2d/no-object-parameters", noObjectParametersRule, {
     { code: "function f(value: object) {}", errors: [error] },
     { code: "type Alias = object; function f(value: Alias) {}", errors: [error] },
     { code: "type Alias = (object); function f(value: Alias) {}", errors: [error] },
+    { code: "function f(value: unknown & object) {}", errors: [error] },
+    {
+      code: "function outer() { type Alias = object; function f(value: Alias) {} }",
+      errors: [error],
+    },
+    {
+      code: "function outer() { function f(value: Alias) {} type Alias = object; }",
+      errors: [error],
+    },
     {
       code: "type Item = object; type Fallback<Input> = Input extends infer Item ? string : (value: Item) => void;",
       errors: [error],

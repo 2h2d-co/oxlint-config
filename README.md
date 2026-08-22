@@ -13,7 +13,7 @@ The package combines:
 Install the package and its exact supported Oxlint version as development dependencies:
 
 ```bash
-npm install --save-dev --save-exact @2h2d/oxlint-config oxlint@1.78.0
+npm install --save-dev --save-exact @2h2d/oxlint-config@alpha oxlint@1.78.0
 ```
 
 ## Oxlint configuration
@@ -80,49 +80,38 @@ export default defineConfig({
 
 The strict preset enables these custom rules as errors:
 
-- `2h2d/no-bivariant-method-signatures`
-- `2h2d/no-conditional-empty-object-spread`
 - `2h2d/no-module-mocking`
 - `2h2d/no-object-parameters`
 - `2h2d/no-typebox-unsafe`
-- `2h2d/no-unpreserved-caught-error`
 - `2h2d/no-unreviewed-suppression-directives`
 - `2h2d/no-unsafe-dictionary-type`
 
-The suppression-directive rule bans TypeScript suppression comments. Lint suppressions must use
-`disable-line` or `disable-next-line`, name exactly one rule, and include an explanation after
-`--`. `reportUnusedDisableDirectives: "error"` is a root configuration option rather than a rule,
-so consumer configurations must set it as shown above.
-
-The bivariant-method-signature rule rejects method syntax in object type declarations. Declare
-callable members as function properties so `strictFunctionTypes` checks their parameter types
-contravariantly. Actual class and object implementation methods remain allowed.
+The suppression-directive rule requires lint suppressions to use `disable-line` or
+`disable-next-line`, name exactly one rule, and include an explanation after `--`. Native
+`typescript/ban-ts-comment` separately bans `@ts-ignore` and `@ts-nocheck` while allowing
+`@ts-expect-error` with a meaningful description. `reportUnusedDisableDirectives: "error"` is a
+root configuration option rather than a rule, so consumer configurations must set it as shown
+above.
 
 The TypeBox rule rejects `Unsafe` calls imported from `typebox`, including named, aliased, default,
 and namespace import forms. Build schemas with TypeBox constructors or declare const native JSON
 Schema and derive the static type with `Static<typeof schema>`.
 
-The conditional-spread rule rejects object spread operands selected by conditional or logical
-expressions. Build the object first and add condition-controlled fields in explicit statements;
-the rule intentionally has no fixer because a mechanical rewrite can change evaluation order or
-property semantics.
+The object-parameter rule rejects the broad lowercase `object` contract on function inputs while
+allowing meaningful generic constraints such as `Value extends object`. Suppress it narrowly when
+“any non-primitive” is the exact intended API.
 
-The unpreserved-error rule rejects replacement built-in errors thrown from parameterless catches.
-It complements native `preserve-caught-error` without requiring dummy catch variables for
-best-effort cleanup.
+The dictionary rule rejects direct value contracts based on `object`, `{}`, or local aliases and
+unions that resolve to them. Use `unknown` when values are genuinely uncertain and narrow them
+before use. Native `typescript/no-explicit-any` separately owns explicit `any` diagnostics.
 
 ## Advisory rules
 
-`2h2d/no-silent-error-suppression` and `2h2d/no-unknown-returns` are available
-separately as review signals:
+`2h2d/no-unknown-returns` is available separately as a review signal:
 
 ```ts
 import { advisoryRules } from "@2h2d/oxlint-config/advisory-rules";
 ```
-
-The silent-error rule analyzes reachable handler paths and reports failures that it cannot prove are
-propagated, classified, returned, or recorded. Its syntax-only sink and classifier recognition is
-heuristic: a finding is a prompt for human review, not proof of a defect.
 
 The unknown-return rule reports explicit `unknown`, unions containing `unknown`,
 `Promise<unknown>`, and file-local aliases resolving to those types. It prompts a
@@ -133,8 +122,7 @@ need not change.
 Do not combine `advisoryRules` with the strict preset in a lint invocation that denies
 warnings. Run it separately during focused review. Advisory findings require neither
 source suppressions nor code changes. In particular, do not distort a truthful
-`unknown` contract or add logging, failure wrappers, or throws solely to satisfy an
-advisory.
+`unknown` contract solely to satisfy an advisory.
 
 ## Native rules
 
@@ -142,13 +130,30 @@ The strict preset also enables these native Oxlint rules:
 
 ```json
 {
-  "preserve-caught-error": ["error", { "requireCatchParameter": false }],
+  "preserve-caught-error": ["error", { "requireCatchParameter": true }],
+  "typescript/ban-ts-comment": [
+    "error",
+    {
+      "minimumDescriptionLength": 10,
+      "ts-check": false,
+      "ts-expect-error": "allow-with-description",
+      "ts-ignore": true,
+      "ts-nocheck": true
+    }
+  ],
   "typescript/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
+  "typescript/method-signature-style": ["error", "property"],
   "typescript/no-explicit-any": "error",
   "typescript/no-floating-promises": [
     "error",
     {
-      "allowForKnownSafeCalls": ["describe", "it", "test"],
+      "allowForKnownSafeCalls": [
+        {
+          "from": "package",
+          "name": ["describe", "it", "test"],
+          "package": "node:test"
+        }
+      ],
       "ignoreVoid": false
     }
   ],
@@ -171,10 +176,15 @@ The strict preset also enables these native Oxlint rules:
 }
 ```
 
+Every catch must bind its failure, and replacement built-in errors must preserve that value as their
+`cause`. Whether a caught failure should be logged or recorded is a review decision rather than a
+custom lint heuristic.
+
 Every non-const type assertion and postfix non-null assertion is prohibited. `as const` remains
-allowed. `void promise` is not accepted as Promise rejection handling. Node's `describe`, `it`, and
-`test` registration calls are allowed because the test runner observes their Promises; invoke those
-registrations directly rather than wrapping them in `void`.
+allowed. Object-type callables use function-property syntax so `strictFunctionTypes` checks
+parameter variance. `void promise` is not accepted as Promise rejection handling. Only the
+`describe`, `it`, and `test` declarations from `node:test` are exempt because the test runner
+observes their Promises; invoke those registrations directly rather than wrapping them in `void`.
 
 ## Rule namespaces
 
@@ -184,8 +194,8 @@ Rules retain the namespace of their implementation:
   displayed as `typescript(no-explicit-any)`;
 - native ESLint-compatible rules use IDs such as `preserve-caught-error` and are displayed as
   `eslint(preserve-caught-error)`;
-- rules implemented by this package use IDs such as `2h2d/no-silent-error-suppression` and are
-  displayed as `2h2d(no-silent-error-suppression)`.
+- rules implemented by this package use IDs such as `2h2d/no-object-parameters` and are displayed
+  as `2h2d(no-object-parameters)`.
 
 Importing a native rule through `strictRules` does not move it into the `2h2d` namespace.
 
@@ -196,8 +206,6 @@ Importing a native rule through `strictRules` does not move it into the `2h2d` n
   contravariantly.
 - Derive static types from their runtime schemas instead of pairing them through `Type.Unsafe`.
 - Propagate unexpected failures and preserve their original causes.
-- Add condition-controlled object fields through explicit statements rather than hiding control
-  flow inside a spread operand.
 - Keep promises observable and use exhaustive union handling.
 - Use named contracts for meaningful inputs and outputs.
 - Use `unknown` for genuinely uncertain dictionary values and narrow each value before use.

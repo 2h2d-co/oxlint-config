@@ -11,20 +11,9 @@ tester.run("2h2d/no-unreviewed-suppression-directives", noUnreviewedSuppressionD
     "operation(); // eslint-disable-line no-console -- the command intentionally writes progress.",
     "/*\n * oxlint-disable-next-line typescript/no-unsafe-call -- the external callback has no published type.\n */\ncallback();",
     "// @ts-check\nconst value = 1;",
+    "// @ts-expect-error: invalid input is intentional in this negative type test.\nacceptsString(123);",
   ],
   invalid: [
-    {
-      code: "// @ts-ignore\nconst value = external;",
-      errors: [{ messageId: "typescript" }],
-    },
-    {
-      code: "// @ts-expect-error -- upstream types are incomplete\nconst value = external;",
-      errors: [{ messageId: "typescript" }],
-    },
-    {
-      code: "// @ts-nocheck\nconst value = external;",
-      errors: [{ messageId: "typescript" }],
-    },
     {
       code: "// oxlint-disable\nconst value = external;",
       errors: [{ messageId: "broad" }],

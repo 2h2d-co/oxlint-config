@@ -22,29 +22,22 @@ function parseLintDirective(line: string): LintDirective | null {
   return { action, remainder: remainder.trim() };
 }
 
-function isTypeScriptSuppression(line: string): boolean {
-  return /^@ts-(?:expect-error|ignore|nocheck)\b/u.test(line);
-}
-
 function hasExactlyOneRule(targets: string): boolean {
   return targets.length > 0 && !/[\s,]/u.test(targets);
 }
 
-/** Require every compiler or lint suppression to be narrow, specific, and explained. */
+/** Require every lint suppression to be narrow, specific, and explained. */
 export const noUnreviewedSuppressionDirectivesRule = defineRule({
   meta: {
     type: "problem",
     docs: {
-      description:
-        "Disallow TypeScript suppressions and require lint suppressions to target one rule on one line with an explanation.",
+      description: "Require lint suppressions to target one rule on one line with an explanation.",
     },
     messages: {
       broad:
         "Range-wide lint suppression is prohibited. Use a same-line or next-line directive for exactly one rule.",
       explanation: "Lint suppression directives require a specific explanation after `--`.",
       oneRule: "Lint suppression directives must name exactly one rule.",
-      typescript:
-        "TypeScript suppression directives are prohibited. Fix the type contract instead of bypassing it.",
     },
   },
   create(context) {
@@ -53,11 +46,6 @@ export const noUnreviewedSuppressionDirectivesRule = defineRule({
         for (const comment of context.sourceCode.getAllComments()) {
           for (const rawLine of comment.value.split("\n")) {
             const line = normalizeCommentLine(rawLine);
-            if (isTypeScriptSuppression(line)) {
-              context.report({ node: comment, messageId: "typescript" });
-              continue;
-            }
-
             const directive = parseLintDirective(line);
             if (directive === null) continue;
 

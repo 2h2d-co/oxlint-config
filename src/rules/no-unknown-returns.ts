@@ -2,6 +2,7 @@ import { defineRule } from "@oxlint/plugins";
 
 import type { ESTree } from "@oxlint/plugins";
 
+import { resolveLexicalTypeBinding } from "../shared/lexical-type-bindings.ts";
 import { lexicalTypeParameterNames } from "../shared/lexical-type-parameters.ts";
 
 type FunctionWithReturnType =
@@ -37,8 +38,6 @@ export const noUnknownReturnsRule = defineRule({
     },
   },
   createOnce(context) {
-    const aliases = new Map<string, ESTree.TSTypeAliasDeclaration>();
-
     const resolvesToUnknown = (
       type: ESTree.TSType,
       shadowedAliases: ReadonlySet<string>,
@@ -54,23 +53,26 @@ export const noUnknownReturnsRule = defineRule({
       if (
         type.type === "TSTypeReference" &&
         type.typeName.type === "Identifier" &&
-        (type.typeName.name === "Promise" || type.typeName.name === "PromiseLike")
+        (type.typeName.name === "Promise" || type.typeName.name === "PromiseLike") &&
+        !shadowedAliases.has(type.typeName.name) &&
+        resolveLexicalTypeBinding(type.typeName.name, type) === null
       ) {
         const value = type.typeArguments?.params[0];
         return value !== undefined && resolvesToUnknown(value, shadowedAliases, visited);
       }
       const name = referencedAliasName(type);
       if (name === null || visited.has(name) || shadowedAliases.has(name)) return false;
-      const alias = aliases.get(name);
+      const binding = resolveLexicalTypeBinding(name, type);
       if (
-        alias === undefined ||
-        (alias.typeParameters !== null && alias.typeParameters !== undefined)
+        binding?.kind !== "alias" ||
+        (binding.declaration.typeParameters !== null &&
+          binding.declaration.typeParameters !== undefined)
       ) {
         return false;
       }
       const nextVisited = new Set(visited);
       nextVisited.add(name);
-      return resolvesToUnknown(alias.typeAnnotation, shadowedAliases, nextVisited);
+      return resolvesToUnknown(binding.declaration.typeAnnotation, shadowedAliases, nextVisited);
     };
 
     const checkReturnType = (node: FunctionWithReturnType) => {
@@ -88,16 +90,6 @@ export const noUnknownReturnsRule = defineRule({
     };
 
     return {
-      Program(node) {
-        aliases.clear();
-        for (const statement of node.body) {
-          const declaration =
-            statement.type === "ExportNamedDeclaration" ? statement.declaration : statement;
-          if (declaration?.type === "TSTypeAliasDeclaration") {
-            aliases.set(declaration.id.name, declaration);
-          }
-        }
-      },
       ArrowFunctionExpression: checkReturnType,
       FunctionDeclaration: checkReturnType,
       FunctionExpression: checkReturnType,

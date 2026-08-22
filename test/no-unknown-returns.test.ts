@@ -18,6 +18,7 @@ tester.run("2h2d/no-unknown-returns", noUnknownReturnsRule, {
     "function cause(): { cause: unknown } { return { cause: input }; }",
     "type Result = { value: unknown }; function load(): Result { return result; }",
     "function load(): Promise<User> { return promise; }",
+    "type Promise<T> = { value: T }; function load(): Promise<unknown> { return result; }",
   ],
   invalid: [
     { code: "function load(): unknown { return input; }", errors: [error] },
@@ -29,6 +30,14 @@ tester.run("2h2d/no-unknown-returns", noUnknownReturnsRule, {
     { code: "function load(): Promise<unknown> { return promise; }", errors: [error] },
     {
       code: "type UnknownValue = unknown; function load(): UnknownValue { return input; }",
+      errors: [error],
+    },
+    {
+      code: "function outer() { type Value = unknown; function load(): Value { return input; } }",
+      errors: [error],
+    },
+    {
+      code: "function outer() { function load(): Value { return input; } type Value = unknown; }",
       errors: [error],
     },
     {
