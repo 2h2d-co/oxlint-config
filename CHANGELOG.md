@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Add native enforcement for array callback returns, non-coercive equality, dynamic function
+  compilation, empty object and unsafe function types, type-only import side effects, invalid
+  `void` positions, unsafe enum comparisons, Promise rejection reasons, and async return semantics.
+- Add adversarial package integration coverage for native-rule boundaries and native/custom
+  dictionary diagnostic ownership.
+
 ### Changed
 
 - Replace custom method-signature enforcement with native
@@ -16,6 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   continuing to prohibit `@ts-ignore` and `@ts-nocheck`.
 - Resolve dictionary aliases in their lexical scopes, respect type-parameter shadowing, and classify
   unions and intersections according to their effective broad value contract.
+- Let native `typescript/no-empty-object-type` own direct `{}` diagnostics while retaining custom
+  dictionary enforcement for `object` and derived semantically empty contracts.
 
 ### Removed
 
@@ -27,7 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
-- Install the current prerelease through the npm `alpha` tag in the README.
+- Install the current prerelease and required type-aware lint engine through the README command.
 - Restore versioned release history instead of describing every published version as unreleased.
 
 ## [0.1.0-alpha.9] - 2026-08-22

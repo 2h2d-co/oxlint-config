@@ -21,6 +21,11 @@ Reject Vitest and Jest module-loader replacement. Prefer production dependency i
 servers, temporary directories, real adapters, and faithful test implementations. A narrow
 suppression is permitted when the behavior under test genuinely belongs to module loading itself.
 
+The native restricted-method rules are not a sufficient replacement in the shared configuration.
+Loading a framework plugin also activates its unrelated correctness-category rules, while loading
+both Jest and Vitest restrictions produces duplicate diagnostics for shared methods. Keep the
+focused custom scope analysis until Oxlint can enable the restriction without those side effects.
+
 ### `2h2d/no-object-parameters`
 
 Reject the broad `object` type on function parameters. Use a specific owner contract or a genuine
@@ -51,9 +56,14 @@ requires review.
 
 ### `2h2d/no-unsafe-dictionary-type`
 
-Reject object dictionaries whose direct value contract is `object`, `{}`, or a union or local alias
-containing one of those types. Native `typescript/no-explicit-any` owns explicit `any` diagnostics
-so the custom rule does not duplicate them.
+Reject object dictionaries whose direct value contract is `object`, or a union or local alias
+containing that broad contract. Also reject semantically empty contracts hidden where the native
+empty-object rule deliberately does not report, including `unknown & {}` and
+`NonNullable<unknown>`.
+
+Native `typescript/no-empty-object-type` owns direct `{}` and empty declaration diagnostics.
+Native `typescript/no-explicit-any` owns explicit `any` diagnostics. The custom rule must not
+duplicate either native diagnostic.
 
 `Record<string, unknown>` and equivalent index signatures are permitted: `unknown` is a truthful,
 type-safe contract when each retrieved value must be narrowed. Use recursive `JsonValue` and
@@ -76,26 +86,40 @@ changes, and treat each finding only as a boundary-review prompt.
 
 ## Adopted native rules
 
-The following rules remain enabled as errors:
+The following rules are explicitly enabled as errors. The required `correctness` category also
+enables Oxlint's version-pinned native correctness rules.
 
 | Configuration rule ID                               | Policy                                                            |
 | --------------------------------------------------- | ----------------------------------------------------------------- |
+| `array-callback-return`                             | Require value-producing array callbacks to return a value.        |
+| `eqeqeq`                                            | Prohibit coercive equality while permitting nullish checks.       |
+| `no-new-func`                                       | Prohibit dynamic function compilation.                            |
 | `typescript/ban-ts-comment`                         | Allow only explained `@ts-expect-error` compiler suppressions.    |
 | `typescript/consistent-type-assertions`             | Ban every non-const type assertion.                               |
 | `typescript/method-signature-style`                 | Require contravariantly checked function-property signatures.     |
+| `typescript/no-empty-object-type`                   | Ban misleading `{}` and empty declarations.                       |
 | `typescript/no-explicit-any`                        | Prevent explicit type-system bypasses.                            |
 | `typescript/no-floating-promises`                   | Require every Promise rejection to be observed.                   |
+| `typescript/no-import-type-side-effects`            | Remove type-only imports completely at runtime.                   |
+| `typescript/no-invalid-void-type`                   | Keep `void` in valid return and generic positions.                |
 | `typescript/no-misused-promises`                    | Do not pass Promise-returning functions to synchronous contracts. |
 | `typescript/no-non-null-assertion`                  | Ban unchecked postfix non-null assertions.                        |
 | `typescript/no-unsafe-argument`                     | Prevent unsafe values from entering typed calls.                  |
 | `typescript/no-unsafe-assignment`                   | Prevent unsafe values from entering typed bindings.               |
 | `typescript/no-unsafe-call`                         | Require callable type evidence before invocation.                 |
+| `typescript/no-unsafe-enum-comparison`              | Compare enum values only with related domains.                    |
+| `typescript/no-unsafe-function-type`                | Ban the unchecked uppercase `Function` type.                      |
 | `typescript/no-unsafe-member-access`                | Require object type evidence before property access.              |
 | `typescript/no-unsafe-return`                       | Prevent unsafe values from escaping typed functions.              |
 | `typescript/only-throw-error`                       | Throw values with reliable error semantics.                       |
+| `typescript/prefer-promise-reject-errors`           | Use stack-bearing Promise rejection reasons when known.           |
+| `typescript/return-await`                           | Preserve local async error-handling semantics.                    |
 | `typescript/switch-exhaustiveness-check`            | Handle every union member without relying on `default`.           |
 | `typescript/use-unknown-in-catch-callback-variable` | Treat Promise rejection values as uncertain until narrowed.       |
 | `preserve-caught-error`                             | Preserve a caught failure when constructing a replacement Error.  |
+
+`eqeqeq` uses `"always"` with `{ "null": "ignore" }`. Intentional `value == null` checks remain
+valid while other coercive equality is prohibited.
 
 `typescript/no-floating-promises` uses `ignoreVoid: false`. `void operation()` does not handle a
 rejection. A package-qualified exemption allows only the `describe`, `it`, and `test` declarations
@@ -106,6 +130,15 @@ directly rather than wrapping them in `void`.
 replacement built-in errors must preserve it as their `cause`. Whether a caught failure should be
 logged or recorded remains a review decision: no custom syntax rule attempts to recognize
 project-specific diagnostic sinks.
+
+`typescript/prefer-promise-reject-errors` permits forwarding an `unknown` or externally typed `any`
+rejection reason unchanged. It still rejects known non-Error reasons and empty rejection calls.
+Native unsafe-propagation rules prohibit introducing or propagating explicit `any` elsewhere. This
+preserves failure identity at uncertain boundaries instead of forcing a wrapper.
+
+`typescript/return-await` uses `"error-handling-correctness-only"`. It requires `await` only where
+returning a bare Promise would bypass local `try`/`catch` behavior; it does not impose stylistic
+`return await` elsewhere.
 
 Exhaustive switches use:
 
@@ -149,10 +182,17 @@ Do not reintroduce these rules without new evidence and a separate review.
 - Unsafe-propagation rules exposed inaccurate broad test fixtures, but upstream `any` declarations
   also created pressure to remove an integration block. Future migrations must preserve useful
   coverage and suppress a rule narrowly at an unavoidable third-party boundary instead.
+- A native-rule trial across all ten in-scope repositories found three genuine type-only import
+  side effects and two bare Promise returns that bypass local error handling. Configured nullish
+  equality and opaque Promise rejection allowances preserve all intentional current contracts
+  without suppressions.
+- Native module-mocking restrictions recognized globals, aliases, computed methods, and local
+  shadowing, but loading both framework plugins duplicated shared findings and loading either
+  expanded the correctness ruleset. The focused custom rule remains lower-noise.
 
-The current native-only error policy deliberately restores catch parameters despite the earlier
-migration result. Consumer adoption must not reintroduce `void error`, dummy reads, or paired
-unused-variable suppressions. Review each caught failure for propagation, diagnostics, or a
+The current native-only caught-error policy deliberately restores catch parameters despite the
+earlier migration result. Consumer adoption must not reintroduce `void error`, dummy reads, or
+paired unused-variable suppressions. Review each caught failure for propagation, diagnostics, or a
 documented best-effort contract; logging itself remains non-blocking.
 
 ## Deferred for later reconsideration
@@ -162,7 +202,7 @@ These native rules remain disabled until a later pilot:
 | Rule                                    | Baseline findings | Reason for deferral                                                                            |
 | --------------------------------------- | ----------------: | ---------------------------------------------------------------------------------------------- |
 | `typescript/strict-boolean-expressions` |               409 | Requires explicit decisions about nullish, empty, zero, and false values across many branches. |
-| `typescript/no-unnecessary-condition`   |               262 | Defensive checks and generated or external type contracts need deliberate review.              |
+| `typescript/no-unnecessary-condition`   |               267 | Defensive checks and generated or external type contracts need deliberate review.              |
 | `typescript/prefer-nullish-coalescing`  |                21 | Each change must preserve valid falsy values such as `""`, `0`, and `false`.                   |
 
 Do not enable or remove these from consideration without a separate review.

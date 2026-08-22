@@ -120,6 +120,205 @@ test("Oxlint loads the built plugin by package specifier", async () => {
   }
 });
 
+test("native and custom rules divide empty and object dictionary ownership", async () => {
+  const temporaryDirectory = await mkdtemp(join(root, ".consumer-"));
+  try {
+    const configPath = join(temporaryDirectory, "oxlint.config.json");
+    const sourcePath = join(temporaryDirectory, "input.ts");
+    await writeFile(
+      configPath,
+      `${JSON.stringify(
+        {
+          plugins: ["typescript"],
+          jsPlugins: [
+            {
+              name: "2h2d",
+              specifier: "@2h2d/oxlint-config/plugin",
+            },
+          ],
+          rules: {
+            "2h2d/no-unsafe-dictionary-type": "error",
+            "typescript/no-empty-object-type": "error",
+          },
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await writeFile(
+      sourcePath,
+      [
+        "export type NativeOwned = Record<string, {}>;",
+        "export type DerivedEmpty = Record<string, unknown & {}>;",
+        "export type ObjectOwned = Record<string, object>;",
+        "",
+      ].join("\n"),
+    );
+
+    const result = spawnSync(
+      resolve(root, "node_modules", "oxlint", "bin", "oxlint"),
+      ["--config", configPath, "--format", "json", sourcePath],
+      {
+        cwd: root,
+        encoding: "utf8",
+      },
+    );
+
+    assert.equal(result.status, 1, result.stderr);
+    const report: unknown = JSON.parse(result.stdout);
+    assert.ok(isObject(report));
+    assert.ok("diagnostics" in report);
+    assert.ok(Array.isArray(report.diagnostics));
+    const codes = report.diagnostics.flatMap((diagnostic) =>
+      isObject(diagnostic) && "code" in diagnostic && typeof diagnostic.code === "string"
+        ? [diagnostic.code]
+        : [],
+    );
+    assert.equal(
+      codes.filter((code) => code === "typescript(no-empty-object-type)").length,
+      1,
+      JSON.stringify(report, null, 2),
+    );
+    assert.equal(
+      codes.filter((code) => code === "2h2d(no-unsafe-dictionary-type)").length,
+      2,
+      JSON.stringify(report, null, 2),
+    );
+    assert.equal(codes.length, 3, JSON.stringify(report, null, 2));
+  } finally {
+    await rm(temporaryDirectory, { recursive: true, force: true });
+  }
+});
+
+test("native additions enforce hazards without rejecting intentional boundaries", async () => {
+  const temporaryDirectory = await mkdtemp(join(root, ".consumer-"));
+  try {
+    const configPath = join(temporaryDirectory, "oxlint.config.json");
+    const sourcePath = join(temporaryDirectory, "input.ts");
+    const tsconfigPath = join(temporaryDirectory, "tsconfig.json");
+    const typesPath = join(temporaryDirectory, "types.ts");
+    await writeFile(
+      configPath,
+      `${JSON.stringify(
+        {
+          plugins: ["typescript"],
+          rules: {
+            "array-callback-return": "error",
+            eqeqeq: ["error", "always", { null: "ignore" }],
+            "no-new-func": "error",
+            "typescript/no-empty-object-type": "error",
+            "typescript/no-import-type-side-effects": "error",
+            "typescript/no-invalid-void-type": "error",
+            "typescript/no-unsafe-enum-comparison": "error",
+            "typescript/no-unsafe-function-type": "error",
+            "typescript/prefer-promise-reject-errors": [
+              "error",
+              {
+                allowEmptyReject: false,
+                allowThrowingAny: true,
+                allowThrowingUnknown: true,
+              },
+            ],
+            "typescript/return-await": ["error", "error-handling-correctness-only"],
+          },
+          options: {
+            typeAware: true,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await writeFile(
+      tsconfigPath,
+      `${JSON.stringify(
+        {
+          compilerOptions: {
+            module: "nodenext",
+            strict: true,
+            target: "esnext",
+          },
+          include: ["*.ts"],
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await writeFile(typesPath, "export type Value = string;\n");
+    await writeFile(
+      sourcePath,
+      [
+        "import { type Value } from './types.js';",
+        "declare const maybe: Value | null | undefined;",
+        "if (maybe == null) {}",
+        "declare const unknownReason: unknown;",
+        "declare const externalReason: any;",
+        "Promise.reject(unknownReason);",
+        "Promise.reject(externalReason);",
+        "if (1 == '1') {}",
+        "[1].map(() => {});",
+        "new Function('return 1');",
+        "export type Empty = {};",
+        "export type InvalidVoid = void;",
+        "export let unsafeFunction: Function;",
+        "enum Left { Value = 'value' }",
+        "enum Right { Value = 'value' }",
+        "if (Left.Value === Right.Value) {}",
+        "Promise.reject('failure');",
+        "export async function catchesRejection(): Promise<void> {",
+        "  try {",
+        "    return Promise.reject(new Error('failure'));",
+        "  } catch (error) {",
+        "    throw error;",
+        "  }",
+        "}",
+        "",
+      ].join("\n"),
+    );
+
+    const result = spawnSync(
+      resolve(root, "node_modules", "oxlint", "bin", "oxlint"),
+      ["--config", configPath, "--format", "json", "--tsconfig", tsconfigPath, sourcePath],
+      {
+        cwd: root,
+        encoding: "utf8",
+      },
+    );
+
+    assert.equal(result.status, 1, result.stderr);
+    const report: unknown = JSON.parse(result.stdout);
+    assert.ok(isObject(report));
+    assert.ok("diagnostics" in report);
+    assert.ok(Array.isArray(report.diagnostics));
+    const codes = report.diagnostics.flatMap((diagnostic) =>
+      isObject(diagnostic) && "code" in diagnostic && typeof diagnostic.code === "string"
+        ? [diagnostic.code]
+        : [],
+    );
+    const expectedCodes = [
+      "eslint(array-callback-return)",
+      "eslint(eqeqeq)",
+      "eslint(no-new-func)",
+      "typescript(no-empty-object-type)",
+      "typescript(no-import-type-side-effects)",
+      "typescript(no-invalid-void-type)",
+      "typescript(no-unsafe-enum-comparison)",
+      "typescript(no-unsafe-function-type)",
+      "typescript(prefer-promise-reject-errors)",
+      "typescript(return-await)",
+    ];
+    for (const code of expectedCodes) {
+      assert.equal(
+        codes.filter((candidate) => candidate === code).length,
+        1,
+        `${code}\n${JSON.stringify(report, null, 2)}`,
+      );
+    }
+  } finally {
+    await rm(temporaryDirectory, { recursive: true, force: true });
+  }
+});
+
 test("Promise exemptions are limited to node:test declarations", async () => {
   const temporaryDirectory = await mkdtemp(join(root, ".consumer-"));
   try {

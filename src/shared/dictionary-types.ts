@@ -32,6 +32,9 @@ type ValueClassification =
       readonly kind: "concrete";
     }
   | {
+      readonly kind: "native-empty";
+    }
+  | {
       readonly kind: "unknown";
     };
 
@@ -88,20 +91,23 @@ function isEffectivelyEmptyMember(member: ESTree.TSSignature): boolean {
   );
 }
 
-function isEffectivelyEmptyTypeLiteral(type: ESTree.TSTypeLiteral): boolean {
-  return type.members.length === 0 || type.members.every(isEffectivelyEmptyMember);
+function classifyTypeLiteral(type: ESTree.TSTypeLiteral): ValueClassification {
+  if (type.members.length === 0) return { kind: "native-empty" };
+  return type.members.every(isEffectivelyEmptyMember)
+    ? { kind: "broad", value: "empty-object" }
+    : { kind: "concrete" };
 }
 
-function isEffectivelyEmptyInterface(
+function classifyInterface(
   declarations: readonly ESTree.TSInterfaceDeclaration[],
-): boolean {
-  if (declarations.length !== 1) return false;
+): ValueClassification {
+  if (declarations.length !== 1) return { kind: "concrete" };
   const [type] = declarations;
-  return (
-    type !== undefined &&
-    type.extends.length === 0 &&
-    (type.body.body.length === 0 || type.body.body.every(isEffectivelyEmptyMember))
-  );
+  if (type === undefined || type.extends.length > 0) return { kind: "concrete" };
+  if (type.body.body.length === 0) return { kind: "native-empty" };
+  return type.body.body.every(isEffectivelyEmptyMember)
+    ? { kind: "broad", value: "empty-object" }
+    : { kind: "concrete" };
 }
 
 function resolvedSubstitutionArgument(
@@ -142,6 +148,9 @@ function classifyUnion(members: readonly ValueClassification[]): ValueClassifica
   if (members.some((member) => member.kind === "broad")) {
     return { kind: "broad", value: "union" };
   }
+  if (members.some((member) => member.kind === "native-empty")) {
+    return { kind: "native-empty" };
+  }
   return { kind: "concrete" };
 }
 
@@ -150,6 +159,9 @@ function classifyIntersection(members: readonly ValueClassification[]): ValueCla
   if (members.some((member) => member.kind === "concrete")) return { kind: "concrete" };
   const broad = members.find((member) => member.kind === "broad");
   if (broad !== undefined) return broad;
+  if (members.some((member) => member.kind === "native-empty")) {
+    return { kind: "broad", value: "empty-object" };
+  }
   return { kind: "unknown" };
 }
 
@@ -163,11 +175,7 @@ function classifyDirectValue(
   if (unwrapped.type === "TSUnknownKeyword") return { kind: "unknown" };
   if (unwrapped.type === "TSAnyKeyword") return { kind: "any" };
   if (unwrapped.type === "TSObjectKeyword") return { kind: "broad", value: "object" };
-  if (unwrapped.type === "TSTypeLiteral") {
-    return isEffectivelyEmptyTypeLiteral(unwrapped)
-      ? { kind: "broad", value: "empty-object" }
-      : { kind: "concrete" };
-  }
+  if (unwrapped.type === "TSTypeLiteral") return classifyTypeLiteral(unwrapped);
   if (unwrapped.type === "TSUnionType") {
     return classifyUnion(
       unwrapped.types.map((member) =>
@@ -206,9 +214,7 @@ function classifyDirectValue(
 
   const binding = resolveLexicalTypeBinding(name, unwrapped);
   if (binding?.kind === "interface") {
-    return isEffectivelyEmptyInterface(binding.declarations)
-      ? { kind: "broad", value: "empty-object" }
-      : { kind: "concrete" };
+    return classifyInterface(binding.declarations);
   }
   if (binding?.kind !== "alias" || resolvingAliases.has(binding.declaration)) {
     return { kind: "concrete" };

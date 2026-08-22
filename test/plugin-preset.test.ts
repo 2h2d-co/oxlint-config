@@ -38,6 +38,9 @@ test("advisory preset contains only non-blocking review signals", () => {
 });
 
 test("strict preset enables the adopted native rules", () => {
+  assert.equal(strictRules["array-callback-return"], "error");
+  assert.deepEqual(strictRules.eqeqeq, ["error", "always", { null: "ignore" }]);
+  assert.equal(strictRules["no-new-func"], "error");
   assert.deepEqual(strictRules["typescript/ban-ts-comment"], [
     "error",
     {
@@ -53,6 +56,7 @@ test("strict preset enables the adopted native rules", () => {
     { assertionStyle: "never" },
   ]);
   assert.deepEqual(strictRules["typescript/method-signature-style"], ["error", "property"]);
+  assert.equal(strictRules["typescript/no-empty-object-type"], "error");
   assert.equal(strictRules["typescript/no-explicit-any"], "error");
   assert.deepEqual(strictRules["typescript/no-floating-promises"], [
     "error",
@@ -67,14 +71,30 @@ test("strict preset enables the adopted native rules", () => {
       ignoreVoid: false,
     },
   ]);
+  assert.equal(strictRules["typescript/no-import-type-side-effects"], "error");
+  assert.equal(strictRules["typescript/no-invalid-void-type"], "error");
   assert.equal(strictRules["typescript/no-misused-promises"], "error");
   assert.equal(strictRules["typescript/no-non-null-assertion"], "error");
   assert.equal(strictRules["typescript/no-unsafe-argument"], "error");
   assert.equal(strictRules["typescript/no-unsafe-assignment"], "error");
   assert.equal(strictRules["typescript/no-unsafe-call"], "error");
+  assert.equal(strictRules["typescript/no-unsafe-enum-comparison"], "error");
+  assert.equal(strictRules["typescript/no-unsafe-function-type"], "error");
   assert.equal(strictRules["typescript/no-unsafe-member-access"], "error");
   assert.equal(strictRules["typescript/no-unsafe-return"], "error");
   assert.equal(strictRules["typescript/only-throw-error"], "error");
+  assert.deepEqual(strictRules["typescript/prefer-promise-reject-errors"], [
+    "error",
+    {
+      allowEmptyReject: false,
+      allowThrowingAny: true,
+      allowThrowingUnknown: true,
+    },
+  ]);
+  assert.deepEqual(strictRules["typescript/return-await"], [
+    "error",
+    "error-handling-correctness-only",
+  ]);
   assert.deepEqual(strictRules["typescript/switch-exhaustiveness-check"], [
     "error",
     {

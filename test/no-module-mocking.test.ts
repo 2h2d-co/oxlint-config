@@ -24,7 +24,15 @@ tester.run("2h2d/no-module-mocking", noModuleMockingRule, {
       errors: [error],
     },
     {
+      code: "import { vi as testApi } from 'vitest'; testApi['doMock']('./user-store');",
+      errors: [error],
+    },
+    {
       code: "import { jest } from '@jest/globals'; jest.mock('./user-store');",
+      errors: [error],
+    },
+    {
+      code: "import { jest as testApi } from '@jest/globals'; testApi['unstable_mockModule']('./user-store');",
       errors: [error],
     },
   ],

@@ -13,7 +13,7 @@ The package combines:
 Install the package and its exact supported Oxlint version as development dependencies:
 
 ```bash
-npm install --save-dev --save-exact @2h2d/oxlint-config@alpha oxlint@1.78.0
+npm install --save-dev --save-exact @2h2d/oxlint-config@alpha oxlint@1.78.0 oxlint-tsgolint@7.0.2001
 ```
 
 ## Oxlint configuration
@@ -93,6 +93,11 @@ The suppression-directive rule requires lint suppressions to use `disable-line` 
 root configuration option rather than a rule, so consumer configurations must set it as shown
 above.
 
+The module-mocking rule prohibits `mock`, `doMock`, and `unstable_mockModule` calls on Jest and
+Vitest APIs. Tests replace dependencies through production interfaces or faithful implementations.
+Native restricted-method rules were not adopted because loading their framework plugins also
+activates unrelated correctness-category rules, and loading both produces duplicate diagnostics.
+
 The TypeBox rule rejects `Unsafe` calls imported from `typebox`, including named, aliased, default,
 and namespace import forms. Build schemas with TypeBox constructors or declare const native JSON
 Schema and derive the static type with `Static<typeof schema>`.
@@ -101,9 +106,10 @@ The object-parameter rule rejects the broad lowercase `object` contract on funct
 allowing meaningful generic constraints such as `Value extends object`. Suppress it narrowly when
 “any non-primitive” is the exact intended API.
 
-The dictionary rule rejects direct value contracts based on `object`, `{}`, or local aliases and
-unions that resolve to them. Use `unknown` when values are genuinely uncertain and narrow them
-before use. Native `typescript/no-explicit-any` separately owns explicit `any` diagnostics.
+The dictionary rule rejects direct value contracts based on `object` and semantically empty
+contracts hidden behind intersections or utility types. Native `typescript/no-empty-object-type`
+owns explicit `{}` and empty declaration diagnostics, while `typescript/no-explicit-any` owns
+explicit `any`. Use `unknown` when values are genuinely uncertain and narrow them before use.
 
 ## Advisory rules
 
@@ -126,10 +132,15 @@ source suppressions nor code changes. In particular, do not distort a truthful
 
 ## Native rules
 
-The strict preset also enables these native Oxlint rules:
+The strict rule map explicitly enables these native Oxlint rules. The required
+`categories.correctness` configuration additionally enables Oxlint's native correctness rules;
+inspect the effective version-pinned set with `oxlint --print-config <file>`.
 
 ```json
 {
+  "array-callback-return": "error",
+  "eqeqeq": ["error", "always", { "null": "ignore" }],
+  "no-new-func": "error",
   "preserve-caught-error": ["error", { "requireCatchParameter": true }],
   "typescript/ban-ts-comment": [
     "error",
@@ -143,6 +154,7 @@ The strict preset also enables these native Oxlint rules:
   ],
   "typescript/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
   "typescript/method-signature-style": ["error", "property"],
+  "typescript/no-empty-object-type": "error",
   "typescript/no-explicit-any": "error",
   "typescript/no-floating-promises": [
     "error",
@@ -157,14 +169,27 @@ The strict preset also enables these native Oxlint rules:
       "ignoreVoid": false
     }
   ],
+  "typescript/no-import-type-side-effects": "error",
+  "typescript/no-invalid-void-type": "error",
   "typescript/no-misused-promises": "error",
   "typescript/no-non-null-assertion": "error",
   "typescript/no-unsafe-argument": "error",
   "typescript/no-unsafe-assignment": "error",
   "typescript/no-unsafe-call": "error",
+  "typescript/no-unsafe-enum-comparison": "error",
+  "typescript/no-unsafe-function-type": "error",
   "typescript/no-unsafe-member-access": "error",
   "typescript/no-unsafe-return": "error",
   "typescript/only-throw-error": "error",
+  "typescript/prefer-promise-reject-errors": [
+    "error",
+    {
+      "allowEmptyReject": false,
+      "allowThrowingAny": true,
+      "allowThrowingUnknown": true
+    }
+  ],
+  "typescript/return-await": ["error", "error-handling-correctness-only"],
   "typescript/switch-exhaustiveness-check": [
     "error",
     {
@@ -181,10 +206,16 @@ Every catch must bind its failure, and replacement built-in errors must preserve
 custom lint heuristic.
 
 Every non-const type assertion and postfix non-null assertion is prohibited. `as const` remains
-allowed. Object-type callables use function-property syntax so `strictFunctionTypes` checks
-parameter variance. `void promise` is not accepted as Promise rejection handling. Only the
-`describe`, `it`, and `test` declarations from `node:test` are exempt because the test runner
-observes their Promises; invoke those registrations directly rather than wrapping them in `void`.
+allowed. Empty `{}` and unsafe `Function` contracts are prohibited. Object-type callables use
+function-property syntax so `strictFunctionTypes` checks parameter variance. `void promise` is not
+accepted as Promise rejection handling, and a Promise returned from a `try` block must be awaited
+when rejection would otherwise bypass local error handling. Only the `describe`, `it`, and `test`
+declarations from `node:test` are exempt from floating-Promise enforcement because the test runner
+observes their Promises.
+
+`Promise.reject` requires an `Error` when the rejection type is known. An `unknown` or externally
+typed `any` reason may be forwarded unchanged so the lint policy does not force wrapping that
+alters failure identity. Explicit `any` remains prohibited at its source.
 
 ## Rule namespaces
 
@@ -220,8 +251,9 @@ Importing a native rule through `strictRules` does not move it into the `2h2d` n
 ## Compatibility
 
 Oxlint JavaScript plugins are currently alpha and outside normal semantic-versioning guarantees.
-This package pins and tests Oxlint and `@oxlint/plugins` 1.78.0. Update those versions together and
-validate the package-consumer integration test before release.
+This package pins and tests Oxlint and `@oxlint/plugins` 1.78.0 with
+`oxlint-tsgolint` 7.0.2001. Update those versions together and validate the package-consumer
+integration test before release.
 
 ## Development
 

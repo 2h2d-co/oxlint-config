@@ -87,7 +87,7 @@ export const noUnsafeDictionaryTypeRule = defineRule({
     type: "problem",
     docs: {
       description:
-        "Disallow object-dictionary contracts whose direct value type is object, {}, or a union/local alias containing one of those broad contracts.",
+        "Disallow object-dictionary contracts whose value type resolves to object or a derived semantically empty contract not owned by the native empty-object rule.",
     },
     messages: {
       unsafeDictionary:
