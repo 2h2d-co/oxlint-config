@@ -42,6 +42,7 @@ export const strictRules: DummyRuleMap = {
   "typescript/no-invalid-void-type": "error",
   "typescript/no-misused-promises": "error",
   "typescript/no-non-null-assertion": "error",
+  "typescript/no-unnecessary-type-parameters": "error",
   "typescript/no-unsafe-argument": "error",
   "typescript/no-unsafe-assignment": "error",
   "typescript/no-unsafe-call": "error",

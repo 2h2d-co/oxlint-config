@@ -105,6 +105,7 @@ enables Oxlint's version-pinned native correctness rules.
 | `typescript/no-invalid-void-type`                   | Keep `void` in valid return and generic positions.                |
 | `typescript/no-misused-promises`                    | Do not pass Promise-returning functions to synchronous contracts. |
 | `typescript/no-non-null-assertion`                  | Ban unchecked postfix non-null assertions.                        |
+| `typescript/no-unnecessary-type-parameters`         | Require generics to relate or preserve type information.          |
 | `typescript/no-unsafe-argument`                     | Prevent unsafe values from entering typed calls.                  |
 | `typescript/no-unsafe-assignment`                   | Prevent unsafe values from entering typed bindings.               |
 | `typescript/no-unsafe-call`                         | Require callable type evidence before invocation.                 |
@@ -140,6 +141,11 @@ preserves failure identity at uncertain boundaries instead of forcing a wrapper.
 `typescript/return-await` uses `"error-handling-correctness-only"`. It requires `await` only where
 returning a bare Promise would bypass local `try`/`catch` behavior; it does not impose stylistic
 `return await` elsewhere.
+
+`typescript/no-unnecessary-type-parameters` prevents a meaningless generic from bypassing
+`2h2d/no-broad-object-parameters`. A generic constrained by `object` is valid only when it relates
+multiple positions or preserves the caller's type through an output. If “any non-primitive” is the
+exact one-way input contract, use `object` with a narrow explained suppression instead.
 
 Exhaustive switches use:
 

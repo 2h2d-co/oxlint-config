@@ -174,6 +174,7 @@ inspect the effective version-pinned set with `oxlint --print-config <file>`.
   "typescript/no-invalid-void-type": "error",
   "typescript/no-misused-promises": "error",
   "typescript/no-non-null-assertion": "error",
+  "typescript/no-unnecessary-type-parameters": "error",
   "typescript/no-unsafe-argument": "error",
   "typescript/no-unsafe-assignment": "error",
   "typescript/no-unsafe-call": "error",
@@ -213,6 +214,9 @@ accepted as Promise rejection handling, and a Promise returned from a `try` bloc
 when rejection would otherwise bypass local error handling. Only the `describe`, `it`, and `test`
 declarations from `node:test` are exempt from floating-Promise enforcement because the test runner
 observes their Promises.
+
+Generic parameters must relate multiple positions or preserve information through an output. Do not
+use a one-position generic merely to disguise a broad input contract.
 
 `Promise.reject` requires an `Error` when the rejection type is known. An `unknown` or externally
 typed `any` reason may be forwarded unchanged so the lint policy does not force wrapping that

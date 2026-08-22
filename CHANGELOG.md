@@ -10,7 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Add native enforcement for array callback returns, non-coercive equality, dynamic function
   compilation, empty object and unsafe function types, type-only import side effects, invalid
-  `void` positions, unsafe enum comparisons, Promise rejection reasons, and async return semantics.
+  `void` positions, unnecessary type parameters, unsafe enum comparisons, Promise rejection
+  reasons, and async return semantics.
 - Add adversarial package integration coverage for native-rule boundaries and native/custom
   dictionary diagnostic ownership.
 
