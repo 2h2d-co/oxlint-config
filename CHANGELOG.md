@@ -40,6 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Removed
 
+- Disable syntax-only double-comparison simplification because its rewrites are not equivalent for
+  `NaN`, coercive comparisons, or object identity.
 - Disable inherited native rules that reject meaningful empty files, sparse-array construction,
   single-value Promise aggregation, deliberate thenables, or anchored regular-expression
   semantics.

@@ -100,6 +100,7 @@ test("strict preset enables the adopted native rules", () => {
 });
 
 test("strict preset disables rejected correctness-category rules", () => {
+  assert.equal(strictRules["oxc/double-comparisons"], "off");
   assert.equal(strictRules["unicorn/no-empty-file"], "off");
   assert.equal(strictRules["unicorn/no-new-array"], "off");
   assert.equal(strictRules["unicorn/no-single-promise-in-promise-methods"], "off");
