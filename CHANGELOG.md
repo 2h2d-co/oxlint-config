@@ -34,6 +34,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   unions and intersections according to their effective broad value contract.
 - Let native `typescript/no-empty-object-type` own direct `{}` diagnostics while retaining custom
   dictionary enforcement for `object` and derived semantically empty contracts.
+- Clarify that TypeBox builders are preferred, schema-derived native JSON Schema is the fallback,
+  and explained `Unsafe` use is the last resort.
 
 ### Removed
 

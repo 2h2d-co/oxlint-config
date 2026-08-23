@@ -99,8 +99,11 @@ Native restricted-method rules were not adopted because loading their framework 
 activates unrelated correctness-category rules, and loading both produces duplicate diagnostics.
 
 The TypeBox rule rejects `Unsafe` calls imported from `typebox`, including named, aliased, default,
-and namespace import forms. Build schemas with TypeBox constructors or declare const native JSON
-Schema and derive the static type with `Static<typeof schema>`.
+and namespace import forms. Prefer TypeBox builders. When builders cannot express the schema, use
+const native JSON Schema and derive the static type with `Static<typeof schema>`; although TypeBox
+does not strongly check the native schema's keywords, deriving from it still prevents an
+independently declared static type from drifting away. Use `Unsafe` with a narrow explained
+suppression only when neither representation can express the required invariant.
 
 The broad-object-parameter rule rejects the lowercase `object` contract on function inputs,
 including local generic aliases that resolve to it, while allowing meaningful generic constraints

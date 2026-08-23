@@ -83,11 +83,11 @@ export const noTypeboxUnsafeRule = defineRule({
     type: "problem",
     docs: {
       description:
-        "Disallow TypeBox Unsafe schemas; derive static types from builders or native JSON Schema.",
+        "Disallow TypeBox Unsafe schemas; prefer builders, then static types derived from const native JSON Schema.",
     },
     messages: {
       typeboxUnsafe:
-        "Type.Unsafe manually pairs a static type with a runtime schema. Use TypeBox builders or a const native JSON Schema and derive its type with Static<typeof schema>.",
+        "Type.Unsafe manually pairs a static type with a runtime schema. Prefer TypeBox builders; otherwise use const native JSON Schema and derive its type with Static<typeof schema>. Suppress only when neither can express the invariant.",
     },
   },
   createOnce(context) {
