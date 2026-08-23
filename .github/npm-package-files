@@ -17,6 +17,8 @@ dist/rules/no-typebox-unsafe.d.ts
 dist/rules/no-typebox-unsafe.js
 dist/rules/require-narrow-suppression-directives.d.ts
 dist/rules/require-narrow-suppression-directives.js
+dist/rules/require-promise-rejection-parameter.d.ts
+dist/rules/require-promise-rejection-parameter.js
 dist/shared/broad-dictionary-types.d.ts
 dist/shared/broad-dictionary-types.js
 dist/shared/lexical-type-bindings.d.ts
