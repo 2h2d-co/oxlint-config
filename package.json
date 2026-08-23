@@ -19,6 +19,7 @@
   "files": [
     "dist",
     "README.md",
+    "STYLE-RULE-CATALOG.md",
     "CHANGELOG.md",
     "LICENSE",
     "LICENSES",
