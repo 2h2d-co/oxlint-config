@@ -8,7 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Add an evidence-backed catalog and adoption plan for native syntax and type-aware style rules.
 - Require Promise-style `.catch` and `.then` rejection callbacks to declare their rejection reason.
 - Add native enforcement for array callback returns, non-coercive equality, dynamic function
   compilation, empty object and unsafe function types, type-only import side effects, invalid

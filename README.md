@@ -130,8 +130,6 @@ information, unrelated APIs using `catch` or `then` can use a narrow explained s
 The strict rule map explicitly enables these native Oxlint rules. The required
 `categories.correctness` configuration additionally enables Oxlint's native correctness rules;
 inspect the effective version-pinned set with `oxlint --print-config <file>`.
-See [`STYLE-RULE-CATALOG.md`](STYLE-RULE-CATALOG.md) for the exhaustive style-category audit and
-the next recommended native-rule adoption wave.
 
 ```json
 {
