@@ -48,6 +48,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   modern ECMAScript.
 - Disable uninvoked-array callback detection because it mistakes function values passed to methods
   such as `fill` for callbacks.
+- Disable useless-spread enforcement because spread can intentionally snapshot iterables, normalize
+  sparse arrays, or change iterator consumption timing.
 - Disable inherited native rules that reject meaningful empty files, sparse-array construction,
   single-value Promise aggregation, deliberate thenables, or anchored regular-expression
   semantics.

@@ -108,5 +108,6 @@ test("strict preset disables rejected correctness-category rules", () => {
   assert.equal(strictRules["unicorn/no-new-array"], "off");
   assert.equal(strictRules["unicorn/no-single-promise-in-promise-methods"], "off");
   assert.equal(strictRules["unicorn/no-thenable"], "off");
+  assert.equal(strictRules["unicorn/no-useless-spread"], "off");
   assert.equal(strictRules["unicorn/prefer-string-starts-ends-with"], "off");
 });

@@ -202,16 +202,18 @@ inspect the effective version-pinned set with `oxlint --print-config <file>`.
   "unicorn/no-new-array": "off",
   "unicorn/no-single-promise-in-promise-methods": "off",
   "unicorn/no-thenable": "off",
+  "unicorn/no-useless-spread": "off",
   "unicorn/prefer-string-starts-ends-with": "off"
 }
 ```
 
-The strict map explicitly disables nine rules inherited from the native `correctness` category.
+The strict map explicitly disables ten rules inherited from the native `correctness` category.
 Syntax-only comparison algebra is not sound for values such as `NaN` or objects with coercion
 semantics. Arithmetic involving zero can preserve `NaN`, infinity, negative zero, or operand side
 effects instead of collapsing to the numeric value `0`. Obsolete number-formatting limits reject
 precision values permitted by modern JavaScript. Function values passed to array methods such as
-`fill` are not necessarily callbacks. Empty committed files can be meaningful artifacts;
+`fill` are not necessarily callbacks. Spread can intentionally snapshot an iterable or convert
+sparse slots into dense `undefined` values. Empty committed files can be meaningful artifacts;
 single-argument `new Array(length)` has intentional sparse-array semantics; a one-element Promise
 combinator can preserve aggregation shape and Promise identity; custom thenables are a standard
 interoperability contract; and anchored regular expressions are not always equivalent to

@@ -77,5 +77,6 @@ export const strictRules: DummyRuleMap = {
   "unicorn/no-new-array": "off",
   "unicorn/no-single-promise-in-promise-methods": "off",
   "unicorn/no-thenable": "off",
+  "unicorn/no-useless-spread": "off",
   "unicorn/prefer-string-starts-ends-with": "off",
 };

@@ -174,6 +174,7 @@ The pinned native `correctness` category is enabled, with these explicit excepti
 | `unicorn/no-new-array`                         | `new Array(length)` intentionally creates a sparse array; suggested replacements can be dense.  |
 | `unicorn/no-single-promise-in-promise-methods` | A one-element combinator can intentionally preserve aggregate shape and fresh Promise identity. |
 | `unicorn/no-thenable`                          | Deliberate `PromiseLike` implementations are a standard JavaScript interoperability contract.   |
+| `unicorn/no-useless-spread`                    | Spread can intentionally snapshot iterables, normalize arrays, or change consumption timing.    |
 | `unicorn/prefer-string-starts-ends-with`       | Anchored regular expressions have edge-case semantics not shared by string methods.             |
 
 ## Removed rules
