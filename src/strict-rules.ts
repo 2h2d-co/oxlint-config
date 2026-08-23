@@ -69,4 +69,9 @@ export const strictRules: DummyRuleMap = {
     },
   ],
   "typescript/use-unknown-in-catch-callback-variable": "error",
+  "unicorn/no-empty-file": "off",
+  "unicorn/no-new-array": "off",
+  "unicorn/no-single-promise-in-promise-methods": "off",
+  "unicorn/no-thenable": "off",
+  "unicorn/prefer-string-starts-ends-with": "off",
 };

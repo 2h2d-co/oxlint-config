@@ -40,6 +40,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Removed
 
+- Disable inherited native rules that reject meaningful empty files, sparse-array construction,
+  single-value Promise aggregation, deliberate thenables, or anchored regular-expression
+  semantics.
 - Remove custom conditional object-spread enforcement because the rejected construction is valid,
   concise, and often preserves useful inference.
 - Remove `2h2d/no-unknown-returns` and the advisory package surface because `unknown` is safe,

@@ -193,9 +193,20 @@ inspect the effective version-pinned set with `oxlint --print-config <file>`.
       "considerDefaultExhaustiveForUnions": false
     }
   ],
-  "typescript/use-unknown-in-catch-callback-variable": "error"
+  "typescript/use-unknown-in-catch-callback-variable": "error",
+  "unicorn/no-empty-file": "off",
+  "unicorn/no-new-array": "off",
+  "unicorn/no-single-promise-in-promise-methods": "off",
+  "unicorn/no-thenable": "off",
+  "unicorn/prefer-string-starts-ends-with": "off"
 }
 ```
+
+The strict map explicitly disables five rules inherited from the native `correctness` category.
+Empty committed files can be meaningful artifacts; single-argument `new Array(length)` has
+intentional sparse-array semantics; a one-element Promise combinator can preserve aggregation
+shape and Promise identity; custom thenables are a standard interoperability contract; and
+anchored regular expressions are not always equivalent to `startsWith` or `endsWith`.
 
 Every catch must bind its failure, and replacement built-in errors must preserve that value as their
 `cause`. Promise-style rejection callbacks must likewise bind their rejection reason. Whether a

@@ -160,6 +160,18 @@ Exhaustive switches use:
 }
 ```
 
+### Native correctness-category exceptions
+
+The pinned native `correctness` category is enabled, with these explicit exceptions:
+
+| Rule                                           | Reason                                                                                          |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `unicorn/no-empty-file`                        | Empty files can be intentional generated artifacts, fixtures, or reserved entry points.         |
+| `unicorn/no-new-array`                         | `new Array(length)` intentionally creates a sparse array; suggested replacements can be dense.  |
+| `unicorn/no-single-promise-in-promise-methods` | A one-element combinator can intentionally preserve aggregate shape and fresh Promise identity. |
+| `unicorn/no-thenable`                          | Deliberate `PromiseLike` implementations are a standard JavaScript interoperability contract.   |
+| `unicorn/prefer-string-starts-ends-with`       | Anchored regular expressions have edge-case semantics not shared by string methods.             |
+
 ## Removed rules
 
 The post-rollout review removed these rules from both the strict preset and the plugin:
