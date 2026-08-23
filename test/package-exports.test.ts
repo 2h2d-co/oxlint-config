@@ -192,6 +192,94 @@ test("native and custom rules divide empty and object dictionary ownership", asy
   }
 });
 
+test("broad object policy distinguishes useful generics and reviewed contracts", async () => {
+  const temporaryDirectory = await mkdtemp(join(root, ".consumer-"));
+  try {
+    const configPath = join(temporaryDirectory, "oxlint.config.json");
+    const sourcePath = join(temporaryDirectory, "input.ts");
+    const tsconfigPath = join(temporaryDirectory, "tsconfig.json");
+    await writeFile(
+      configPath,
+      `${JSON.stringify(
+        {
+          plugins: ["typescript"],
+          jsPlugins: [
+            {
+              name: "2h2d",
+              specifier: "@2h2d/oxlint-config/plugin",
+            },
+          ],
+          rules: {
+            "2h2d/no-broad-object-parameters": "error",
+            "2h2d/require-narrow-suppression-directives": "error",
+            "typescript/no-unnecessary-type-parameters": "error",
+          },
+          options: {
+            reportUnusedDisableDirectives: "error",
+            typeAware: true,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await writeFile(
+      tsconfigPath,
+      `${JSON.stringify(
+        {
+          compilerOptions: {
+            module: "nodenext",
+            strict: true,
+            target: "esnext",
+          },
+          include: ["*.ts"],
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await writeFile(
+      sourcePath,
+      [
+        "interface User { readonly id: string }",
+        "export function specific(value: User): void { console.log(value.id); }",
+        "export function clone<Value extends object>(value: Value): Value { return value; }",
+        "export function disguised<Value extends object>(value: Value): void { Object.keys(value); }",
+        "export function broad(value: object): void { Object.keys(value); }",
+        "// oxlint-disable-next-line 2h2d/no-broad-object-parameters -- Every non-primitive value is accepted by this identity registry.",
+        "export function reviewed(value: object): void { Object.keys(value); }",
+        "",
+      ].join("\n"),
+    );
+
+    const result = spawnSync(
+      resolve(root, "node_modules", "oxlint", "bin", "oxlint"),
+      ["--config", configPath, "--format", "json", "--tsconfig", tsconfigPath, sourcePath],
+      {
+        cwd: root,
+        encoding: "utf8",
+      },
+    );
+
+    assert.equal(result.status, 1, result.stderr);
+    const report: unknown = JSON.parse(result.stdout);
+    assert.ok(isObject(report));
+    assert.ok("diagnostics" in report);
+    assert.ok(Array.isArray(report.diagnostics));
+    const codes = report.diagnostics.flatMap((diagnostic) =>
+      isObject(diagnostic) && "code" in diagnostic && typeof diagnostic.code === "string"
+        ? [diagnostic.code]
+        : [],
+    );
+    assert.deepEqual(codes.sort(), [
+      "2h2d(no-broad-object-parameters)",
+      "typescript(no-unnecessary-type-parameters)",
+    ]);
+  } finally {
+    await rm(temporaryDirectory, { recursive: true, force: true });
+  }
+});
+
 test("native additions enforce hazards without rejecting intentional boundaries", async () => {
   const temporaryDirectory = await mkdtemp(join(root, ".consumer-"));
   try {

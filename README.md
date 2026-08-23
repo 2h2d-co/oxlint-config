@@ -105,7 +105,10 @@ Schema and derive the static type with `Static<typeof schema>`.
 The broad-object-parameter rule rejects the lowercase `object` contract on function inputs,
 including local generic aliases that resolve to it, while allowing meaningful generic constraints
 such as `Value extends object`. Suppress it narrowly when “any non-primitive” is the exact intended
-API.
+API. Do not replace an accurate `object` contract with a one-position generic such as
+`<Value extends object>(value: Value): void`; native
+`typescript/no-unnecessary-type-parameters` rejects that generic because it does not relate or
+preserve type information.
 
 The dictionary rule rejects direct value contracts based on `object` and semantically empty
 contracts hidden behind intersections or utility types. Native `typescript/no-empty-object-type`
