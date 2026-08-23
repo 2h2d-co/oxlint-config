@@ -7,6 +7,7 @@ export const strictRules: DummyRuleMap = {
   "2h2d/no-module-mocking": "error",
   "2h2d/no-typebox-unsafe": "error",
   "2h2d/require-narrow-suppression-directives": "error",
+  "2h2d/require-promise-rejection-parameter": "error",
   "array-callback-return": "error",
   eqeqeq: ["error", "always", { null: "ignore" }],
   "no-new-func": "error",

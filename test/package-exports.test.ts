@@ -50,6 +50,7 @@ test("Oxlint loads the built plugin by package specifier", async () => {
           rules: {
             "2h2d/no-broad-object-parameters": "error",
             "2h2d/no-typebox-unsafe": "error",
+            "2h2d/require-promise-rejection-parameter": "error",
             "preserve-caught-error": ["error", { requireCatchParameter: true }],
             "typescript/ban-ts-comment": [
               "error",
@@ -86,6 +87,7 @@ test("Oxlint loads the built plugin by package specifier", async () => {
         "} catch (cause) {",
         '  throw new Error("Operation failed");',
         "}",
+        "Promise.resolve().catch(() => undefined);",
         "",
       ].join("\n"),
     );
@@ -102,6 +104,7 @@ test("Oxlint loads the built plugin by package specifier", async () => {
     assert.equal(result.status, 1, result.stderr);
     assert.match(result.stdout, /2h2d\(no-broad-object-parameters\)/u);
     assert.match(result.stdout, /2h2d\(no-typebox-unsafe\)/u);
+    assert.match(result.stdout, /2h2d\(require-promise-rejection-parameter\)/u);
     assert.match(result.stdout, /eslint\(preserve-caught-error\)/u);
     assert.match(result.stdout, /typescript\(ban-ts-comment\)/u);
     assert.match(result.stdout, /typescript\(method-signature-style\)/u);

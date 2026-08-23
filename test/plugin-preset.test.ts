@@ -10,6 +10,7 @@ const expectedStrictRules = [
   "no-module-mocking",
   "no-typebox-unsafe",
   "require-narrow-suppression-directives",
+  "require-promise-rejection-parameter",
 ];
 
 test("plugin exports exactly the adopted custom rules", () => {

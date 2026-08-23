@@ -71,6 +71,20 @@ type-safe contract when each retrieved value must be narrowed. Use recursive `Js
 `JsonObject` only after establishing that the data is actually JSON. A narrow suppression is valid
 when “non-primitive” is the dictionary's exact value contract.
 
+### `2h2d/require-promise-rejection-parameter`
+
+Require inline and locally resolvable callbacks passed to `.catch`, plus second-argument rejection
+callbacks passed to `.then`, to declare at least one runtime parameter. This extends the objective
+parameter-retention policy of native `preserve-caught-error` to Promise-style rejection callbacks
+without attempting to recognize logging methods, diagnostic sinks, expected-error classifiers, or
+adequate control flow.
+
+The Oxlint JavaScript plugin API exposes syntax and scopes but no TypeScript parser services, while
+the separate type-aware backend has no custom-rule registration surface. The rule therefore
+recognizes `catch` and `then` method names syntactically. Use a narrow explained suppression for an
+unrelated API with the same method name, or when intentionally discarding a rejection reason is the
+actual best-effort contract.
+
 ## Adopted native rules
 
 The following rules are explicitly enabled as errors. The required `correctness` category also
@@ -119,6 +133,10 @@ replacement built-in errors must preserve it as their `cause`. Whether a caught 
 logged or recorded remains a review decision: no custom syntax rule attempts to recognize
 project-specific diagnostic sinks.
 
+`2h2d/require-promise-rejection-parameter` closes the equivalent parameterless-callback gap for
+Promise-style `.catch` and `.then` rejection handlers. It deliberately does not infer whether
+mentioning the parameter constitutes adequate handling.
+
 `typescript/prefer-promise-reject-errors` permits forwarding an `unknown` or externally typed `any`
 rejection reason unchanged. It still rejects known non-Error reasons and empty rejection calls.
 Native unsafe-propagation rules prohibit introducing or propagating explicit `any` elsewhere. This
@@ -159,6 +177,10 @@ The post-rollout review removed these rules from both the strict preset and the 
 | `2h2d/no-unpreserved-caught-error`        | Native `preserve-caught-error` now requires a catch parameter in every handler.                    |
 
 Do not reintroduce these rules without new evidence and a separate review.
+
+The Promise rejection parameter rule is not a restoration of silent-error analysis. It enforces
+only whether the callback can access its rejection reason and contains no sink-name or
+control-flow heuristics.
 
 ## Post-rollout evidence
 

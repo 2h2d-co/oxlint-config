@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Require Promise-style `.catch` and `.then` rejection callbacks to declare their rejection reason.
 - Add native enforcement for array callback returns, non-coercive equality, dynamic function
   compilation, empty object and unsafe function types, type-only import side effects, invalid
   `void` positions, unnecessary type parameters, unsafe enum comparisons, Promise rejection

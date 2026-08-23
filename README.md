@@ -85,6 +85,7 @@ The strict preset enables these custom rules as errors:
 - `2h2d/no-module-mocking`
 - `2h2d/no-typebox-unsafe`
 - `2h2d/require-narrow-suppression-directives`
+- `2h2d/require-promise-rejection-parameter`
 
 The suppression-directive rule requires lint suppressions to use `disable-line` or
 `disable-next-line`, name exactly one rule, and include an explanation after `--`. Native
@@ -117,6 +118,12 @@ The dictionary rule rejects direct value contracts based on `object` and semanti
 contracts hidden behind intersections or utility types. Native `typescript/no-empty-object-type`
 owns explicit `{}` and empty declaration diagnostics, while `typescript/no-explicit-any` owns
 explicit `any`. Use `unknown` when values are genuinely uncertain and narrow them before use.
+
+The Promise rejection parameter rule requires inline and locally resolvable `.catch` callbacks, and
+the rejection callback passed to `.then`, to declare the rejection reason. It closes the syntax gap
+between Promise callbacks and native `preserve-caught-error` without guessing whether a particular
+logging or diagnostic sink is adequate. Because Oxlint JavaScript plugins do not receive type
+information, unrelated APIs using `catch` or `then` can use a narrow explained suppression.
 
 ## Native rules
 
@@ -191,8 +198,9 @@ inspect the effective version-pinned set with `oxlint --print-config <file>`.
 ```
 
 Every catch must bind its failure, and replacement built-in errors must preserve that value as their
-`cause`. Whether a caught failure should be logged or recorded is a review decision rather than a
-custom lint heuristic.
+`cause`. Promise-style rejection callbacks must likewise bind their rejection reason. Whether a
+caught failure should be logged or recorded is a review decision rather than a custom lint
+heuristic.
 
 Every non-const type assertion and postfix non-null assertion is prohibited. `as const` remains
 allowed. Empty `{}` and unsafe `Function` contracts are prohibited. Object-type callables use
