@@ -44,6 +44,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `NaN`, coercive comparisons, or object identity.
 - Disable erasing-operation simplification because zero arithmetic can preserve `NaN`, negative
   zero, infinity, and operand side effects.
+- Disable obsolete number-formatting argument limits that reject precision values permitted by
+  modern ECMAScript.
 - Disable inherited native rules that reject meaningful empty files, sparse-array construction,
   single-value Promise aggregation, deliberate thenables, or anchored regular-expression
   semantics.

@@ -168,6 +168,7 @@ The pinned native `correctness` category is enabled, with these explicit excepti
 | ---------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `oxc/double-comparisons`                       | Syntax-only rewrites are unsound for `NaN`, coercive comparisons, and object identity.          |
 | `oxc/erasing-op`                               | Zero arithmetic can preserve `NaN`, negative zero, infinity, and operand side effects.          |
+| `oxc/number-arg-out-of-range`                  | Its number-formatting precision limits are obsolete under modern ECMAScript.                    |
 | `unicorn/no-empty-file`                        | Empty files can be intentional generated artifacts, fixtures, or reserved entry points.         |
 | `unicorn/no-new-array`                         | `new Array(length)` intentionally creates a sparse array; suggested replacements can be dense.  |
 | `unicorn/no-single-promise-in-promise-methods` | A one-element combinator can intentionally preserve aggregate shape and fresh Promise identity. |

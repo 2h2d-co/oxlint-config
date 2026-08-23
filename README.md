@@ -196,6 +196,7 @@ inspect the effective version-pinned set with `oxlint --print-config <file>`.
   "typescript/use-unknown-in-catch-callback-variable": "error",
   "oxc/double-comparisons": "off",
   "oxc/erasing-op": "off",
+  "oxc/number-arg-out-of-range": "off",
   "unicorn/no-empty-file": "off",
   "unicorn/no-new-array": "off",
   "unicorn/no-single-promise-in-promise-methods": "off",
@@ -204,13 +205,14 @@ inspect the effective version-pinned set with `oxlint --print-config <file>`.
 }
 ```
 
-The strict map explicitly disables seven rules inherited from the native `correctness` category.
+The strict map explicitly disables eight rules inherited from the native `correctness` category.
 Syntax-only comparison algebra is not sound for values such as `NaN` or objects with coercion
 semantics. Arithmetic involving zero can preserve `NaN`, infinity, negative zero, or operand side
-effects instead of collapsing to the numeric value `0`. Empty committed files can be meaningful
-artifacts; single-argument `new Array(length)` has intentional sparse-array semantics; a one-element
-Promise combinator can preserve aggregation shape and Promise identity; custom thenables are a
-standard interoperability contract; and anchored regular expressions are not always equivalent to
+effects instead of collapsing to the numeric value `0`. Obsolete number-formatting limits reject
+precision values permitted by modern JavaScript. Empty committed files can be meaningful artifacts;
+single-argument `new Array(length)` has intentional sparse-array semantics; a one-element Promise
+combinator can preserve aggregation shape and Promise identity; custom thenables are a standard
+interoperability contract; and anchored regular expressions are not always equivalent to
 `startsWith` or `endsWith`.
 
 Every catch must bind its failure, and replacement built-in errors must preserve that value as their

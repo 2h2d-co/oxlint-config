@@ -71,6 +71,7 @@ export const strictRules: DummyRuleMap = {
   "typescript/use-unknown-in-catch-callback-variable": "error",
   "oxc/double-comparisons": "off",
   "oxc/erasing-op": "off",
+  "oxc/number-arg-out-of-range": "off",
   "unicorn/no-empty-file": "off",
   "unicorn/no-new-array": "off",
   "unicorn/no-single-promise-in-promise-methods": "off",
