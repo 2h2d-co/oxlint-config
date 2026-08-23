@@ -46,6 +46,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   zero, infinity, and operand side effects.
 - Disable obsolete number-formatting argument limits that reject precision values permitted by
   modern ECMAScript.
+- Disable uninvoked-array callback detection because it mistakes function values passed to methods
+  such as `fill` for callbacks.
 - Disable inherited native rules that reject meaningful empty files, sparse-array construction,
   single-value Promise aggregation, deliberate thenables, or anchored regular-expression
   semantics.

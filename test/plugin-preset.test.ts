@@ -103,6 +103,7 @@ test("strict preset disables rejected correctness-category rules", () => {
   assert.equal(strictRules["oxc/double-comparisons"], "off");
   assert.equal(strictRules["oxc/erasing-op"], "off");
   assert.equal(strictRules["oxc/number-arg-out-of-range"], "off");
+  assert.equal(strictRules["oxc/uninvoked-array-callback"], "off");
   assert.equal(strictRules["unicorn/no-empty-file"], "off");
   assert.equal(strictRules["unicorn/no-new-array"], "off");
   assert.equal(strictRules["unicorn/no-single-promise-in-promise-methods"], "off");

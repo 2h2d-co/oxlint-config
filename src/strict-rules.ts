@@ -72,6 +72,7 @@ export const strictRules: DummyRuleMap = {
   "oxc/double-comparisons": "off",
   "oxc/erasing-op": "off",
   "oxc/number-arg-out-of-range": "off",
+  "oxc/uninvoked-array-callback": "off",
   "unicorn/no-empty-file": "off",
   "unicorn/no-new-array": "off",
   "unicorn/no-single-promise-in-promise-methods": "off",
