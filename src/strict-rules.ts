@@ -14,6 +14,7 @@ export const strictRules: DummyRuleMap = {
   "no-new-func": "error",
   "no-var": "error",
   "oxc/misrefactored-assign-op": "error",
+  "oxc/no-accumulating-spread": "error",
   "preserve-caught-error": ["error", { requireCatchParameter: true }],
   "typescript/ban-ts-comment": [
     "error",

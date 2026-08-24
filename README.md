@@ -125,6 +125,7 @@ set with `oxlint --print-config <file>`.
   "no-new-func": "error",
   "no-var": "error",
   "oxc/misrefactored-assign-op": "error",
+  "oxc/no-accumulating-spread": "error",
   "preserve-caught-error": ["error", { "requireCatchParameter": true }],
   "typescript/ban-ts-comment": [
     "error",
@@ -201,6 +202,9 @@ declarations remain valid. Native global prototypes must not be extended. Intent
 runtime patches require a narrow explained suppression because they alter process-wide behavior.
 Incomplete compound-assignment refactors such as `total += total + amount` are rejected; intentional
 recurrence formulas can use an ordinary assignment or an explained suppression.
+Accumulating spread is rejected because repeated full copies produce quadratic work. Compliance
+must preserve caller-owned seeds and intentional snapshots; explain those immutable contracts
+rather than replacing them blindly with mutation.
 
 The strict map explicitly disables ten rules inherited from the native `correctness` category.
 Syntax-only comparison algebra is not sound for values such as `NaN` or objects with coercion

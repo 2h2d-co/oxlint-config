@@ -101,6 +101,7 @@ Oxlint's version-pinned native `correctness` category.
 | `no-new-func`                                       | Prohibit dynamic function compilation.                            |
 | `no-var`                                            | Use block-scoped declarations instead of function-scoped `var`.   |
 | `oxc/misrefactored-assign-op`                       | Detect targets accidentally retained in compound assignments.     |
+| `oxc/no-accumulating-spread`                        | Prevent quadratic copying while accumulating collections.         |
 | `typescript/ban-ts-comment`                         | Allow only explained `@ts-expect-error` compiler suppressions.    |
 | `typescript/consistent-type-assertions`             | Ban every non-const type assertion.                               |
 | `typescript/method-signature-style`                 | Require contravariantly checked function-property signatures.     |
@@ -140,6 +141,11 @@ because it changes process-wide behavior.
 Its simplification is a suggestion rather than an automatic fix. Preserve an intentional recurrence
 with a clearer ordinary assignment or a narrow explanation instead of applying a semantic rewrite
 blindly.
+
+`oxc/no-accumulating-spread` has no automatic fixer. Prefer a linear construction, but do not
+replace immutable accumulation with mutation when a caller-owned seed or intermediate snapshots
+must remain unchanged. Those ownership and persistence contracts justify a narrow explained
+suppression.
 
 `typescript/no-floating-promises` uses `ignoreVoid: false`. `void operation()` does not handle a
 rejection. A package-qualified exemption allows only the `describe`, `it`, and `test` declarations
