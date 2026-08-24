@@ -131,6 +131,7 @@ Oxlint's version-pinned native `correctness` category.
 | `typescript/use-unknown-in-catch-callback-variable` | Treat Promise rejection values as uncertain until narrowed.       |
 | `unicorn/no-accessor-recursion`                     | Prevent getters and setters from recursively invoking themselves. |
 | `unicorn/no-array-fill-with-reference-type`         | Prevent accidental aliasing across filled array elements.         |
+| `unicorn/no-new-buffer`                             | Use explicit safe Node.js buffer allocation and conversion APIs.  |
 | `preserve-caught-error`                             | Preserve a caught failure when constructing a replacement Error.  |
 
 `eqeqeq` uses `"always"` with `{ "null": "ignore" }`. Intentional `value == null` checks remain
@@ -173,6 +174,10 @@ explanation of why recursion cannot occur.
 reuse in every array position. It is intentionally incomplete because it has no type information.
 Shared immutable sentinels and custom `fill` methods that clone their input require a narrow
 explanation.
+
+`unicorn/no-new-buffer` replaces the deprecated argument-overloaded constructor with an explicit
+choice among `Buffer.alloc`, `Buffer.allocUnsafe`, and `Buffer.from`. The native implementation
+recognizes the global binding but currently misses an explicitly imported `Buffer`.
 
 `typescript/no-require-imports` rejects the unavailable global `require` in ESM source while
 permitting a locally bound function created with `createRequire`. Intentional `.cjs` files and exact

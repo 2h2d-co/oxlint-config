@@ -190,6 +190,7 @@ set with `oxlint --print-config <file>`.
   "typescript/use-unknown-in-catch-callback-variable": "error",
   "unicorn/no-accessor-recursion": "error",
   "unicorn/no-array-fill-with-reference-type": "error",
+  "unicorn/no-new-buffer": "error",
   "oxc/double-comparisons": "off",
   "oxc/erasing-op": "off",
   "oxc/number-arg-out-of-range": "off",
@@ -223,6 +224,8 @@ Recursive access through the same getter or setter is rejected. Dynamic accessor
 themselves before the reported access require an explained suppression.
 Filling every array position with the same obvious object reference is rejected. Intentional shared
 immutable sentinels and custom cloning `fill` methods require an explained suppression.
+The deprecated argument-overloaded `new Buffer` API is prohibited in favor of explicit allocation
+or conversion methods. The native rule currently recognizes only the global `Buffer` binding.
 
 The strict map explicitly disables ten rules inherited from the native `correctness` category.
 Syntax-only comparison algebra is not sound for values such as `NaN` or objects with coercion
