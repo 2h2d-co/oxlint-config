@@ -126,6 +126,7 @@ set with `oxlint --print-config <file>`.
   "no-extend-native": "error",
   "no-new-func": "error",
   "no-new-wrappers": "error",
+  "no-proto": "error",
   "no-prototype-builtins": "error",
   "no-var": "error",
   "oxc/misrefactored-assign-op": "error",
@@ -216,6 +217,9 @@ declarations remain valid. Native global prototypes must not be extended. Intent
 runtime patches require a narrow explained suppression because they alter process-wide behavior.
 Boxed primitive constructors are prohibited because they introduce object identity and truthiness;
 intentional wrapper identity requires an explained suppression instead of applying the fixer.
+The deprecated magic `__proto__` accessor is prohibited in favor of explicit `Object` or `Reflect`
+prototype operations. Null-prototype object literals remain valid; intentional data fields named
+`__proto__` require an explained suppression.
 Direct calls to inherited object prototype methods are prohibited because null-prototype or
 externally shadowed objects make them unsafe; prefer `Object.hasOwn` for ownership checks.
 Global CommonJS `require` calls are prohibited in ESM projects; explicit local `createRequire`

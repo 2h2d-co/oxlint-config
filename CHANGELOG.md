@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Prevent constructors from replacing their initialized instance through native
   `no-constructor-return`.
 - Prohibit boxed primitive constructors through native `no-new-wrappers`.
+- Prohibit the deprecated magic `__proto__` accessor through native `no-proto`.
 - Prevent unsafe direct calls to inherited object methods through native `no-prototype-builtins`.
 - Require explicit ESM or CommonJS interoperability boundaries through native
   `typescript/no-require-imports`.

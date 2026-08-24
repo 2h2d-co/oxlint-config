@@ -102,6 +102,7 @@ Oxlint's version-pinned native `correctness` category.
 | `no-extend-native`                                  | Prevent process-wide mutation of built-in prototypes.             |
 | `no-new-func`                                       | Prohibit dynamic function compilation.                            |
 | `no-new-wrappers`                                   | Prevent boxed primitives with object truthiness and identity.     |
+| `no-proto`                                          | Use explicit prototype inspection and mutation APIs.              |
 | `no-prototype-builtins`                             | Call prototype methods safely across untrusted object boundaries. |
 | `no-var`                                            | Use block-scoped declarations instead of function-scoped `var`.   |
 | `oxc/misrefactored-assign-op`                       | Detect targets accidentally retained in compound assignments.     |
@@ -157,6 +158,11 @@ because it changes process-wide behavior.
 `no-new-wrappers` closes the runtime-construction gap left by the native wrapper-type annotation
 check. Its fixer removes `new`, which changes identity and `typeof`; intentional wrapper identity
 requires a narrow explanation rather than blindly applying the fix.
+
+`no-proto` rejects the deprecated magic `__proto__` accessor in favor of explicit `Object` or
+`Reflect` prototype operations. The standardized `{ __proto__: null }` object literal remains
+valid. An object or protocol that deliberately exposes `__proto__` as an ordinary data field
+requires a narrow explanation.
 
 `no-prototype-builtins` prevents null-prototype objects and externally shadowed methods from
 breaking property checks. Prefer `Object.hasOwn`; invoke the other prototype methods explicitly.
