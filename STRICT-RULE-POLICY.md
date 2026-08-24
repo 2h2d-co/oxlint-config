@@ -100,6 +100,7 @@ Oxlint's version-pinned native `correctness` category.
 | `no-extend-native`                                  | Prevent process-wide mutation of built-in prototypes.             |
 | `no-new-func`                                       | Prohibit dynamic function compilation.                            |
 | `no-var`                                            | Use block-scoped declarations instead of function-scoped `var`.   |
+| `oxc/misrefactored-assign-op`                       | Detect targets accidentally retained in compound assignments.     |
 | `typescript/ban-ts-comment`                         | Allow only explained `@ts-expect-error` compiler suppressions.    |
 | `typescript/consistent-type-assertions`             | Ban every non-const type assertion.                               |
 | `typescript/method-signature-style`                 | Require contravariantly checked function-property signatures.     |
@@ -134,6 +135,11 @@ though it were scoped to its nearest visual block. TypeScript ambient declaratio
 `no-extend-native` permits local constructors and subclasses while rejecting additions to native
 global prototypes. A polyfill or deliberate runtime patch requires a narrow explained suppression
 because it changes process-wide behavior.
+
+`oxc/misrefactored-assign-op` reports likely incomplete rewrites such as `total += total + amount`.
+Its simplification is a suggestion rather than an automatic fix. Preserve an intentional recurrence
+with a clearer ordinary assignment or a narrow explanation instead of applying a semantic rewrite
+blindly.
 
 `typescript/no-floating-promises` uses `ignoreVoid: false`. `void operation()` does not handle a
 rejection. A package-qualified exemption allows only the `describe`, `it`, and `test` declarations

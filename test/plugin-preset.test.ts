@@ -51,6 +51,7 @@ test("strict preset enables the adopted native rules", () => {
   assert.equal(strictRules["no-extend-native"], "error");
   assert.equal(strictRules["no-new-func"], "error");
   assert.equal(strictRules["no-var"], "error");
+  assert.equal(strictRules["oxc/misrefactored-assign-op"], "error");
   assert.deepEqual(strictRules["typescript/ban-ts-comment"], [
     "error",
     {

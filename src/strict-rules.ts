@@ -13,6 +13,7 @@ export const strictRules: DummyRuleMap = {
   "no-extend-native": "error",
   "no-new-func": "error",
   "no-var": "error",
+  "oxc/misrefactored-assign-op": "error",
   "preserve-caught-error": ["error", { requireCatchParameter: true }],
   "typescript/ban-ts-comment": [
     "error",

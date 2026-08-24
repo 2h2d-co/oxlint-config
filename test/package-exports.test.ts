@@ -399,13 +399,14 @@ test("native additions enforce hazards without rejecting intentional boundaries"
       configPath,
       `${JSON.stringify(
         {
-          plugins: ["typescript"],
+          plugins: ["typescript", "oxc"],
           rules: {
             "array-callback-return": "error",
             eqeqeq: ["error", "always", { null: "ignore" }],
             "no-extend-native": "error",
             "no-new-func": "error",
             "no-var": "error",
+            "oxc/misrefactored-assign-op": "error",
             "typescript/no-empty-object-type": "error",
             "typescript/no-import-type-side-effects": "error",
             "typescript/no-invalid-void-type": "error",
@@ -461,6 +462,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
         "Array.prototype.sharedExtension = () => undefined;",
         "new Function('return 1');",
         "var legacyBinding = 1;",
+        "let total = 1; total += total + 1;",
         "export type Empty = {};",
         "export type InvalidVoid = void;",
         "export let unsafeFunction: Function;",
@@ -506,6 +508,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
       "eslint(no-extend-native)",
       "eslint(no-new-func)",
       "eslint(no-var)",
+      "oxc(misrefactored-assign-op)",
       "typescript(no-empty-object-type)",
       "typescript(no-import-type-side-effects)",
       "typescript(no-invalid-void-type)",
