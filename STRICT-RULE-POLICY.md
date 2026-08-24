@@ -98,6 +98,7 @@ Oxlint's version-pinned native `correctness` category.
 | `array-callback-return`                             | Require value-producing array callbacks to return a value.        |
 | `eqeqeq`                                            | Prohibit coercive equality while permitting nullish checks.       |
 | `no-case-declarations`                              | Give lexical declarations an explicit case-local scope.           |
+| `no-constructor-return`                             | Prevent constructors from replacing their initialized instance.   |
 | `no-extend-native`                                  | Prevent process-wide mutation of built-in prototypes.             |
 | `no-new-func`                                       | Prohibit dynamic function compilation.                            |
 | `no-new-wrappers`                                   | Prevent boxed primitives with object truthiness and identity.     |
@@ -141,6 +142,10 @@ valid while other coercive equality is prohibited.
 `no-case-declarations` prevents lexical bindings from silently belonging to an entire switch.
 Cases that own declarations use explicit blocks. A deliberate cross-case binding requires a narrow
 explanation.
+
+`no-constructor-return` permits early bare returns but rejects an explicit replacement value.
+Singleton, proxy, cache, and other intentional instance-substitution constructors require a narrow
+explanation because `new` returns the replacement instead of the initialized `this`.
 
 `no-var` expresses the declaration policy directly instead of treating a function-scoped `var` as
 though it were scoped to its nearest visual block. TypeScript ambient declarations remain valid.

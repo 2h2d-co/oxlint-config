@@ -49,6 +49,7 @@ test("strict preset enables the adopted native rules", () => {
   assert.equal(strictRules["array-callback-return"], "error");
   assert.deepEqual(strictRules.eqeqeq, ["error", "always", { null: "ignore" }]);
   assert.equal(strictRules["no-case-declarations"], "error");
+  assert.equal(strictRules["no-constructor-return"], "error");
   assert.equal(strictRules["no-extend-native"], "error");
   assert.equal(strictRules["no-new-func"], "error");
   assert.equal(strictRules["no-new-wrappers"], "error");

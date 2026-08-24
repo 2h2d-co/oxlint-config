@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Require explicit case-local blocks for switch-case lexical declarations through native
   `no-case-declarations`.
+- Prevent constructors from replacing their initialized instance through native
+  `no-constructor-return`.
 - Prohibit boxed primitive constructors through native `no-new-wrappers`.
 - Prevent unsafe direct calls to inherited object methods through native `no-prototype-builtins`.
 - Require explicit ESM or CommonJS interoperability boundaries through native

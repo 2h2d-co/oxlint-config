@@ -11,6 +11,7 @@ export const strictRules: DummyRuleMap = {
   "array-callback-return": "error",
   eqeqeq: ["error", "always", { null: "ignore" }],
   "no-case-declarations": "error",
+  "no-constructor-return": "error",
   "no-extend-native": "error",
   "no-new-func": "error",
   "no-new-wrappers": "error",
