@@ -161,6 +161,7 @@ set with `oxlint --print-config <file>`.
   "typescript/no-invalid-void-type": "error",
   "typescript/no-misused-promises": "error",
   "typescript/no-non-null-assertion": "error",
+  "typescript/no-require-imports": "error",
   "typescript/no-unnecessary-type-parameters": "error",
   "typescript/no-unsafe-argument": "error",
   "typescript/no-unsafe-assignment": "error",
@@ -211,6 +212,8 @@ Boxed primitive constructors are prohibited because they introduce object identi
 intentional wrapper identity requires an explained suppression instead of applying the fixer.
 Direct calls to inherited object prototype methods are prohibited because null-prototype or
 externally shadowed objects make them unsafe; prefer `Object.hasOwn` for ownership checks.
+Global CommonJS `require` calls are prohibited in ESM projects; explicit local `createRequire`
+bindings remain valid, while intentional `.cjs` boundaries require an explained suppression.
 Incomplete compound-assignment refactors such as `total += total + amount` are rejected; intentional
 recurrence formulas can use an ordinary assignment or an explained suppression.
 Accumulating spread is rejected because repeated full copies produce quadratic work. Compliance

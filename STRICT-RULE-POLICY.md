@@ -115,6 +115,7 @@ Oxlint's version-pinned native `correctness` category.
 | `typescript/no-invalid-void-type`                   | Keep `void` in valid return and generic positions.                |
 | `typescript/no-misused-promises`                    | Do not pass Promise-returning functions to synchronous contracts. |
 | `typescript/no-non-null-assertion`                  | Ban unchecked postfix non-null assertions.                        |
+| `typescript/no-require-imports`                     | Require explicit ESM or CommonJS interoperability boundaries.     |
 | `typescript/no-unnecessary-type-parameters`         | Require generics to relate or preserve type information.          |
 | `typescript/no-unsafe-argument`                     | Prevent unsafe values from entering typed calls.                  |
 | `typescript/no-unsafe-assignment`                   | Prevent unsafe values from entering typed bindings.               |
@@ -172,6 +173,10 @@ explanation of why recursion cannot occur.
 reuse in every array position. It is intentionally incomplete because it has no type information.
 Shared immutable sentinels and custom `fill` methods that clone their input require a narrow
 explanation.
+
+`typescript/no-require-imports` rejects the unavailable global `require` in ESM source while
+permitting a locally bound function created with `createRequire`. Intentional `.cjs` files and exact
+TypeScript `export =` interoperability require a narrow explanation.
 
 `typescript/no-floating-promises` uses `ignoreVoid: false`. `void operation()` does not handle a
 rejection. A package-qualified exemption allows only the `describe`, `it`, and `test` declarations

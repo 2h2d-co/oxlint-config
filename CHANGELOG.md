@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `no-case-declarations`.
 - Prohibit boxed primitive constructors through native `no-new-wrappers`.
 - Prevent unsafe direct calls to inherited object methods through native `no-prototype-builtins`.
+- Require explicit ESM or CommonJS interoperability boundaries through native
+  `typescript/no-require-imports`.
 - Prohibit function-scoped `var` declarations through native `no-var`.
 - Prevent additions to built-in prototypes through native `no-extend-native`.
 - Detect incomplete compound-assignment refactors through native

@@ -90,6 +90,7 @@ test("strict preset enables the adopted native rules", () => {
   assert.equal(strictRules["typescript/no-invalid-void-type"], "error");
   assert.equal(strictRules["typescript/no-misused-promises"], "error");
   assert.equal(strictRules["typescript/no-non-null-assertion"], "error");
+  assert.equal(strictRules["typescript/no-require-imports"], "error");
   assert.equal(strictRules["typescript/no-unnecessary-type-parameters"], "error");
   assert.equal(strictRules["typescript/no-unsafe-argument"], "error");
   assert.equal(strictRules["typescript/no-unsafe-assignment"], "error");
