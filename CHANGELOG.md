@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.0-alpha.12] - 2026-08-24
+
 ### Fixed
 
 - Report parameterless named rejection handlers at each `.catch` or `.then` argument so explained
@@ -170,7 +172,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   integration tests.
 - Add anti-slop attribution and license notices for adapted implementations.
 
-[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.11...HEAD
+[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.12...HEAD
+[0.1.0-alpha.12]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.11...v0.1.0-alpha.12
 [0.1.0-alpha.11]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.10...v0.1.0-alpha.11
 [0.1.0-alpha.10]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.9...v0.1.0-alpha.10
 [0.1.0-alpha.9]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.8...v0.1.0-alpha.9
