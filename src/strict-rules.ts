@@ -23,7 +23,6 @@ export const strictRules: DummyRuleMap = {
   "preserve-caught-error": ["error", { requireCatchParameter: true }],
   "promise/no-callback-in-promise": "off",
   "promise/no-multiple-resolved": "error",
-  "promise/no-new-statics": "off",
   "promise/valid-params": "off",
   "typescript/ban-ts-comment": [
     "error",

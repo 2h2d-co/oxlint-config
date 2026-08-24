@@ -254,7 +254,6 @@ The pinned native `correctness` category is enabled, with these explicit excepti
 | `oxc/number-arg-out-of-range`                  | Its number-formatting precision limits are obsolete under modern ECMAScript.                    |
 | `oxc/uninvoked-array-callback`                 | It mistakes function values passed to non-callback methods such as `fill` for callbacks.        |
 | `promise/no-callback-in-promise`               | Held disabled until its callback interoperability contract is reviewed.                         |
-| `promise/no-new-statics`                       | Held disabled until its overlap with TypeScript diagnostics is reviewed.                        |
 | `promise/valid-params`                         | Held disabled until its global resolution and call-signature analysis are reviewed.             |
 | `unicorn/no-empty-file`                        | Empty files can be intentional generated artifacts, fixtures, or reserved entry points.         |
 | `unicorn/no-new-array`                         | `new Array(length)` intentionally creates a sparse array; suggested replacements can be dense.  |

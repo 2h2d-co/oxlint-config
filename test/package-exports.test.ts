@@ -73,7 +73,11 @@ test("Oxlint inherits the complete built configuration", async () => {
     );
     await writeFile(
       sourcePath,
-      "export function accept(value: object): void { console.log(value); }\n",
+      [
+        "export function accept(value: object): void { console.log(value); }",
+        "export const invalidPromiseStatic = new Promise.resolve();",
+        "",
+      ].join("\n"),
     );
 
     const result = spawnSync(
@@ -94,7 +98,7 @@ test("Oxlint inherits the complete built configuration", async () => {
     assert.equal(getProperty(rules, "no-var"), "deny", result.stdout);
     assert.equal(getProperty(rules, "promise/no-callback-in-promise"), "allow", result.stdout);
     assert.equal(getProperty(rules, "promise/no-multiple-resolved"), "deny", result.stdout);
-    assert.equal(getProperty(rules, "promise/no-new-statics"), "allow", result.stdout);
+    assert.equal(getProperty(rules, "promise/no-new-statics"), "deny", result.stdout);
     assert.equal(getProperty(rules, "promise/valid-params"), "allow", result.stdout);
     assert.equal(getProperty(rules, "typescript/no-implied-eval"), "deny", result.stdout);
     const options = getProperty(config, "options");
@@ -122,6 +126,14 @@ test("Oxlint inherits the complete built configuration", async () => {
         (diagnostic) =>
           isObject(diagnostic) &&
           getProperty(diagnostic, "code") === "2h2d(no-broad-object-parameters)",
+      ).length,
+      1,
+      lintResult.stdout,
+    );
+    assert.equal(
+      diagnostics.filter(
+        (diagnostic) =>
+          isObject(diagnostic) && getProperty(diagnostic, "code") === "promise(no-new-statics)",
       ).length,
       1,
       lintResult.stdout,

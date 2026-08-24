@@ -139,7 +139,6 @@ test("strict preset disables reviewed and pending correctness-category exception
   assert.equal(strictRules["oxc/number-arg-out-of-range"], "off");
   assert.equal(strictRules["oxc/uninvoked-array-callback"], "off");
   assert.equal(strictRules["promise/no-callback-in-promise"], "off");
-  assert.equal(strictRules["promise/no-new-statics"], "off");
   assert.equal(strictRules["promise/valid-params"], "off");
   assert.equal(strictRules["unicorn/no-empty-file"], "off");
   assert.equal(strictRules["unicorn/no-new-array"], "off");
