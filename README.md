@@ -13,7 +13,7 @@ The package combines:
 Install the package and its exact supported Oxlint version as development dependencies:
 
 ```bash
-npm install --save-dev --save-exact @2h2d/oxlint-config@alpha oxlint@1.78.0 oxlint-tsgolint@7.0.2001
+npm install --save-dev --save-exact @2h2d/oxlint-config@0.1.0 oxlint@1.78.0 oxlint-tsgolint@7.0.2001
 ```
 
 ## Oxlint configuration
@@ -29,7 +29,7 @@ export default defineConfig({
 });
 ```
 
-The inherited configuration enables the TypeScript, Unicorn, and Oxc plugins; the native
+The inherited configuration enables the TypeScript, Unicorn, Oxc, and Promise plugins; the native
 `correctness` category; the shared rules; built-in globals; type-aware linting and type checking;
 and unused suppression reporting. Add project-specific rules or overrides after `extends`.
 
@@ -45,7 +45,7 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   lint: {
-    plugins: ["typescript", "unicorn", "oxc"],
+    plugins: ["typescript", "unicorn", "oxc", "promise"],
     jsPlugins: [
       {
         name: "2h2d",

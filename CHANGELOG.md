@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-08-24
+
 ### Added
 
 - Pin the reviewed correctness-category inventory so Oxlint upgrades cannot change inherited rules
@@ -201,7 +203,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   integration tests.
 - Add anti-slop attribution and license notices for adapted implementations.
 
-[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.12...HEAD
+[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.12...v0.1.0
 [0.1.0-alpha.12]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.11...v0.1.0-alpha.12
 [0.1.0-alpha.11]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.10...v0.1.0-alpha.11
 [0.1.0-alpha.10]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.9...v0.1.0-alpha.10
