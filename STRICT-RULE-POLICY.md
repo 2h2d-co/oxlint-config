@@ -97,7 +97,9 @@ Oxlint's version-pinned native `correctness` category.
 | --------------------------------------------------- | ----------------------------------------------------------------- |
 | `array-callback-return`                             | Require value-producing array callbacks to return a value.        |
 | `eqeqeq`                                            | Prohibit coercive equality while permitting nullish checks.       |
+| `no-extend-native`                                  | Prevent process-wide mutation of built-in prototypes.             |
 | `no-new-func`                                       | Prohibit dynamic function compilation.                            |
+| `no-var`                                            | Use block-scoped declarations instead of function-scoped `var`.   |
 | `typescript/ban-ts-comment`                         | Allow only explained `@ts-expect-error` compiler suppressions.    |
 | `typescript/consistent-type-assertions`             | Ban every non-const type assertion.                               |
 | `typescript/method-signature-style`                 | Require contravariantly checked function-property signatures.     |
@@ -125,6 +127,13 @@ Oxlint's version-pinned native `correctness` category.
 
 `eqeqeq` uses `"always"` with `{ "null": "ignore" }`. Intentional `value == null` checks remain
 valid while other coercive equality is prohibited.
+
+`no-var` expresses the declaration policy directly instead of treating a function-scoped `var` as
+though it were scoped to its nearest visual block. TypeScript ambient declarations remain valid.
+
+`no-extend-native` permits local constructors and subclasses while rejecting additions to native
+global prototypes. A polyfill or deliberate runtime patch requires a narrow explained suppression
+because it changes process-wide behavior.
 
 `typescript/no-floating-promises` uses `ignoreVoid: false`. `void operation()` does not handle a
 rejection. A package-qualified exemption allows only the `describe`, `it`, and `test` declarations

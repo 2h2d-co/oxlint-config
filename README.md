@@ -121,7 +121,9 @@ set with `oxlint --print-config <file>`.
 {
   "array-callback-return": "error",
   "eqeqeq": ["error", "always", { "null": "ignore" }],
+  "no-extend-native": "error",
   "no-new-func": "error",
+  "no-var": "error",
   "preserve-caught-error": ["error", { "requireCatchParameter": true }],
   "typescript/ban-ts-comment": [
     "error",
@@ -192,6 +194,10 @@ set with `oxlint --print-config <file>`.
   "unicorn/prefer-string-starts-ends-with": "off"
 }
 ```
+
+Function-scoped `var` declarations are prohibited in favor of `let` and `const`; TypeScript ambient
+declarations remain valid. Native global prototypes must not be extended. Intentional polyfills or
+runtime patches require a narrow explained suppression because they alter process-wide behavior.
 
 The strict map explicitly disables ten rules inherited from the native `correctness` category.
 Syntax-only comparison algebra is not sound for values such as `NaN` or objects with coercion

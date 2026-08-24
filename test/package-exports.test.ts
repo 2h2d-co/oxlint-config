@@ -90,6 +90,8 @@ test("Oxlint inherits the complete built configuration", async () => {
     assert.ok(isObject(config));
     const rules = getProperty(config, "rules");
     assert.ok(isObject(rules));
+    assert.equal(getProperty(rules, "no-extend-native"), "deny", result.stdout);
+    assert.equal(getProperty(rules, "no-var"), "deny", result.stdout);
     assert.equal(getProperty(rules, "typescript/no-implied-eval"), "deny", result.stdout);
     const options = getProperty(config, "options");
     assert.ok(isObject(options));
@@ -401,7 +403,9 @@ test("native additions enforce hazards without rejecting intentional boundaries"
           rules: {
             "array-callback-return": "error",
             eqeqeq: ["error", "always", { null: "ignore" }],
+            "no-extend-native": "error",
             "no-new-func": "error",
+            "no-var": "error",
             "typescript/no-empty-object-type": "error",
             "typescript/no-import-type-side-effects": "error",
             "typescript/no-invalid-void-type": "error",
@@ -454,7 +458,9 @@ test("native additions enforce hazards without rejecting intentional boundaries"
         "Promise.reject(externalReason);",
         "if (1 == '1') {}",
         "[1].map(() => {});",
+        "Array.prototype.sharedExtension = () => undefined;",
         "new Function('return 1');",
+        "var legacyBinding = 1;",
         "export type Empty = {};",
         "export type InvalidVoid = void;",
         "export let unsafeFunction: Function;",
@@ -497,7 +503,9 @@ test("native additions enforce hazards without rejecting intentional boundaries"
     const expectedCodes = [
       "eslint(array-callback-return)",
       "eslint(eqeqeq)",
+      "eslint(no-extend-native)",
       "eslint(no-new-func)",
+      "eslint(no-var)",
       "typescript(no-empty-object-type)",
       "typescript(no-import-type-side-effects)",
       "typescript(no-invalid-void-type)",
