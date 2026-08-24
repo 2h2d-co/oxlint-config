@@ -100,6 +100,7 @@ Oxlint's version-pinned native `correctness` category.
 | `no-case-declarations`                              | Give lexical declarations an explicit case-local scope.           |
 | `no-extend-native`                                  | Prevent process-wide mutation of built-in prototypes.             |
 | `no-new-func`                                       | Prohibit dynamic function compilation.                            |
+| `no-new-wrappers`                                   | Prevent boxed primitives with object truthiness and identity.     |
 | `no-var`                                            | Use block-scoped declarations instead of function-scoped `var`.   |
 | `oxc/misrefactored-assign-op`                       | Detect targets accidentally retained in compound assignments.     |
 | `oxc/no-accumulating-spread`                        | Prevent quadratic copying while accumulating collections.         |
@@ -143,6 +144,10 @@ though it were scoped to its nearest visual block. TypeScript ambient declaratio
 `no-extend-native` permits local constructors and subclasses while rejecting additions to native
 global prototypes. A polyfill or deliberate runtime patch requires a narrow explained suppression
 because it changes process-wide behavior.
+
+`no-new-wrappers` closes the runtime-construction gap left by the native wrapper-type annotation
+check. Its fixer removes `new`, which changes identity and `typeof`; intentional wrapper identity
+requires a narrow explanation rather than blindly applying the fix.
 
 `oxc/misrefactored-assign-op` reports likely incomplete rewrites such as `total += total + amount`.
 Its simplification is a suggestion rather than an automatic fix. Preserve an intentional recurrence

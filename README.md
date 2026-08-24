@@ -124,6 +124,7 @@ set with `oxlint --print-config <file>`.
   "no-case-declarations": "error",
   "no-extend-native": "error",
   "no-new-func": "error",
+  "no-new-wrappers": "error",
   "no-var": "error",
   "oxc/misrefactored-assign-op": "error",
   "oxc/no-accumulating-spread": "error",
@@ -205,6 +206,8 @@ the switch-wide lexical environment.
 Function-scoped `var` declarations are prohibited in favor of `let` and `const`; TypeScript ambient
 declarations remain valid. Native global prototypes must not be extended. Intentional polyfills or
 runtime patches require a narrow explained suppression because they alter process-wide behavior.
+Boxed primitive constructors are prohibited because they introduce object identity and truthiness;
+intentional wrapper identity requires an explained suppression instead of applying the fixer.
 Incomplete compound-assignment refactors such as `total += total + amount` are rejected; intentional
 recurrence formulas can use an ordinary assignment or an explained suppression.
 Accumulating spread is rejected because repeated full copies produce quadratic work. Compliance

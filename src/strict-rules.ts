@@ -13,6 +13,7 @@ export const strictRules: DummyRuleMap = {
   "no-case-declarations": "error",
   "no-extend-native": "error",
   "no-new-func": "error",
+  "no-new-wrappers": "error",
   "no-var": "error",
   "oxc/misrefactored-assign-op": "error",
   "oxc/no-accumulating-spread": "error",
