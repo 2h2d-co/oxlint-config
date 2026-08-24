@@ -27,6 +27,8 @@ dist/shared/lexical-type-parameters.d.ts
 dist/shared/lexical-type-parameters.js
 dist/shared/local-type-aliases.d.ts
 dist/shared/local-type-aliases.js
+dist/strict-config.d.ts
+dist/strict-config.js
 dist/strict-rules.d.ts
 dist/strict-rules.js
 package.json
