@@ -132,6 +132,10 @@ set with `oxlint --print-config <file>`.
   "oxc/misrefactored-assign-op": "error",
   "oxc/no-accumulating-spread": "error",
   "preserve-caught-error": ["error", { "requireCatchParameter": true }],
+  "promise/no-callback-in-promise": "off",
+  "promise/no-multiple-resolved": "error",
+  "promise/no-new-statics": "off",
+  "promise/valid-params": "off",
   "typescript/ban-ts-comment": [
     "error",
     {
@@ -229,6 +233,7 @@ recurrence formulas can use an ordinary assignment or an explained suppression.
 Accumulating spread is rejected because repeated full copies produce quadratic work. Compliance
 must preserve caller-owned seeds and intentional snapshots; explain those immutable contracts
 rather than replacing them blindly with mutation.
+Inline Promise executors must not reach a second resolve or reject call after settlement.
 Recursive access through the same getter or setter is rejected. Dynamic accessors that replace
 themselves before the reported access require an explained suppression.
 Filling every array position with the same obvious object reference is rejected. Intentional shared
@@ -238,7 +243,7 @@ or conversion methods. The native rule currently recognizes only the global `Buf
 Node.js built-in module specifiers must use the explicit `node:` protocol. Intentional build-time
 aliases for bare built-in names require an explained suppression because their resolution differs.
 
-The strict map explicitly disables ten rules inherited from the native `correctness` category.
+The strict map explicitly disables thirteen rules inherited from the native `correctness` category.
 Syntax-only comparison algebra is not sound for values such as `NaN` or objects with coercion
 semantics. Arithmetic involving zero can preserve `NaN`, infinity, negative zero, or operand side
 effects instead of collapsing to the numeric value `0`. Obsolete number-formatting limits reject
@@ -249,6 +254,7 @@ single-argument `new Array(length)` has intentional sparse-array semantics; a on
 combinator can preserve aggregation shape and Promise identity; custom thenables are a standard
 interoperability contract; and anchored regular expressions are not always equivalent to
 `startsWith` or `endsWith`.
+The three Promise correctness rules remain disabled while their contracts are reviewed individually.
 
 Every catch must bind its failure, and replacement built-in errors must preserve that value as their
 `cause`. Promise-style rejection callbacks must likewise bind their rejection reason. Whether a

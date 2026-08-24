@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Detect incomplete compound-assignment refactors through native
   `oxc/misrefactored-assign-op`.
 - Prevent quadratic accumulator copying through native `oxc/no-accumulating-spread`.
+- Prevent reachable duplicate Promise settlement through native `promise/no-multiple-resolved`.
 - Prevent recursive getter and setter access through native `unicorn/no-accessor-recursion`.
 - Prevent accidental shared references in filled arrays through native
   `unicorn/no-array-fill-with-reference-type`.

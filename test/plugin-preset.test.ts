@@ -28,7 +28,7 @@ test("strict preset enables only blocking custom rules", () => {
 });
 
 test("strict configuration supplies the complete shared baseline", () => {
-  assert.deepEqual(strictConfig.plugins, ["typescript", "unicorn", "oxc"]);
+  assert.deepEqual(strictConfig.plugins, ["typescript", "unicorn", "oxc", "promise"]);
   assert.deepEqual(strictConfig.jsPlugins, [
     {
       name: "2h2d",
@@ -58,6 +58,7 @@ test("strict preset enables the adopted native rules", () => {
   assert.equal(strictRules["no-var"], "error");
   assert.equal(strictRules["oxc/misrefactored-assign-op"], "error");
   assert.equal(strictRules["oxc/no-accumulating-spread"], "error");
+  assert.equal(strictRules["promise/no-multiple-resolved"], "error");
   assert.deepEqual(strictRules["typescript/ban-ts-comment"], [
     "error",
     {
@@ -132,11 +133,14 @@ test("strict preset enables the adopted native rules", () => {
   ]);
 });
 
-test("strict preset disables rejected correctness-category rules", () => {
+test("strict preset disables reviewed and pending correctness-category exceptions", () => {
   assert.equal(strictRules["oxc/double-comparisons"], "off");
   assert.equal(strictRules["oxc/erasing-op"], "off");
   assert.equal(strictRules["oxc/number-arg-out-of-range"], "off");
   assert.equal(strictRules["oxc/uninvoked-array-callback"], "off");
+  assert.equal(strictRules["promise/no-callback-in-promise"], "off");
+  assert.equal(strictRules["promise/no-new-statics"], "off");
+  assert.equal(strictRules["promise/valid-params"], "off");
   assert.equal(strictRules["unicorn/no-empty-file"], "off");
   assert.equal(strictRules["unicorn/no-new-array"], "off");
   assert.equal(strictRules["unicorn/no-single-promise-in-promise-methods"], "off");

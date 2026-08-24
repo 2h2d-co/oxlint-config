@@ -107,6 +107,7 @@ Oxlint's version-pinned native `correctness` category.
 | `no-var`                                            | Use block-scoped declarations instead of function-scoped `var`.   |
 | `oxc/misrefactored-assign-op`                       | Detect targets accidentally retained in compound assignments.     |
 | `oxc/no-accumulating-spread`                        | Prevent quadratic copying while accumulating collections.         |
+| `promise/no-multiple-resolved`                      | Prevent reachable duplicate Promise settlement.                   |
 | `typescript/ban-ts-comment`                         | Allow only explained `@ts-expect-error` compiler suppressions.    |
 | `typescript/consistent-type-assertions`             | Ban every non-const type assertion.                               |
 | `typescript/method-signature-style`                 | Require contravariantly checked function-property signatures.     |
@@ -178,6 +179,11 @@ replace immutable accumulation with mutation when a caller-owned seed or interme
 must remain unchanged. Those ownership and persistence contracts justify a narrow explained
 suppression.
 
+`promise/no-multiple-resolved` performs control-flow analysis on inline `new Promise` executors and
+rejects a second reachable call to either settlement function. It understands mutually exclusive
+branches and terminating returns. Settlement hidden behind helpers or independent callbacks is
+outside its analysis.
+
 `unicorn/no-accessor-recursion` catches same-property access that would ordinarily overflow the
 stack. A dynamic accessor that replaces itself before the reported access requires a narrow
 explanation of why recursion cannot occur.
@@ -247,6 +253,9 @@ The pinned native `correctness` category is enabled, with these explicit excepti
 | `oxc/erasing-op`                               | Zero arithmetic can preserve `NaN`, negative zero, infinity, and operand side effects.          |
 | `oxc/number-arg-out-of-range`                  | Its number-formatting precision limits are obsolete under modern ECMAScript.                    |
 | `oxc/uninvoked-array-callback`                 | It mistakes function values passed to non-callback methods such as `fill` for callbacks.        |
+| `promise/no-callback-in-promise`               | Held disabled until its callback interoperability contract is reviewed.                         |
+| `promise/no-new-statics`                       | Held disabled until its overlap with TypeScript diagnostics is reviewed.                        |
+| `promise/valid-params`                         | Held disabled until its global resolution and call-signature analysis are reviewed.             |
 | `unicorn/no-empty-file`                        | Empty files can be intentional generated artifacts, fixtures, or reserved entry points.         |
 | `unicorn/no-new-array`                         | `new Array(length)` intentionally creates a sparse array; suggested replacements can be dense.  |
 | `unicorn/no-single-promise-in-promise-methods` | A one-element combinator can intentionally preserve aggregate shape and fresh Promise identity. |

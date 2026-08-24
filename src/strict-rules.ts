@@ -21,6 +21,10 @@ export const strictRules: DummyRuleMap = {
   "oxc/misrefactored-assign-op": "error",
   "oxc/no-accumulating-spread": "error",
   "preserve-caught-error": ["error", { requireCatchParameter: true }],
+  "promise/no-callback-in-promise": "off",
+  "promise/no-multiple-resolved": "error",
+  "promise/no-new-statics": "off",
+  "promise/valid-params": "off",
   "typescript/ban-ts-comment": [
     "error",
     {

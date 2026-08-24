@@ -4,7 +4,7 @@ import { strictRules } from "./strict-rules.ts";
 
 /** Complete shared 2h2d Oxlint configuration. */
 const strictConfig = defineConfig({
-  plugins: ["typescript", "unicorn", "oxc"],
+  plugins: ["typescript", "unicorn", "oxc", "promise"],
   jsPlugins: [
     {
       name: "2h2d",

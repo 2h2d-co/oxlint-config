@@ -92,6 +92,10 @@ test("Oxlint inherits the complete built configuration", async () => {
     assert.ok(isObject(rules));
     assert.equal(getProperty(rules, "no-extend-native"), "deny", result.stdout);
     assert.equal(getProperty(rules, "no-var"), "deny", result.stdout);
+    assert.equal(getProperty(rules, "promise/no-callback-in-promise"), "allow", result.stdout);
+    assert.equal(getProperty(rules, "promise/no-multiple-resolved"), "deny", result.stdout);
+    assert.equal(getProperty(rules, "promise/no-new-statics"), "allow", result.stdout);
+    assert.equal(getProperty(rules, "promise/valid-params"), "allow", result.stdout);
     assert.equal(getProperty(rules, "typescript/no-implied-eval"), "deny", result.stdout);
     const options = getProperty(config, "options");
     assert.ok(isObject(options));
@@ -559,6 +563,76 @@ test("native additions enforce hazards without rejecting intentional boundaries"
         `${code}\n${JSON.stringify(report, null, 2)}`,
       );
     }
+  } finally {
+    await rm(temporaryDirectory, { recursive: true, force: true });
+  }
+});
+
+test("Promise settlement analysis rejects a reachable second resolution", async () => {
+  const temporaryDirectory = await mkdtemp(join(root, ".consumer-"));
+  try {
+    const configPath = join(temporaryDirectory, "oxlint.config.json");
+    const sourcePath = join(temporaryDirectory, "input.ts");
+    const tsconfigPath = join(temporaryDirectory, "tsconfig.json");
+    await writeFile(
+      configPath,
+      `${JSON.stringify(
+        {
+          plugins: ["promise"],
+          rules: {
+            "promise/no-multiple-resolved": "error",
+          },
+          options: {
+            typeAware: true,
+          },
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await writeFile(
+      sourcePath,
+      "new Promise((resolve, reject) => { reject(new Error('failure')); resolve(); });\n",
+    );
+    await writeFile(
+      tsconfigPath,
+      `${JSON.stringify(
+        {
+          compilerOptions: {
+            module: "nodenext",
+            strict: true,
+            target: "esnext",
+          },
+          include: ["input.ts"],
+        },
+        null,
+        2,
+      )}\n`,
+    );
+
+    const result = spawnSync(
+      resolve(root, "node_modules", "oxlint", "bin", "oxlint"),
+      ["--config", configPath, "--format", "json", "--tsconfig", tsconfigPath, sourcePath],
+      {
+        cwd: root,
+        encoding: "utf8",
+      },
+    );
+
+    assert.equal(result.status, 1, result.stderr);
+    const report: unknown = JSON.parse(result.stdout);
+    assert.ok(isObject(report));
+    const diagnostics = getProperty(report, "diagnostics");
+    assert.ok(Array.isArray(diagnostics));
+    assert.equal(
+      diagnostics.filter(
+        (diagnostic) =>
+          isObject(diagnostic) &&
+          getProperty(diagnostic, "code") === "promise(no-multiple-resolved)",
+      ).length,
+      1,
+      result.stdout,
+    );
   } finally {
     await rm(temporaryDirectory, { recursive: true, force: true });
   }
