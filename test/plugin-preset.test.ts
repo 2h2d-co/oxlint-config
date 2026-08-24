@@ -52,6 +52,7 @@ test("strict preset enables the adopted native rules", () => {
   assert.equal(strictRules["no-extend-native"], "error");
   assert.equal(strictRules["no-new-func"], "error");
   assert.equal(strictRules["no-new-wrappers"], "error");
+  assert.equal(strictRules["no-prototype-builtins"], "error");
   assert.equal(strictRules["no-var"], "error");
   assert.equal(strictRules["oxc/misrefactored-assign-op"], "error");
   assert.equal(strictRules["oxc/no-accumulating-spread"], "error");

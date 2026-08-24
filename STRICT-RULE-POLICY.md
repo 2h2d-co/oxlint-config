@@ -101,6 +101,7 @@ Oxlint's version-pinned native `correctness` category.
 | `no-extend-native`                                  | Prevent process-wide mutation of built-in prototypes.             |
 | `no-new-func`                                       | Prohibit dynamic function compilation.                            |
 | `no-new-wrappers`                                   | Prevent boxed primitives with object truthiness and identity.     |
+| `no-prototype-builtins`                             | Call prototype methods safely across untrusted object boundaries. |
 | `no-var`                                            | Use block-scoped declarations instead of function-scoped `var`.   |
 | `oxc/misrefactored-assign-op`                       | Detect targets accidentally retained in compound assignments.     |
 | `oxc/no-accumulating-spread`                        | Prevent quadratic copying while accumulating collections.         |
@@ -148,6 +149,10 @@ because it changes process-wide behavior.
 `no-new-wrappers` closes the runtime-construction gap left by the native wrapper-type annotation
 check. Its fixer removes `new`, which changes identity and `typeof`; intentional wrapper identity
 requires a narrow explanation rather than blindly applying the fix.
+
+`no-prototype-builtins` prevents null-prototype objects and externally shadowed methods from
+breaking property checks. Prefer `Object.hasOwn`; invoke the other prototype methods explicitly.
+A project API that deliberately owns one of the same method names requires a narrow explanation.
 
 `oxc/misrefactored-assign-op` reports likely incomplete rewrites such as `total += total + amount`.
 Its simplification is a suggestion rather than an automatic fix. Preserve an intentional recurrence

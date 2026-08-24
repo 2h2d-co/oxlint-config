@@ -125,6 +125,7 @@ set with `oxlint --print-config <file>`.
   "no-extend-native": "error",
   "no-new-func": "error",
   "no-new-wrappers": "error",
+  "no-prototype-builtins": "error",
   "no-var": "error",
   "oxc/misrefactored-assign-op": "error",
   "oxc/no-accumulating-spread": "error",
@@ -208,6 +209,8 @@ declarations remain valid. Native global prototypes must not be extended. Intent
 runtime patches require a narrow explained suppression because they alter process-wide behavior.
 Boxed primitive constructors are prohibited because they introduce object identity and truthiness;
 intentional wrapper identity requires an explained suppression instead of applying the fixer.
+Direct calls to inherited object prototype methods are prohibited because null-prototype or
+externally shadowed objects make them unsafe; prefer `Object.hasOwn` for ownership checks.
 Incomplete compound-assignment refactors such as `total += total + amount` are rejected; intentional
 recurrence formulas can use an ordinary assignment or an explained suppression.
 Accumulating spread is rejected because repeated full copies produce quadratic work. Compliance
