@@ -253,7 +253,7 @@ The pinned native `correctness` category is enabled, with these explicit excepti
 | `oxc/erasing-op`                               | Zero arithmetic can preserve `NaN`, negative zero, infinity, and operand side effects.           |
 | `oxc/number-arg-out-of-range`                  | Its number-formatting precision limits are obsolete under modern ECMAScript.                     |
 | `oxc/uninvoked-array-callback`                 | It mistakes function values passed to non-callback methods such as `fill` for callbacks.         |
-| `promise/no-callback-in-promise`               | Held disabled until its callback interoperability contract is reviewed.                          |
+| `promise/no-callback-in-promise`               | Name heuristics reject legitimate callback adapters and are bypassed by renaming the callback.   |
 | `promise/valid-params`                         | It rejects valid parameterless forwarding calls and guesses that unknown receivers are Promises. |
 | `unicorn/no-empty-file`                        | Empty files can be intentional generated artifacts, fixtures, or reserved entry points.          |
 | `unicorn/no-new-array`                         | `new Array(length)` intentionally creates a sparse array; suggested replacements can be dense.   |

@@ -133,7 +133,7 @@ test("strict preset enables the adopted native rules", () => {
   ]);
 });
 
-test("strict preset disables reviewed and pending correctness-category exceptions", () => {
+test("strict preset disables reviewed correctness-category exceptions", () => {
   assert.equal(strictRules["oxc/double-comparisons"], "off");
   assert.equal(strictRules["oxc/erasing-op"], "off");
   assert.equal(strictRules["oxc/number-arg-out-of-range"], "off");
