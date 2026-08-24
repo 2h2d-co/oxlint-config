@@ -123,6 +123,7 @@ test("strict preset enables the adopted native rules", () => {
   assert.equal(strictRules["unicorn/no-accessor-recursion"], "error");
   assert.equal(strictRules["unicorn/no-array-fill-with-reference-type"], "error");
   assert.equal(strictRules["unicorn/no-new-buffer"], "error");
+  assert.equal(strictRules["unicorn/prefer-node-protocol"], "error");
   assert.deepEqual(strictRules["preserve-caught-error"], [
     "error",
     { requireCatchParameter: true },

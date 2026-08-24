@@ -80,6 +80,7 @@ export const strictRules: DummyRuleMap = {
   "unicorn/no-accessor-recursion": "error",
   "unicorn/no-array-fill-with-reference-type": "error",
   "unicorn/no-new-buffer": "error",
+  "unicorn/prefer-node-protocol": "error",
   "oxc/double-comparisons": "off",
   "oxc/erasing-op": "off",
   "oxc/number-arg-out-of-range": "off",

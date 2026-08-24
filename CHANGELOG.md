@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `typescript/no-require-imports`.
 - Prohibit the deprecated argument-overloaded Node.js buffer constructor through native
   `unicorn/no-new-buffer`.
+- Require explicit `node:` specifiers for Node.js built-in modules through native
+  `unicorn/prefer-node-protocol`.
 - Prohibit function-scoped `var` declarations through native `no-var`.
 - Prevent additions to built-in prototypes through native `no-extend-native`.
 - Detect incomplete compound-assignment refactors through native

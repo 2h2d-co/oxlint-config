@@ -430,6 +430,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
             "unicorn/no-accessor-recursion": "error",
             "unicorn/no-array-fill-with-reference-type": "error",
             "unicorn/no-new-buffer": "error",
+            "unicorn/prefer-node-protocol": "error",
           },
           options: {
             typeAware: true,
@@ -480,6 +481,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
         "export class RecursiveAccessor { get value(): number { return this.value; } }",
         "export const sharedRows: object[] = [{}, {}]; sharedRows.fill({});",
         "export const deprecatedBuffer = new Buffer(8);",
+        "export { readFile } from 'fs/promises';",
         "export type Empty = {};",
         "export type InvalidVoid = void;",
         "export let unsafeFunction: Function;",
@@ -542,6 +544,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
       "unicorn(no-accessor-recursion)",
       "unicorn(no-array-fill-with-reference-type)",
       "unicorn(no-new-buffer)",
+      "unicorn(prefer-node-protocol)",
     ];
     for (const code of expectedCodes) {
       assert.equal(

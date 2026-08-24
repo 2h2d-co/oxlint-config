@@ -191,6 +191,7 @@ set with `oxlint --print-config <file>`.
   "unicorn/no-accessor-recursion": "error",
   "unicorn/no-array-fill-with-reference-type": "error",
   "unicorn/no-new-buffer": "error",
+  "unicorn/prefer-node-protocol": "error",
   "oxc/double-comparisons": "off",
   "oxc/erasing-op": "off",
   "oxc/number-arg-out-of-range": "off",
@@ -226,6 +227,8 @@ Filling every array position with the same obvious object reference is rejected.
 immutable sentinels and custom cloning `fill` methods require an explained suppression.
 The deprecated argument-overloaded `new Buffer` API is prohibited in favor of explicit allocation
 or conversion methods. The native rule currently recognizes only the global `Buffer` binding.
+Node.js built-in module specifiers must use the explicit `node:` protocol. Intentional build-time
+aliases for bare built-in names require an explained suppression because their resolution differs.
 
 The strict map explicitly disables ten rules inherited from the native `correctness` category.
 Syntax-only comparison algebra is not sound for values such as `NaN` or objects with coercion

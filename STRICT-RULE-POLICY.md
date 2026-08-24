@@ -132,6 +132,7 @@ Oxlint's version-pinned native `correctness` category.
 | `unicorn/no-accessor-recursion`                     | Prevent getters and setters from recursively invoking themselves. |
 | `unicorn/no-array-fill-with-reference-type`         | Prevent accidental aliasing across filled array elements.         |
 | `unicorn/no-new-buffer`                             | Use explicit safe Node.js buffer allocation and conversion APIs.  |
+| `unicorn/prefer-node-protocol`                      | Identify Node.js built-in modules explicitly.                     |
 | `preserve-caught-error`                             | Preserve a caught failure when constructing a replacement Error.  |
 
 `eqeqeq` uses `"always"` with `{ "null": "ignore" }`. Intentional `value == null` checks remain
@@ -178,6 +179,11 @@ explanation.
 `unicorn/no-new-buffer` replaces the deprecated argument-overloaded constructor with an explicit
 choice among `Buffer.alloc`, `Buffer.allocUnsafe`, and `Buffer.from`. The native implementation
 recognizes the global binding but currently misses an explicitly imported `Buffer`.
+
+`unicorn/prefer-node-protocol` distinguishes Node.js built-ins from package specifiers across
+imports, exports, dynamic imports, TypeScript import-equals, and CommonJS `require`. A build that
+deliberately aliases a bare built-in name requires a narrow explanation because adding `node:` can
+change that build-time resolution contract.
 
 `typescript/no-require-imports` rejects the unavailable global `require` in ESM source while
 permitting a locally bound function created with `createRequire`. Intentional `.cjs` files and exact
