@@ -73,6 +73,7 @@ export const strictRules: DummyRuleMap = {
     },
   ],
   "typescript/use-unknown-in-catch-callback-variable": "error",
+  "unicorn/no-accessor-recursion": "error",
   "oxc/double-comparisons": "off",
   "oxc/erasing-op": "off",
   "oxc/number-arg-out-of-range": "off",

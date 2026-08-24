@@ -399,7 +399,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
       configPath,
       `${JSON.stringify(
         {
-          plugins: ["typescript", "oxc"],
+          plugins: ["typescript", "unicorn", "oxc"],
           rules: {
             "array-callback-return": "error",
             eqeqeq: ["error", "always", { null: "ignore" }],
@@ -423,6 +423,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
               },
             ],
             "typescript/return-await": ["error", "error-handling-correctness-only"],
+            "unicorn/no-accessor-recursion": "error",
           },
           options: {
             typeAware: true,
@@ -465,6 +466,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
         "var legacyBinding = 1;",
         "let total = 1; total += total + 1;",
         "let accumulated = [1, 2].reduce((result, value) => [...result, value], []);",
+        "export class RecursiveAccessor { get value(): number { return this.value; } }",
         "export type Empty = {};",
         "export type InvalidVoid = void;",
         "export let unsafeFunction: Function;",
@@ -520,6 +522,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
       "typescript(no-unsafe-function-type)",
       "typescript(prefer-promise-reject-errors)",
       "typescript(return-await)",
+      "unicorn(no-accessor-recursion)",
     ];
     for (const code of expectedCodes) {
       assert.equal(

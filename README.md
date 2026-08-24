@@ -184,6 +184,7 @@ set with `oxlint --print-config <file>`.
     }
   ],
   "typescript/use-unknown-in-catch-callback-variable": "error",
+  "unicorn/no-accessor-recursion": "error",
   "oxc/double-comparisons": "off",
   "oxc/erasing-op": "off",
   "oxc/number-arg-out-of-range": "off",
@@ -205,6 +206,8 @@ recurrence formulas can use an ordinary assignment or an explained suppression.
 Accumulating spread is rejected because repeated full copies produce quadratic work. Compliance
 must preserve caller-owned seeds and intentional snapshots; explain those immutable contracts
 rather than replacing them blindly with mutation.
+Recursive access through the same getter or setter is rejected. Dynamic accessors that replace
+themselves before the reported access require an explained suppression.
 
 The strict map explicitly disables ten rules inherited from the native `correctness` category.
 Syntax-only comparison algebra is not sound for values such as `NaN` or objects with coercion
