@@ -1,6 +1,6 @@
 {
   "name": "@2h2d/oxlint-config",
-  "version": "0.1.0-alpha.10",
+  "version": "0.1.0-alpha.11",
   "description": "Shared Oxlint rules and configuration for 2h2d repositories",
   "homepage": "https://github.com/2h2d-co/oxlint-config#readme",
   "bugs": {
