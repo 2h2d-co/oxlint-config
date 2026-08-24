@@ -126,6 +126,7 @@ Oxlint's version-pinned native `correctness` category.
 | `typescript/switch-exhaustiveness-check`            | Handle every union member without relying on `default`.           |
 | `typescript/use-unknown-in-catch-callback-variable` | Treat Promise rejection values as uncertain until narrowed.       |
 | `unicorn/no-accessor-recursion`                     | Prevent getters and setters from recursively invoking themselves. |
+| `unicorn/no-array-fill-with-reference-type`         | Prevent accidental aliasing across filled array elements.         |
 | `preserve-caught-error`                             | Preserve a caught failure when constructing a replacement Error.  |
 
 `eqeqeq` uses `"always"` with `{ "null": "ignore" }`. Intentional `value == null` checks remain
@@ -151,6 +152,11 @@ suppression.
 `unicorn/no-accessor-recursion` catches same-property access that would ordinarily overflow the
 stack. A dynamic accessor that replaces itself before the reported access requires a narrow
 explanation of why recursion cannot occur.
+
+`unicorn/no-array-fill-with-reference-type` catches obvious object references that `fill` would
+reuse in every array position. It is intentionally incomplete because it has no type information.
+Shared immutable sentinels and custom `fill` methods that clone their input require a narrow
+explanation.
 
 `typescript/no-floating-promises` uses `ignoreVoid: false`. `void operation()` does not handle a
 rejection. A package-qualified exemption allows only the `describe`, `it`, and `test` declarations

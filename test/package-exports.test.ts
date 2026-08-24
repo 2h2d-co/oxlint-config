@@ -424,6 +424,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
             ],
             "typescript/return-await": ["error", "error-handling-correctness-only"],
             "unicorn/no-accessor-recursion": "error",
+            "unicorn/no-array-fill-with-reference-type": "error",
           },
           options: {
             typeAware: true,
@@ -467,6 +468,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
         "let total = 1; total += total + 1;",
         "let accumulated = [1, 2].reduce((result, value) => [...result, value], []);",
         "export class RecursiveAccessor { get value(): number { return this.value; } }",
+        "export const sharedRows: object[] = [{}, {}]; sharedRows.fill({});",
         "export type Empty = {};",
         "export type InvalidVoid = void;",
         "export let unsafeFunction: Function;",
@@ -523,6 +525,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
       "typescript(prefer-promise-reject-errors)",
       "typescript(return-await)",
       "unicorn(no-accessor-recursion)",
+      "unicorn(no-array-fill-with-reference-type)",
     ];
     for (const code of expectedCodes) {
       assert.equal(

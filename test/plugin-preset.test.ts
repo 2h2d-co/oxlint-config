@@ -117,6 +117,7 @@ test("strict preset enables the adopted native rules", () => {
   ]);
   assert.equal(strictRules["typescript/use-unknown-in-catch-callback-variable"], "error");
   assert.equal(strictRules["unicorn/no-accessor-recursion"], "error");
+  assert.equal(strictRules["unicorn/no-array-fill-with-reference-type"], "error");
   assert.deepEqual(strictRules["preserve-caught-error"], [
     "error",
     { requireCatchParameter: true },

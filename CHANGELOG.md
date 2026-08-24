@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `oxc/misrefactored-assign-op`.
 - Prevent quadratic accumulator copying through native `oxc/no-accumulating-spread`.
 - Prevent recursive getter and setter access through native `unicorn/no-accessor-recursion`.
+- Prevent accidental shared references in filled arrays through native
+  `unicorn/no-array-fill-with-reference-type`.
 
 ## [0.1.0-alpha.12] - 2026-08-24
 
