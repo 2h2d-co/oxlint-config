@@ -259,6 +259,9 @@ can mistake unrelated `then`, `catch`, and `finally` methods for Promise operati
 `promise/no-callback-in-promise` remains disabled because it relies on callback names, can be
 bypassed by renaming, and rejects legitimate Promise-to-callback adapters.
 
+The test suite pins the exact correctness-category inventory for every loaded native plugin.
+Oxlint upgrades fail until each added, removed, or reclassified rule is reviewed explicitly.
+
 Every catch must bind its failure, and replacement built-in errors must preserve that value as their
 `cause`. Promise-style rejection callbacks must likewise bind their rejection reason. Whether a
 caught failure should be logged or recorded is a review decision rather than a custom lint

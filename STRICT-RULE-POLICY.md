@@ -262,6 +262,11 @@ The pinned native `correctness` category is enabled, with these explicit excepti
 | `unicorn/no-useless-spread`                    | Spread can intentionally snapshot iterables, normalize arrays, or change consumption timing.     |
 | `unicorn/prefer-string-starts-ends-with`       | Anchored regular expressions have edge-case semantics not shared by string methods.              |
 
+`test/correctness-inventory.test.ts` pins the complete correctness-category inventory for every
+loaded native plugin scope. An Oxlint upgrade that adds, removes, or reclassifies a rule must fail
+the test. Review each inventory difference individually; either accept it by updating the reviewed
+list or disable it explicitly with a documented reason. Do not regenerate the list mechanically.
+
 ## Removed rules
 
 The post-rollout review removed these rules from both the strict preset and the plugin:
