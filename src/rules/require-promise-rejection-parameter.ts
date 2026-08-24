@@ -58,33 +58,33 @@ function hasRuntimeParameter(handler: HandlerFunction): boolean {
   );
 }
 
-function parameterlessHandlers(
+function parameterlessHandlerExpressions(
   sourceCode: SourceCode,
   expression: ESTree.Expression,
-): HandlerFunction[] {
+): ESTree.Expression[] {
   const current = unwrapExpression(expression);
   if (current.type === "ArrowFunctionExpression" || current.type === "FunctionExpression") {
     return hasRuntimeParameter(current) ? [] : [current];
   }
   if (current.type === "Identifier") {
     const handler = resolvedHandler(sourceCode, current);
-    return handler === null || hasRuntimeParameter(handler) ? [] : [handler];
+    return handler === null || hasRuntimeParameter(handler) ? [] : [current];
   }
   if (current.type === "ConditionalExpression") {
     return [
-      ...parameterlessHandlers(sourceCode, current.consequent),
-      ...parameterlessHandlers(sourceCode, current.alternate),
+      ...parameterlessHandlerExpressions(sourceCode, current.consequent),
+      ...parameterlessHandlerExpressions(sourceCode, current.alternate),
     ];
   }
   if (current.type === "LogicalExpression") {
     return [
-      ...parameterlessHandlers(sourceCode, current.left),
-      ...parameterlessHandlers(sourceCode, current.right),
+      ...parameterlessHandlerExpressions(sourceCode, current.left),
+      ...parameterlessHandlerExpressions(sourceCode, current.right),
     ];
   }
   if (current.type === "SequenceExpression") {
     const last = current.expressions.at(-1);
-    return last === undefined ? [] : parameterlessHandlers(sourceCode, last);
+    return last === undefined ? [] : parameterlessHandlerExpressions(sourceCode, last);
   }
   return [];
 }
@@ -137,8 +137,8 @@ export const requirePromiseRejectionParameterRule = defineRule({
       CallExpression(node) {
         const argument = rejectionHandlerArgument(node);
         if (argument === null) return;
-        for (const handler of parameterlessHandlers(context.sourceCode, argument)) {
-          context.report({ node: handler, messageId: "missingParameter" });
+        for (const expression of parameterlessHandlerExpressions(context.sourceCode, argument)) {
+          context.report({ node: expression, messageId: "missingParameter" });
         }
       },
     };

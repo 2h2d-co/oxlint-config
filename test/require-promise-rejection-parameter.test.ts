@@ -41,16 +41,16 @@ tester.run("2h2d/require-promise-rejection-parameter", requirePromiseRejectionPa
       errors: [error],
     },
     {
-      code: "function ignore() {} promise.catch(ignore);",
-      errors: [error],
+      code: "function ignore() {}\npromise.catch(ignore);",
+      errors: [{ ...error, line: 2, column: 14, endLine: 2, endColumn: 20 }],
     },
     {
-      code: "const ignore = () => undefined; promise.catch(ignore);",
-      errors: [error],
+      code: "const ignore = () => undefined;\npromise.catch(ignore);",
+      errors: [{ ...error, line: 2, column: 14, endLine: 2, endColumn: 20 }],
     },
     {
-      code: "const ignore = function () {}; promise.then(onFulfilled, ignore);",
-      errors: [error],
+      code: "const ignore = function () {};\npromise.then(onFulfilled, ignore);",
+      errors: [{ ...error, line: 2, column: 26, endLine: 2, endColumn: 32 }],
     },
     {
       code: "promise.catch(condition ? () => fallback : handle);",

@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Report parameterless named rejection handlers at each `.catch` or `.then` argument so explained
+  suppressions remain attached to the Promise operation rather than the callback declaration.
+
 ## [0.1.0-alpha.11] - 2026-08-24
 
 ### Added

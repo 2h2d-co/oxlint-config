@@ -84,7 +84,9 @@ The Oxlint JavaScript plugin API exposes syntax and scopes but no TypeScript par
 the separate type-aware backend has no custom-rule registration surface. The rule therefore
 recognizes `catch` and `then` method names syntactically. Use a narrow explained suppression for an
 unrelated API with the same method name, or when intentionally discarding a rejection reason is the
-actual best-effort contract.
+actual best-effort contract. Diagnostics for locally resolved named callbacks are reported at each
+rejection-handler argument, keeping suppressions attached to the Promise operation that discards the
+reason rather than to the reusable callback declaration.
 
 ## Adopted native rules
 

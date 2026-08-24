@@ -181,6 +181,9 @@ test("Oxlint loads the built plugin by package specifier", async () => {
         '  throw new Error("Operation failed");',
         "}",
         "Promise.resolve().catch(() => undefined);",
+        "const ignoreRejection = () => undefined;",
+        "// oxlint-disable-next-line 2h2d/require-promise-rejection-parameter -- This fixture verifies suppression at the Promise rejection-handler call site.",
+        "Promise.resolve().catch(ignoreRejection);",
         "",
       ].join("\n"),
     );
@@ -213,6 +216,13 @@ test("Oxlint loads the built plugin by package specifier", async () => {
         diagnostic.code === "typescript(ban-ts-comment)",
     );
     assert.equal(typeScriptDirectiveFindings.length, 1);
+    const promiseRejectionFindings = report.diagnostics.filter(
+      (diagnostic) =>
+        isObject(diagnostic) &&
+        "code" in diagnostic &&
+        diagnostic.code === "2h2d(require-promise-rejection-parameter)",
+    );
+    assert.equal(promiseRejectionFindings.length, 1);
   } finally {
     await rm(temporaryDirectory, { recursive: true, force: true });
   }
