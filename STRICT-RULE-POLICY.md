@@ -247,20 +247,20 @@ Exhaustive switches use:
 
 The pinned native `correctness` category is enabled, with these explicit exceptions:
 
-| Rule                                           | Reason                                                                                          |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `oxc/double-comparisons`                       | Syntax-only rewrites are unsound for `NaN`, coercive comparisons, and object identity.          |
-| `oxc/erasing-op`                               | Zero arithmetic can preserve `NaN`, negative zero, infinity, and operand side effects.          |
-| `oxc/number-arg-out-of-range`                  | Its number-formatting precision limits are obsolete under modern ECMAScript.                    |
-| `oxc/uninvoked-array-callback`                 | It mistakes function values passed to non-callback methods such as `fill` for callbacks.        |
-| `promise/no-callback-in-promise`               | Held disabled until its callback interoperability contract is reviewed.                         |
-| `promise/valid-params`                         | Held disabled until its global resolution and call-signature analysis are reviewed.             |
-| `unicorn/no-empty-file`                        | Empty files can be intentional generated artifacts, fixtures, or reserved entry points.         |
-| `unicorn/no-new-array`                         | `new Array(length)` intentionally creates a sparse array; suggested replacements can be dense.  |
-| `unicorn/no-single-promise-in-promise-methods` | A one-element combinator can intentionally preserve aggregate shape and fresh Promise identity. |
-| `unicorn/no-thenable`                          | Deliberate `PromiseLike` implementations are a standard JavaScript interoperability contract.   |
-| `unicorn/no-useless-spread`                    | Spread can intentionally snapshot iterables, normalize arrays, or change consumption timing.    |
-| `unicorn/prefer-string-starts-ends-with`       | Anchored regular expressions have edge-case semantics not shared by string methods.             |
+| Rule                                           | Reason                                                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `oxc/double-comparisons`                       | Syntax-only rewrites are unsound for `NaN`, coercive comparisons, and object identity.           |
+| `oxc/erasing-op`                               | Zero arithmetic can preserve `NaN`, negative zero, infinity, and operand side effects.           |
+| `oxc/number-arg-out-of-range`                  | Its number-formatting precision limits are obsolete under modern ECMAScript.                     |
+| `oxc/uninvoked-array-callback`                 | It mistakes function values passed to non-callback methods such as `fill` for callbacks.         |
+| `promise/no-callback-in-promise`               | Held disabled until its callback interoperability contract is reviewed.                          |
+| `promise/valid-params`                         | It rejects valid parameterless forwarding calls and guesses that unknown receivers are Promises. |
+| `unicorn/no-empty-file`                        | Empty files can be intentional generated artifacts, fixtures, or reserved entry points.          |
+| `unicorn/no-new-array`                         | `new Array(length)` intentionally creates a sparse array; suggested replacements can be dense.   |
+| `unicorn/no-single-promise-in-promise-methods` | A one-element combinator can intentionally preserve aggregate shape and fresh Promise identity.  |
+| `unicorn/no-thenable`                          | Deliberate `PromiseLike` implementations are a standard JavaScript interoperability contract.    |
+| `unicorn/no-useless-spread`                    | Spread can intentionally snapshot iterables, normalize arrays, or change consumption timing.     |
+| `unicorn/prefer-string-starts-ends-with`       | Anchored regular expressions have edge-case semantics not shared by string methods.              |
 
 ## Removed rules
 

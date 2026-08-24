@@ -253,8 +253,10 @@ single-argument `new Array(length)` has intentional sparse-array semantics; a on
 combinator can preserve aggregation shape and Promise identity; custom thenables are a standard
 interoperability contract; and anchored regular expressions are not always equivalent to
 `startsWith` or `endsWith`.
-The two remaining Promise correctness rules stay disabled while their contracts are reviewed
-individually. Native `promise/no-new-statics` is active through the `correctness` category.
+Native `promise/no-new-statics` is active through the `correctness` category.
+`promise/valid-params` remains disabled because it rejects valid parameterless forwarding calls and
+can mistake unrelated `then`, `catch`, and `finally` methods for Promise operations. The remaining
+`promise/no-callback-in-promise` contract is still under review.
 
 Every catch must bind its failure, and replacement built-in errors must preserve that value as their
 `cause`. Promise-style rejection callbacks must likewise bind their rejection reason. Whether a
