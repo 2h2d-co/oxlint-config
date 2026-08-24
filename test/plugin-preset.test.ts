@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import plugin from "../src/plugin.ts";
+import strictConfig from "../src/strict-config.ts";
 import { strictRules } from "../src/strict-rules.ts";
 
 const expectedStrictRules = [
@@ -24,6 +25,24 @@ test("strict preset enables only blocking custom rules", () => {
     .sort();
 
   assert.deepEqual(configuredCustomRules, expectedStrictRules);
+});
+
+test("strict configuration supplies the complete shared baseline", () => {
+  assert.deepEqual(strictConfig.plugins, ["typescript", "unicorn", "oxc"]);
+  assert.deepEqual(strictConfig.jsPlugins, [
+    {
+      name: "2h2d",
+      specifier: "@2h2d/oxlint-config/plugin",
+    },
+  ]);
+  assert.deepEqual(strictConfig.categories, { correctness: "error" });
+  assert.equal(strictConfig.rules, strictRules);
+  assert.deepEqual(strictConfig.env, { builtin: true });
+  assert.deepEqual(strictConfig.options, {
+    reportUnusedDisableDirectives: "error",
+    typeAware: true,
+    typeCheck: true,
+  });
 });
 
 test("strict preset enables the adopted native rules", () => {

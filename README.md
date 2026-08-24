@@ -21,31 +21,17 @@ npm install --save-dev --save-exact @2h2d/oxlint-config@alpha oxlint@1.78.0 oxli
 Create `oxlint.config.ts`:
 
 ```ts
-import { strictRules } from "@2h2d/oxlint-config/strict-rules";
+import { strictConfig } from "@2h2d/oxlint-config";
 import { defineConfig } from "oxlint";
 
 export default defineConfig({
-  plugins: ["typescript", "unicorn", "oxc"],
-  jsPlugins: [
-    {
-      name: "2h2d",
-      specifier: "@2h2d/oxlint-config/plugin",
-    },
-  ],
-  categories: {
-    correctness: "error",
-  },
-  rules: strictRules,
-  env: {
-    builtin: true,
-  },
-  options: {
-    reportUnusedDisableDirectives: "error",
-    typeAware: true,
-    typeCheck: true,
-  },
+  extends: [strictConfig],
 });
 ```
+
+The inherited configuration enables the TypeScript, Unicorn, and Oxc plugins; the native
+`correctness` category; the shared rules; built-in globals; type-aware linting and type checking;
+and unused suppression reporting. Add project-specific rules or overrides after `extends`.
 
 The package requires Node.js 22.19 or newer, matching the generated 2h2d TypeScript projects.
 
@@ -91,8 +77,8 @@ The suppression-directive rule requires lint suppressions to use `disable-line` 
 `disable-next-line`, name exactly one rule, and include an explanation after `--`. Native
 `typescript/ban-ts-comment` separately bans `@ts-ignore` and `@ts-nocheck` while allowing
 `@ts-expect-error` with a meaningful description. Both explanations require at least ten
-characters. `reportUnusedDisableDirectives: "error"` is a root configuration option rather than a
-rule, so consumer configurations must set it as shown above.
+characters. `reportUnusedDisableDirectives: "error"` is a root configuration option supplied by
+the inherited strict configuration.
 
 The module-mocking rule prohibits `mock`, `doMock`, and `unstable_mockModule` calls on Jest and
 Vitest APIs. Tests replace dependencies through production interfaces or faithful implementations.
@@ -127,9 +113,9 @@ information, unrelated APIs using `catch` or `then` can use a narrow explained s
 
 ## Native rules
 
-The strict rule map explicitly enables these native Oxlint rules. The required
-`categories.correctness` configuration additionally enables Oxlint's native correctness rules;
-inspect the effective version-pinned set with `oxlint --print-config <file>`.
+The strict rule map explicitly enables these native Oxlint rules. The exported strict configuration
+additionally enables Oxlint's native `correctness` category; inspect the effective version-pinned
+set with `oxlint --print-config <file>`.
 
 ```json
 {

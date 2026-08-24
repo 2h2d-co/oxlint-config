@@ -11,6 +11,10 @@ function isObject(value: unknown): value is object {
   return typeof value === "object" && value !== null;
 }
 
+function getProperty(value: unknown, name: string): unknown {
+  return isObject(value) ? Reflect.get(value, name) : undefined;
+}
+
 test("built package exports resolve through the package name", async () => {
   const pluginUrl = import.meta.resolve("@2h2d/oxlint-config/plugin");
   const rootUrl = import.meta.resolve("@2h2d/oxlint-config");
@@ -25,11 +29,100 @@ test("built package exports resolve through the package name", async () => {
   assert.ok(isObject(rootModule));
   assert.ok("plugin" in rootModule);
   assert.ok(isObject(rootModule.plugin));
+  assert.ok("strictConfig" in rootModule);
+  assert.ok(isObject(rootModule.strictConfig));
   assert.ok("strictRules" in rootModule);
   assert.ok(isObject(rootModule.strictRules));
   assert.ok(isObject(rulesModule));
   assert.ok("strictRules" in rulesModule);
   assert.ok(isObject(rulesModule.strictRules));
+});
+
+test("Oxlint inherits the complete built configuration", async () => {
+  const temporaryDirectory = await mkdtemp(join(root, ".consumer-"));
+  try {
+    const configPath = join(temporaryDirectory, "oxlint.config.ts");
+    const sourcePath = join(temporaryDirectory, "input.ts");
+    const tsconfigPath = join(temporaryDirectory, "tsconfig.json");
+    await writeFile(
+      configPath,
+      [
+        'import { strictConfig } from "@2h2d/oxlint-config";',
+        'import { defineConfig } from "oxlint";',
+        "",
+        "export default defineConfig({",
+        "  extends: [strictConfig],",
+        "});",
+        "",
+      ].join("\n"),
+    );
+    await writeFile(
+      tsconfigPath,
+      `${JSON.stringify(
+        {
+          compilerOptions: {
+            module: "nodenext",
+            strict: true,
+            target: "esnext",
+          },
+          include: ["input.ts"],
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    await writeFile(
+      sourcePath,
+      "export function accept(value: object): void { console.log(value); }\n",
+    );
+
+    const result = spawnSync(
+      resolve(root, "node_modules", "oxlint", "bin", "oxlint"),
+      ["--config", configPath, "--print-config", sourcePath],
+      {
+        cwd: root,
+        encoding: "utf8",
+      },
+    );
+
+    assert.equal(result.status, 0, result.stderr);
+    const config: unknown = JSON.parse(result.stdout);
+    assert.ok(isObject(config));
+    const rules = getProperty(config, "rules");
+    assert.ok(isObject(rules));
+    assert.equal(getProperty(rules, "typescript/no-implied-eval"), "deny", result.stdout);
+    const options = getProperty(config, "options");
+    assert.ok(isObject(options));
+    assert.equal(getProperty(options, "reportUnusedDisableDirectives"), "deny");
+    assert.equal(getProperty(options, "typeAware"), true);
+    assert.equal(getProperty(options, "typeCheck"), true);
+
+    const lintResult = spawnSync(
+      resolve(root, "node_modules", "oxlint", "bin", "oxlint"),
+      ["--config", configPath, "--format", "json", "--tsconfig", tsconfigPath, sourcePath],
+      {
+        cwd: root,
+        encoding: "utf8",
+      },
+    );
+
+    assert.equal(lintResult.status, 1, lintResult.stderr);
+    const report: unknown = JSON.parse(lintResult.stdout);
+    assert.ok(isObject(report));
+    const diagnostics = getProperty(report, "diagnostics");
+    assert.ok(Array.isArray(diagnostics));
+    assert.equal(
+      diagnostics.filter(
+        (diagnostic) =>
+          isObject(diagnostic) &&
+          getProperty(diagnostic, "code") === "2h2d(no-broad-object-parameters)",
+      ).length,
+      1,
+      lintResult.stdout,
+    );
+  } finally {
+    await rm(temporaryDirectory, { recursive: true, force: true });
+  }
 });
 
 test("Oxlint loads the built plugin by package specifier", async () => {

@@ -53,7 +53,8 @@ requires review.
 - Require an explanation of at least ten characters after `--`.
 - Let native `typescript/ban-ts-comment` govern TypeScript directives: ban `@ts-ignore` and
   `@ts-nocheck`, permit `@ts-check`, and require a meaningful description on `@ts-expect-error`.
-- Set the root Oxlint option `reportUnusedDisableDirectives` to `error` in every consumer.
+- Supply the root Oxlint option `reportUnusedDisableDirectives: "error"` through the shared strict
+  configuration.
 
 ### `2h2d/no-broad-dictionary-values`
 
@@ -87,8 +88,8 @@ actual best-effort contract.
 
 ## Adopted native rules
 
-The following rules are explicitly enabled as errors. The required `correctness` category also
-enables Oxlint's version-pinned native correctness rules.
+The following rules are explicitly enabled as errors. The shared strict configuration also enables
+Oxlint's version-pinned native `correctness` category.
 
 | Configuration rule ID                               | Policy                                                            |
 | --------------------------------------------------- | ----------------------------------------------------------------- |

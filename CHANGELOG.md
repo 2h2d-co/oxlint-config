@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Export a complete strict configuration that consumers inherit to enable the native correctness
+  category, plugins, shared rules, built-in globals, type-aware checking, and unused suppression
+  reporting.
 - Require Promise-style `.catch` and `.then` rejection callbacks to declare their rejection reason.
 - Add native enforcement for array callback returns, non-coercive equality, dynamic function
   compilation, empty object and unsafe function types, type-only import side effects, invalid
