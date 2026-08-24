@@ -6,12 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.0-alpha.11] - 2026-08-24
+
 ### Added
 
 - Export a complete strict configuration that consumers inherit to enable the native correctness
   category, plugins, shared rules, built-in globals, type-aware checking, and unused suppression
   reporting.
 - Require Promise-style `.catch` and `.then` rejection callbacks to declare their rejection reason.
+
+### Removed
+
+- Disable syntax-only double-comparison simplification because its rewrites are not equivalent for
+  `NaN`, coercive comparisons, or object identity.
+- Disable erasing-operation simplification because zero arithmetic can preserve `NaN`, negative
+  zero, infinity, and operand side effects.
+- Disable obsolete number-formatting argument limits that reject precision values permitted by
+  modern ECMAScript.
+- Disable uninvoked-array callback detection because it mistakes function values passed to methods
+  such as `fill` for callbacks.
+- Disable useless-spread enforcement because spread can intentionally snapshot iterables, normalize
+  sparse arrays, or change iterator consumption timing.
+- Disable inherited native rules that reject meaningful empty files, sparse-array construction,
+  single-value Promise aggregation, deliberate thenables, or anchored regular-expression
+  semantics.
+
+## [0.1.0-alpha.10] - 2026-08-23
+
+### Added
+
 - Add native enforcement for array callback returns, non-coercive equality, dynamic function
   compilation, empty object and unsafe function types, type-only import side effects, invalid
   `void` positions, unnecessary type parameters, unsafe enum comparisons, Promise rejection
@@ -43,19 +66,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Removed
 
-- Disable syntax-only double-comparison simplification because its rewrites are not equivalent for
-  `NaN`, coercive comparisons, or object identity.
-- Disable erasing-operation simplification because zero arithmetic can preserve `NaN`, negative
-  zero, infinity, and operand side effects.
-- Disable obsolete number-formatting argument limits that reject precision values permitted by
-  modern ECMAScript.
-- Disable uninvoked-array callback detection because it mistakes function values passed to methods
-  such as `fill` for callbacks.
-- Disable useless-spread enforcement because spread can intentionally snapshot iterables, normalize
-  sparse arrays, or change iterator consumption timing.
-- Disable inherited native rules that reject meaningful empty files, sparse-array construction,
-  single-value Promise aggregation, deliberate thenables, or anchored regular-expression
-  semantics.
 - Remove custom conditional object-spread enforcement because the rejected construction is valid,
   concise, and often preserves useful inference.
 - Remove `2h2d/no-unknown-returns` and the advisory package surface because `unknown` is safe,
@@ -155,7 +165,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   integration tests.
 - Add anti-slop attribution and license notices for adapted implementations.
 
-[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.9...HEAD
+[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.11...HEAD
+[0.1.0-alpha.11]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.10...v0.1.0-alpha.11
+[0.1.0-alpha.10]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.9...v0.1.0-alpha.10
 [0.1.0-alpha.9]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.8...v0.1.0-alpha.9
 [0.1.0-alpha.8]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.7...v0.1.0-alpha.8
 [0.1.0-alpha.7]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.6...v0.1.0-alpha.7
