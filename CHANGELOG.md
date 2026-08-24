@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Require explicit case-local blocks for switch-case lexical declarations through native
+  `no-case-declarations`.
 - Prohibit function-scoped `var` declarations through native `no-var`.
 - Prevent additions to built-in prototypes through native `no-extend-native`.
 - Detect incomplete compound-assignment refactors through native

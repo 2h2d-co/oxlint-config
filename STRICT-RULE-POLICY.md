@@ -97,6 +97,7 @@ Oxlint's version-pinned native `correctness` category.
 | --------------------------------------------------- | ----------------------------------------------------------------- |
 | `array-callback-return`                             | Require value-producing array callbacks to return a value.        |
 | `eqeqeq`                                            | Prohibit coercive equality while permitting nullish checks.       |
+| `no-case-declarations`                              | Give lexical declarations an explicit case-local scope.           |
 | `no-extend-native`                                  | Prevent process-wide mutation of built-in prototypes.             |
 | `no-new-func`                                       | Prohibit dynamic function compilation.                            |
 | `no-var`                                            | Use block-scoped declarations instead of function-scoped `var`.   |
@@ -131,6 +132,10 @@ Oxlint's version-pinned native `correctness` category.
 
 `eqeqeq` uses `"always"` with `{ "null": "ignore" }`. Intentional `value == null` checks remain
 valid while other coercive equality is prohibited.
+
+`no-case-declarations` prevents lexical bindings from silently belonging to an entire switch.
+Cases that own declarations use explicit blocks. A deliberate cross-case binding requires a narrow
+explanation.
 
 `no-var` expresses the declaration policy directly instead of treating a function-scoped `var` as
 though it were scoped to its nearest visual block. TypeScript ambient declarations remain valid.

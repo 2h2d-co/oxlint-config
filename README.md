@@ -121,6 +121,7 @@ set with `oxlint --print-config <file>`.
 {
   "array-callback-return": "error",
   "eqeqeq": ["error", "always", { "null": "ignore" }],
+  "no-case-declarations": "error",
   "no-extend-native": "error",
   "no-new-func": "error",
   "no-var": "error",
@@ -199,6 +200,8 @@ set with `oxlint --print-config <file>`.
 }
 ```
 
+Switch cases containing lexical declarations use explicit blocks so their bindings cannot leak into
+the switch-wide lexical environment.
 Function-scoped `var` declarations are prohibited in favor of `let` and `const`; TypeScript ambient
 declarations remain valid. Native global prototypes must not be extended. Intentional polyfills or
 runtime patches require a narrow explained suppression because they alter process-wide behavior.

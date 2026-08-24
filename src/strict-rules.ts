@@ -10,6 +10,7 @@ export const strictRules: DummyRuleMap = {
   "2h2d/require-promise-rejection-parameter": "error",
   "array-callback-return": "error",
   eqeqeq: ["error", "always", { null: "ignore" }],
+  "no-case-declarations": "error",
   "no-extend-native": "error",
   "no-new-func": "error",
   "no-var": "error",

@@ -403,6 +403,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
           rules: {
             "array-callback-return": "error",
             eqeqeq: ["error", "always", { null: "ignore" }],
+            "no-case-declarations": "error",
             "no-extend-native": "error",
             "no-new-func": "error",
             "no-var": "error",
@@ -462,6 +463,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
         "Promise.reject(externalReason);",
         "if (1 == '1') {}",
         "[1].map(() => {});",
+        "switch (maybe) { case 'value': const caseValue = 1; console.log(caseValue); break; }",
         "Array.prototype.sharedExtension = () => undefined;",
         "new Function('return 1');",
         "var legacyBinding = 1;",
@@ -511,6 +513,7 @@ test("native additions enforce hazards without rejecting intentional boundaries"
     const expectedCodes = [
       "eslint(array-callback-return)",
       "eslint(eqeqeq)",
+      "eslint(no-case-declarations)",
       "eslint(no-extend-native)",
       "eslint(no-new-func)",
       "eslint(no-var)",
