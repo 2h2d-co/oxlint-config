@@ -13,7 +13,7 @@ The package combines:
 Install the package and its exact supported Oxlint version as development dependencies:
 
 ```bash
-npm install --save-dev --save-exact @2h2d/oxlint-config@0.1.0 oxlint@1.78.0 oxlint-tsgolint@7.0.2001
+npm install --save-dev --save-exact @2h2d/oxlint-config@0.1.1 oxlint@1.79.0 oxlint-tsgolint@7.0.2001
 ```
 
 ## Oxlint configuration
@@ -316,7 +316,7 @@ Importing a native rule through `strictRules` does not move it into the `2h2d` n
 ## Compatibility
 
 Oxlint JavaScript plugins are currently alpha and outside normal semantic-versioning guarantees.
-This package pins and tests Oxlint and `@oxlint/plugins` 1.78.0 with
+This package pins and tests Oxlint and `@oxlint/plugins` 1.79.0 with
 `oxlint-tsgolint` 7.0.2001. Update those versions together and validate the package-consumer
 integration test before release.
 

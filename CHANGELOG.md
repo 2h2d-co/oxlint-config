@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-26
+
+### Changed
+
+- Advance the tested Oxlint and `@oxlint/plugins` compatibility line to 1.79.0 after confirming the
+  loaded correctness-rule inventory is unchanged.
+
 ## [0.1.0] - 2026-08-24
 
 ### Added
@@ -203,7 +210,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   integration tests.
 - Add anti-slop attribution and license notices for adapted implementations.
 
-[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.12...v0.1.0
 [0.1.0-alpha.12]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.11...v0.1.0-alpha.12
 [0.1.0-alpha.11]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.10...v0.1.0-alpha.11
