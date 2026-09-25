@@ -11,7 +11,7 @@
   alpha and outside normal semantic-versioning guarantees.
 - Preserve `LICENSES/anti-slop-MIT.txt` and `THIRD_PARTY_NOTICES.md` while adapted anti-slop code
   remains.
-- Run `npm run check` and `npm test` before committing meaningful code changes.
+- Run `mise run check` before committing meaningful code changes. It runs `npm run check`, `npm test`, and `npm run pack:dry`.
 - Run `npm run pack:dry` to build and inspect the npm package contents before release.
 - Keep `.github/npm-package-files` synchronized with every intentional package-content change; local release validation and both CI jobs enforce it exactly.
 - Keep exports in `package.json` aligned with built files in `dist/`.
