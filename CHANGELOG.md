@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-10-03
+
+### Changed
+
+- Require Oxlint 1.85.0 and `oxlint-tsgolint` 7.0.2003 as peer dependencies, and depend on
+  `@oxlint/plugins` 1.85.0. The loaded correctness-rule inventory is unchanged. Consumers must
+  update their exact Oxlint and `oxlint-tsgolint` pins together with this package.
+
 ## [0.1.1] - 2026-08-26
 
 ### Changed
@@ -210,7 +218,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   integration tests.
 - Add anti-slop attribution and license notices for adapted implementations.
 
-[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.12...v0.1.0
 [0.1.0-alpha.12]: https://github.com/2h2d-co/oxlint-config/compare/v0.1.0-alpha.11...v0.1.0-alpha.12
