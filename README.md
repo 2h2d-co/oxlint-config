@@ -323,10 +323,8 @@ integration test before release.
 ## Development
 
 ```bash
-npm install
-npm run check
-npm test
-npm run pack:dry
+mise run init
+mise run check
 ```
 
 `npm test` builds the package before running rule, preset, package-export, and Oxlint consumer tests.
